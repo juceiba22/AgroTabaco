@@ -19,8 +19,25 @@ import plotly.graph_objects as go
 import re
 
 # URL del portal de noticias AgroTabaco (Next.js). Configurable por variable
-# de entorno para apuntar al dominio real una vez desplegado.
-AGROTABACO_SITE_URL = os.environ.get("AGROTABACO_SITE_URL", "http://localhost:3000")
+# de entorno (local) o por "Secrets" en Streamlit Community Cloud, que no
+# inyecta st.secrets como variables de entorno del proceso.
+try:
+    _secret_site_url = st.secrets.get("AGROTABACO_SITE_URL")
+except Exception:
+    _secret_site_url = None
+AGROTABACO_SITE_URL = (
+    _secret_site_url or os.environ.get("AGROTABACO_SITE_URL", "http://localhost:3000")
+)
+
+# Directorio de este script: los CSV se resuelven siempre relativos a acá,
+# sin importar desde qué working directory lo ejecute Streamlit Cloud u otro
+# hosting (algunos corren el proceso desde la raíz del repo, no desde esta
+# subcarpeta).
+DATA_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def data_path(filename):
+    return os.path.join(DATA_DIR, filename)
 
 # -----------------------------------------------------------------------------
 # 1. Configuración de Página y Estética Visual Corporativa
@@ -328,10 +345,10 @@ def load_produccion_primaria():
     df = None
     for enc in ['utf-8-sig', 'latin-1', 'cp1252']:
         try:
-            df = pd.read_csv("csv_anuario_produccion_primaria.csv", encoding=enc)
+            df = pd.read_csv(data_path("csv_anuario_produccion_primaria.csv"), encoding=enc)
             break
         except Exception: continue
-    if df is None: df = pd.read_csv("csv_anuario_produccion_primaria.csv", encoding='latin-1', errors='replace')
+    if df is None: df = pd.read_csv(data_path("csv_anuario_produccion_primaria.csv"), encoding='latin-1', errors='replace')
     df.columns = [c.replace('\ufeff', '').strip() for c in df.columns]
     df['provincia_clean'] = df['provincia'].apply(sanitize_province)
     df['tipo_tabaco_clean'] = df['tipo_tabaco'].apply(sanitize_tobacco)
@@ -352,10 +369,10 @@ def load_acopio_clases():
     df = None
     for enc in ['utf-8-sig', 'latin-1', 'cp1252']:
         try:
-            df = pd.read_csv("acopio_historico_unificado.csv", sep=';', encoding=enc)
+            df = pd.read_csv(data_path("acopio_historico_unificado.csv"), sep=';', encoding=enc)
             break
         except Exception: continue
-    if df is None: df = pd.read_csv("acopio_historico_unificado.csv", sep=';', encoding='latin-1', errors='replace')
+    if df is None: df = pd.read_csv(data_path("acopio_historico_unificado.csv"), sep=';', encoding='latin-1', errors='replace')
     df.columns = [c.replace('\ufeff', '').strip() for c in df.columns]
     df['provincia_clean'] = df['provincia'].apply(sanitize_province)
     df['tipo_tabaco_clean'] = df['tipo_tabaco'].apply(sanitize_tobacco)
@@ -373,10 +390,10 @@ def load_acopio_empresas():
     df = None
     for enc in ['utf-8-sig', 'latin-1', 'cp1252']:
         try:
-            df = pd.read_csv("acopio_empresas_historico_unificado.csv", sep=';', encoding=enc)
+            df = pd.read_csv(data_path("acopio_empresas_historico_unificado.csv"), sep=';', encoding=enc)
             break
         except Exception: continue
-    if df is None: df = pd.read_csv("acopio_empresas_historico_unificado.csv", sep=';', encoding='latin-1', errors='replace')
+    if df is None: df = pd.read_csv(data_path("acopio_empresas_historico_unificado.csv"), sep=';', encoding='latin-1', errors='replace')
     df.columns = [c.replace('\ufeff', '').strip() for c in df.columns]
     df['provincia_clean'] = df['provincia'].apply(sanitize_province)
     df['tipo_tabaco_clean'] = df['tipo_tabaco'].apply(sanitize_tobacco)
@@ -404,10 +421,10 @@ def load_acopio_precios():
     df = None
     for enc in ['utf-8-sig', 'latin-1', 'cp1252']:
         try:
-            df = pd.read_csv("acopio_resumen_precios_historico_unificado.csv", sep=';', encoding=enc)
+            df = pd.read_csv(data_path("acopio_resumen_precios_historico_unificado.csv"), sep=';', encoding=enc)
             break
         except Exception: continue
-    if df is None: df = pd.read_csv("acopio_resumen_precios_historico_unificado.csv", sep=';', encoding='latin-1', errors='replace')
+    if df is None: df = pd.read_csv(data_path("acopio_resumen_precios_historico_unificado.csv"), sep=';', encoding='latin-1', errors='replace')
     df.columns = [c.replace('\ufeff', '').strip() for c in df.columns]
     df['provincia_clean'] = df['provincia'].apply(sanitize_province)
     df['tipo_tabaco_clean'] = df['tipo_tabaco'].apply(sanitize_tobacco)
@@ -446,10 +463,10 @@ def load_fet_consolidado():
     df = None
     for enc in ['utf-8-sig', 'latin-1', 'cp1252']:
         try:
-            df = pd.read_csv("FET_Consolidado_Ejecuciones_Dashboard.csv", encoding=enc)
+            df = pd.read_csv(data_path("FET_Consolidado_Ejecuciones_Dashboard.csv"), encoding=enc)
             break
         except Exception: continue
-    if df is None: df = pd.read_csv("FET_Consolidado_Ejecuciones_Dashboard.csv", encoding='latin-1', errors='replace')
+    if df is None: df = pd.read_csv(data_path("FET_Consolidado_Ejecuciones_Dashboard.csv"), encoding='latin-1', errors='replace')
     df.columns = [c.replace('\ufeff', '').strip() for c in df.columns]
     
     def sanitize_concept(c):
