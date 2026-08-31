@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%" gradientTransform="rotate(111 0.5 0.5)">
+      <stop offset="0%" stop-color="#284a33"/>
+      <stop offset="100%" stop-color="#5c8a68"/>
+    </linearGradient>
+    <pattern id="lines" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(27.75)">
+      <line x1="0" y1="0" x2="0" y2="80" stroke="#ffffff" stroke-opacity="0.05" stroke-width="40"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#g)"/>
+  <rect width="1600" height="900" fill="url(#lines)"/>
+  <circle cx="1350" cy="180" r="260" fill="#ffffff" fill-opacity="0.06"/>
+  <circle cx="220" cy="760" r="200" fill="#ffffff" fill-opacity="0.05"/>
+  <g transform="translate(80,780)">
+    <text font-family="Arial, sans-serif" font-size="34" fill="#ffffff" fill-opacity="0.85" font-weight="700">AgroTabaco</text>
+    <text y="40" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" fill-opacity="0.6">Ganadería · Imagen ilustrativa</text>
+  </g>
+</svg>
