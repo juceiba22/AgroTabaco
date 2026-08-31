@@ -8,26 +8,26 @@ def apply_corporate_dark_theme():
     """
     return """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
     :root {
-        --bg-primary: #090d16;
-        --bg-card: #111827;
-        --bg-card-hover: #172033;
-        --border-color: rgba(255, 255, 255, 0.08);
-        --border-color-glow: rgba(16, 185, 129, 0.3);
-        --text-primary: #f8fafc;
-        --text-secondary: #94a3b8;
-        --text-muted: #64748b;
-        --accent-emerald: #10b981;
-        --accent-cyan: #06b6d4;
-        --accent-amber: #f59e0b;
-        --accent-indigo: #6366f1;
-        --accent-rose: #f43f5e;
+        --bg-primary: #10150f;
+        --bg-card: #182015;
+        --bg-card-hover: #1f291b;
+        --border-color: rgba(242, 244, 239, 0.10);
+        --border-color-glow: rgba(79, 145, 105, 0.35);
+        --text-primary: #f2f4ef;
+        --text-secondary: #a3ae9d;
+        --text-muted: #7a8578;
+        --accent-emerald: #4f9169;
+        --accent-cyan: #6fae87;
+        --accent-amber: #c68a4e;
+        --accent-indigo: #8a9c52;
+        --accent-rose: #c2604a;
     }
 
     html, body, [class*="css"], .stApp {
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         background-color: var(--bg-primary) !important;
         color: var(--text-primary) !important;
     }
@@ -42,7 +42,7 @@ def apply_corporate_dark_theme():
 
     /* Top Executive Header */
     .dashboard-header {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0d2822 100%);
+        background: linear-gradient(135deg, #0a1410 0%, #142218 50%, #1a4329 100%);
         border: 1px solid var(--border-color);
         border-radius: 16px;
         padding: 1.6rem 2.2rem;
@@ -64,14 +64,15 @@ def apply_corporate_dark_theme():
         left: 0;
         right: 0;
         height: 2px;
-        background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #6366f1 100%);
+        background: linear-gradient(90deg, #4f9169 0%, #8a9c52 50%, #c68a4e 100%);
     }
 
     .dashboard-header-title {
+        font-family: 'Source Serif 4', Georgia, serif;
         font-size: 1.85rem;
-        font-weight: 800;
+        font-weight: 700;
         color: #ffffff !important;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.01em;
         margin: 0;
         display: flex;
         align-items: center;
@@ -80,7 +81,7 @@ def apply_corporate_dark_theme():
 
     .dashboard-header-subtitle {
         font-size: 0.92rem;
-        color: #94a3b8;
+        color: #a3ae9d;
         margin-top: 0.4rem;
         margin-bottom: 0;
         display: flex;
@@ -89,9 +90,9 @@ def apply_corporate_dark_theme():
     }
 
     .header-badge {
-        background: rgba(16, 185, 129, 0.15);
-        color: #34d399;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+        background: rgba(79, 145, 105, 0.18);
+        color: #8fc7a3;
+        border: 1px solid rgba(79, 145, 105, 0.35);
         font-size: 0.75rem;
         font-weight: 700;
         padding: 0.25rem 0.65rem;
@@ -166,12 +167,12 @@ def apply_corporate_dark_theme():
     }
 
     .kpi-delta-pos {
-        color: #34d399;
+        color: #8fc7a3;
         font-weight: 600;
     }
 
     .kpi-delta-neg {
-        color: #f87171;
+        color: #e08a72;
         font-weight: 600;
     }
 
@@ -203,7 +204,7 @@ def apply_corporate_dark_theme():
     /* Tabs Styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 0.5rem;
-        background-color: #0f172a;
+        background-color: #182015;
         padding: 0.4rem;
         border-radius: 12px;
         border: 1px solid var(--border-color);
@@ -222,14 +223,14 @@ def apply_corporate_dark_theme():
     }
 
     .stTabs [aria-selected="true"] {
-        background-color: #1e293b !important;
+        background-color: #1f291b !important;
         color: #ffffff !important;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     /* Sidebar Dark Customization */
     section[data-testid="stSidebar"] {
-        background-color: #0c121e !important;
+        background-color: #0c1109 !important;
         border-right: 1px solid var(--border-color);
     }
 
@@ -244,22 +245,22 @@ def apply_corporate_dark_theme():
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: #38bdf8;
+        color: #a9b87a;
         margin-top: 1rem;
         margin-bottom: 0.5rem;
         padding-bottom: 0.3rem;
-        border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        border-bottom: 1px solid rgba(169, 184, 122, 0.25);
     }
 
     /* Citation Box */
     .citation-container {
-        background: rgba(15, 23, 42, 0.7);
+        background: rgba(24, 32, 21, 0.7);
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 1.1rem 1.4rem;
         margin-top: 2.5rem;
         font-size: 0.82rem;
-        color: #94a3b8;
+        color: #a3ae9d;
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
@@ -267,20 +268,20 @@ def apply_corporate_dark_theme():
 
     .citation-title {
         font-weight: 700;
-        color: #e2e8f0;
+        color: #f2f4ef;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
     .citation-link {
-        color: #38bdf8;
+        color: #a9b87a;
         text-decoration: none;
         transition: color 0.2s ease;
     }
-    
+
     .citation-link:hover {
-        color: #7dd3fc;
+        color: #c9d9a5;
         text-decoration: underline;
     }
 
@@ -290,15 +291,61 @@ def apply_corporate_dark_theme():
         height: 6px;
     }
     ::-webkit-scrollbar-track {
-        background: #090d16;
+        background: #10150f;
     }
     ::-webkit-scrollbar-thumb {
-        background: #334155;
+        background: #2a3626;
         border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
+        background: #3d4a35;
     }
+
+    /* Barra de marca AgroTabaco */
+    .agrotabaco-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding-bottom: 1rem;
+        margin-bottom: 1.2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .agrotabaco-topbar-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #f2f4ef !important;
+        text-decoration: none !important;
+    }
+
+    .agrotabaco-topbar-brand .accent { color: #a9b87a; }
+
+    .agrotabaco-topbar-logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 9999px;
+        background: #4f9169;
+        color: #0c1109;
+        font-size: 1rem;
+    }
+
+    .agrotabaco-topbar-back {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #a3ae9d !important;
+        text-decoration: none !important;
+    }
+
+    .agrotabaco-topbar-back:hover { color: #f2f4ef !important; }
     </style>
     """
 
@@ -325,6 +372,20 @@ def render_metric_card(title: str, value: str, subtitle: str = "", delta: str = 
     """
 
 
+def render_topbar(site_url: str) -> str:
+    """
+    Genera la barra de marca AgroTabaco con link de retorno al portal.
+    """
+    return f"""
+    <div class="agrotabaco-topbar">
+        <a class="agrotabaco-topbar-brand" href="{site_url}" target="_top">
+            <span class="agrotabaco-topbar-logo">🌱</span> Agro<span class="accent">Tabaco</span>
+        </a>
+        <a class="agrotabaco-topbar-back" href="{site_url}" target="_top">← Volver al portal de noticias</a>
+    </div>
+    """
+
+
 def render_header(title: str, subtitle: str, badge_text: str = "FAOstat Intelligence") -> str:
     """
     Genera el banner superior corporativo.
@@ -346,7 +407,7 @@ def render_header(title: str, subtitle: str, badge_text: str = "FAOstat Intellig
     """
 
 
-def render_citation_footer(citation_text: str, source_url: str = "http://www.fao.org/faostat/en/#data/QCL", owid_url: str = "https://ourworldindata.org/grapher/tobacco-production") -> str:
+def render_citation_footer(citation_text: str, source_url: str = "http://www.fao.org/faostat/en/#data/QCL", owid_url: str = "https://ourworldindata.org/grapher/tobacco-production", site_url: str = "http://localhost:3000") -> str:
     """
     Genera el footer de citación oficial estipulado por FAO y Our World in Data.
     """
@@ -359,9 +420,12 @@ def render_citation_footer(citation_text: str, source_url: str = "http://www.fao
             <strong>Referencia recomendada:</strong> <em>{citation_text}</em>
         </div>
         <div style="font-size: 0.78rem; margin-top: 0.3rem;">
-            🔗 Enlaces de consulta: 
-            <a href="{source_url}" target="_blank" class="citation-link">FAOstat - Crops & Livestock Products</a> | 
+            🔗 Enlaces de consulta:
+            <a href="{source_url}" target="_blank" class="citation-link">FAOstat - Crops & Livestock Products</a> |
             <a href="{owid_url}" target="_blank" class="citation-link">Our World in Data - Tobacco Production Dataset</a>
+        </div>
+        <div style="font-size: 0.78rem; margin-top: 0.3rem;">
+            Un desarrollo de <a href="{site_url}" target="_top" class="citation-link">AgroTabaco</a>
         </div>
     </div>
     """

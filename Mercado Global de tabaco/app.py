@@ -3,6 +3,7 @@ app.py - Dashboard Analítico del Mercado Internacional de Tabaco
 Basado en datos de FAOstat y Our World in Data.
 """
 
+import os
 from pathlib import Path
 import streamlit as st
 import pandas as pd
@@ -23,6 +24,7 @@ from styles import (
     render_metric_card,
     render_header,
     render_citation_footer,
+    render_topbar,
 )
 from charts import (
     create_timeseries_chart,
@@ -34,7 +36,7 @@ from charts import (
 
 # Configuración inicial de Streamlit
 st.set_page_config(
-    page_title="Mercado Internacional de Tabaco | FAOstat Intelligence",
+    page_title="Mercado Internacional de Tabaco | AgroTabaco",
     page_icon="🍃",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -42,6 +44,18 @@ st.set_page_config(
 
 # Inyectar estilos Dark Mode corporativos
 st.markdown(apply_corporate_dark_theme(), unsafe_allow_html=True)
+
+# URL del portal de noticias AgroTabaco (Next.js). Configurable por variable
+# de entorno (local) o por "Secrets" en Streamlit Community Cloud.
+try:
+    _secret_site_url = st.secrets.get("AGROTABACO_SITE_URL")
+except Exception:
+    _secret_site_url = None
+AGROTABACO_SITE_URL = (
+    _secret_site_url or os.environ.get("AGROTABACO_SITE_URL", "http://localhost:3000")
+)
+
+st.markdown(render_topbar(AGROTABACO_SITE_URL), unsafe_allow_html=True)
 
 # Directorio de trabajo de datos
 CURRENT_DIR = Path(__file__).parent.resolve()
@@ -74,7 +88,7 @@ with st.sidebar:
         <span style="font-size: 1.6rem;">🍃</span>
         <div>
             <div style="font-size: 1.05rem; font-weight: 800; color: #ffffff; line-height: 1.1;">TABACO STATS</div>
-            <div style="font-size: 0.72rem; color: #38bdf8; font-weight: 600; letter-spacing: 0.05em;">GLOBAL INTELLIGENCE</div>
+            <div style="font-size: 0.72rem; color: #a9b87a; font-weight: 600; letter-spacing: 0.05em;">GLOBAL INTELLIGENCE</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -135,7 +149,7 @@ with st.sidebar:
         available_entities = sorted(df_raw[entity_col].unique())
 
     # Presets rápidos de países
-    st.markdown('<div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; margin-bottom: 0.3rem;">⚡ Presets de Países:</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-size: 0.8rem; color: #a3ae9d; margin-top: 0.5rem; margin-bottom: 0.3rem;">⚡ Presets de Países:</div>', unsafe_allow_html=True)
     p_col1, p_col2 = st.columns(2)
     with p_col1:
         if st.button("🔥 Top 5 Global", use_container_width=True):
@@ -441,7 +455,7 @@ with tab_ranking:
         st.plotly_chart(fig_share, use_container_width=True)
 
         st.markdown(f"""
-        <div style="background: #1e293b; border-radius: 10px; padding: 1rem; border: 1px solid rgba(255,255,255,0.06); font-size: 0.85rem;">
+        <div style="background: #1f291b; border-radius: 10px; padding: 1rem; border: 1px solid rgba(242,244,239,0.08); font-size: 0.85rem;">
             <strong>📌 Concentración de la Producción ({selected_eval_year}):</strong><br>
             Los <strong>5 principales países</strong> representan el <strong>{share_df[share_df['Category'] == 'Top Productores']['Percentage'].sum():.1f}%</strong> del volumen global producido en el planeta.
         </div>
@@ -501,20 +515,20 @@ with tab_argentina:
             st.markdown("""
             <div class="content-card">
                 <div class="card-title"><span>📋</span> Perfil Productivo Nacional</div>
-                <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5;">
+                <p style="font-size: 0.88rem; color: #c3cabb; line-height: 1.5;">
                     Argentina es uno de los productores tradicionales más destacados de Sudamérica y un exportador clave de tabaco Virginia y Burley.
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem;">
-                    <div style="background: rgba(56, 189, 248, 0.1); border-left: 3px solid #38bdf8; padding: 0.6rem 0.8rem; border-radius: 6px;">
-                        <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Volumen Reciente (2024)</span><br>
+                    <div style="background: rgba(79, 145, 105, 0.12); border-left: 3px solid #4f9169; padding: 0.6rem 0.8rem; border-radius: 6px;">
+                        <span style="font-size: 0.75rem; color: #a3ae9d; text-transform: uppercase;">Volumen Reciente (2024)</span><br>
                         <strong style="font-size: 1.2rem; color: #ffffff;">80.786 toneladas</strong>
                     </div>
-                    <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; padding: 0.6rem 0.8rem; border-radius: 6px;">
-                        <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Récord Histórico de Cosecha</span><br>
+                    <div style="background: rgba(138, 156, 82, 0.12); border-left: 3px solid #8a9c52; padding: 0.6rem 0.8rem; border-radius: 6px;">
+                        <span style="font-size: 0.75rem; color: #a3ae9d; text-transform: uppercase;">Récord Histórico de Cosecha</span><br>
                         <strong style="font-size: 1.2rem; color: #ffffff;">167.936 t (Año 2005)</strong>
                     </div>
-                    <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 0.6rem 0.8rem; border-radius: 6px;">
-                        <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Posición Global</span><br>
+                    <div style="background: rgba(198, 138, 78, 0.12); border-left: 3px solid #c68a4e; padding: 0.6rem 0.8rem; border-radius: 6px;">
+                        <span style="font-size: 0.75rem; color: #a3ae9d; text-transform: uppercase;">Posición Global</span><br>
                         <strong style="font-size: 1.2rem; color: #ffffff;">Top 15 Mundial (#14 en 2024)</strong>
                     </div>
                 </div>
@@ -615,4 +629,4 @@ with tab_multi_csv:
 # ==========================================
 # CITACIÓN OFICIAL Y FOOTER
 # ==========================================
-st.markdown(render_citation_footer(citation_text), unsafe_allow_html=True)
+st.markdown(render_citation_footer(citation_text, site_url=AGROTABACO_SITE_URL), unsafe_allow_html=True)

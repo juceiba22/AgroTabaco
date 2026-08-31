@@ -7,22 +7,22 @@ import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 
-# Paleta de colores corporativos brillantes sobre fondo oscuro
+# Paleta de colores corporativos AgroTabaco (tonos tierra/agro sobre fondo oscuro)
 COLOR_PALETTE = [
-    "#10b981",  # Esmeralda
-    "#06b6d4",  # Cian
-    "#f59e0b",  # Ámbar
-    "#6366f1",  # Índigo
-    "#ec4899",  # Rosa
-    "#8b5cf6",  # Violeta
-    "#3b82f6",  # Azul eléctrico
-    "#14b8a6",  # Turquesa
-    "#f97316",  # Naranja
-    "#84cc16",  # Lima
-    "#e11d48",  # Carmín
-    "#a855f7",  # Púrpura
-    "#0ea5e9",  # Celeste
-    "#eab308",  # Amarillo dorado
+    "#4f9169",  # Verde hoja
+    "#c68a4e",  # Ámbar cosecha
+    "#6fae87",  # Verde salvia
+    "#a0522d",  # Terracota
+    "#8a9c52",  # Oliva
+    "#d9a441",  # Dorado trigo
+    "#5c8a68",  # Verde bosque
+    "#b5804a",  # Madera
+    "#7a9e9f",  # Teal apagado
+    "#a9b87a",  # Oliva claro
+    "#8a5a2e",  # Marrón tabaco
+    "#c2604a",  # Terracota rojiza
+    "#4a7a5c",  # Verde pino
+    "#9c7a4a",  # Bronce caqui
 ]
 
 def apply_base_dark_layout(fig: go.Figure, **kwargs):
@@ -30,25 +30,25 @@ def apply_base_dark_layout(fig: go.Figure, **kwargs):
     Aplica el tema visual Dark Mode de forma segura a cualquier figura Plotly.
     """
     base_dict = dict(
-        paper_bgcolor="rgba(17, 24, 39, 0)",
-        plot_bgcolor="rgba(17, 24, 39, 0.4)",
-        font=dict(family="Plus Jakarta Sans, sans-serif", color="#e2e8f0", size=12),
+        paper_bgcolor="rgba(24, 32, 21, 0)",
+        plot_bgcolor="rgba(24, 32, 21, 0.4)",
+        font=dict(family="Inter, sans-serif", color="#f2f4ef", size=12),
         xaxis=dict(
-            gridcolor="rgba(255, 255, 255, 0.07)",
-            zerolinecolor="rgba(255, 255, 255, 0.1)",
-            tickfont=dict(color="#94a3b8"),
-            title_font=dict(color="#cbd5e1", size=13),
+            gridcolor="rgba(79, 145, 105, 0.10)",
+            zerolinecolor="rgba(242, 244, 239, 0.15)",
+            tickfont=dict(color="#a3ae9d"),
+            title_font=dict(color="#c3cabb", size=13),
         ),
         yaxis=dict(
-            gridcolor="rgba(255, 255, 255, 0.07)",
-            zerolinecolor="rgba(255, 255, 255, 0.1)",
-            tickfont=dict(color="#94a3b8"),
-            title_font=dict(color="#cbd5e1", size=13),
+            gridcolor="rgba(79, 145, 105, 0.10)",
+            zerolinecolor="rgba(242, 244, 239, 0.15)",
+            tickfont=dict(color="#a3ae9d"),
+            title_font=dict(color="#c3cabb", size=13),
         ),
         hoverlabel=dict(
-            bgcolor="#0f172a",
-            bordercolor="#38bdf8",
-            font=dict(family="Plus Jakarta Sans, sans-serif", color="#ffffff", size=12),
+            bgcolor="#182015",
+            bordercolor="#4f9169",
+            font=dict(family="Inter, sans-serif", color="#ffffff", size=12),
         ),
         margin=dict(l=40, r=40, t=50, b=40),
     )
@@ -99,7 +99,7 @@ def create_timeseries_chart(
         fig,
         title=dict(
             text=f"Evolución Histórica de Producción de Tabaco ({unit})",
-            font=dict(size=16, color="#ffffff", family="Plus Jakarta Sans"),
+            font=dict(size=16, color="#ffffff", family="Inter"),
             x=0.01,
         ),
         xaxis_title="Año",
@@ -112,10 +112,10 @@ def create_timeseries_chart(
             y=-0.28,
             xanchor="center",
             x=0.5,
-            bgcolor="rgba(15, 23, 42, 0.6)",
+            bgcolor="rgba(24, 32, 21, 0.7)",
             bordercolor="rgba(255, 255, 255, 0.08)",
             borderwidth=1,
-            font=dict(color="#e2e8f0", size=11),
+            font=dict(color="#f2f4ef", size=11),
         ),
         height=500,
     )
@@ -139,9 +139,9 @@ def create_ranking_bar_chart(
     colors = []
     for ent in plot_df[entity_col]:
         if ent == highlight_entity:
-            colors.append("#38bdf8")  # Celeste brillante para Argentina
+            colors.append("#d9a441")  # Dorado destacado para Argentina
         else:
-            colors.append("#10b981")  # Verde esmeralda corporativo
+            colors.append("#4f9169")  # Verde corporativo
 
     display_labels = plot_df["Entity_Display"] if "Entity_Display" in plot_df.columns else plot_df[entity_col]
 
@@ -165,7 +165,7 @@ def create_ranking_bar_chart(
         fig,
         title=dict(
             text=f"Ranking de Principales Productores Globales – Año {year}",
-            font=dict(size=16, color="#ffffff", family="Plus Jakarta Sans"),
+            font=dict(size=16, color="#ffffff", family="Inter"),
             x=0.01,
         ),
         xaxis_title=f"Producción ({unit})",
@@ -205,12 +205,12 @@ def create_world_choropleth_map(
             value_col: ":,.0f",
         },
         labels={value_col: f"Producción ({unit})"},
-        color_continuous_scale="Viridis",
+        color_continuous_scale="YlGn",
     )
 
     fig.update_traces(
         hovertemplate="<b>%{hovertext}</b><br>Producción: %{customdata[0]} " + unit + "<extra></extra>",
-        marker_line_color="rgba(255, 255, 255, 0.15)",
+        marker_line_color="rgba(242, 244, 239, 0.15)",
         marker_line_width=0.5,
     )
 
@@ -218,27 +218,27 @@ def create_world_choropleth_map(
         fig,
         title=dict(
             text=f"Distribución Geográfica Mundial de Producción de Tabaco – Año {year}",
-            font=dict(size=16, color="#ffffff", family="Plus Jakarta Sans"),
+            font=dict(size=16, color="#ffffff", family="Inter"),
             x=0.01,
         ),
         geo=dict(
             showframe=False,
             showcoastlines=True,
-            coastlinecolor="rgba(255, 255, 255, 0.2)",
+            coastlinecolor="rgba(242, 244, 239, 0.2)",
             projection_type="equirectangular",
-            bgcolor="rgba(17, 24, 39, 0)",
+            bgcolor="rgba(24, 32, 21, 0)",
             showland=True,
-            landcolor="#1e293b",
+            landcolor="#1a2117",
             showocean=True,
-            oceancolor="#0b0f19",
+            oceancolor="#10150f",
             showlakes=True,
-            lakecolor="#0b0f19",
+            lakecolor="#10150f",
             showcountries=True,
-            countrycolor="rgba(255, 255, 255, 0.1)",
+            countrycolor="rgba(242, 244, 239, 0.1)",
         ),
         coloraxis_colorbar=dict(
-            title=dict(text="Escala (Log)", font=dict(color="#cbd5e1", size=11)),
-            tickfont=dict(color="#94a3b8"),
+            title=dict(text="Escala (Log)", font=dict(color="#c3cabb", size=11)),
+            tickfont=dict(color="#a3ae9d"),
             len=0.7,
             thickness=14,
         ),
@@ -258,12 +258,12 @@ def create_market_share_pie_chart(
     Crea un gráfico de dona / participación de mercado de los principales productores vs Resto del Mundo.
     """
     colors = [
-        "#10b981",  # 1er productor
-        "#06b6d4",  # 2do
-        "#f59e0b",  # 3ro
-        "#6366f1",  # 4to
-        "#ec4899",  # 5to
-        "#475569",  # Resto del mundo
+        "#4f9169",  # 1er productor
+        "#c68a4e",  # 2do
+        "#6fae87",  # 3ro
+        "#a0522d",  # 4to
+        "#8a9c52",  # 5to
+        "#5c6b5e",  # Resto del mundo
     ]
 
     fig = go.Figure(
@@ -272,7 +272,7 @@ def create_market_share_pie_chart(
                 labels=share_df["Entity_Display"],
                 values=share_df["Value"],
                 hole=0.55,
-                marker=dict(colors=colors[: len(share_df)], line=dict(color="#0f172a", width=2)),
+                marker=dict(colors=colors[: len(share_df)], line=dict(color="#182015", width=2)),
                 textinfo="label+percent",
                 textposition="outside",
                 hoverinfo="label+value+percent",
@@ -285,14 +285,14 @@ def create_market_share_pie_chart(
         fig,
         title=dict(
             text=f"Cuota de Producción Mundial (% Share) – Año {year}",
-            font=dict(size=16, color="#ffffff", family="Plus Jakarta Sans"),
+            font=dict(size=16, color="#ffffff", family="Inter"),
             x=0.01,
         ),
         showlegend=False,
         height=420,
         annotations=[
             dict(
-                text=f"<b>{year}</b><br><span style='font-size:10px; color:#94a3b8;'>GLOBAL</span>",
+                text=f"<b>{year}</b><br><span style='font-size:10px; color:#a3ae9d;'>GLOBAL</span>",
                 x=0.5,
                 y=0.5,
                 font_size=16,
@@ -355,7 +355,7 @@ def create_comparative_growth_chart(
         fig,
         title=dict(
             text=f"Evolución Relativa Indexada (Base 100 = {base_year})",
-            font=dict(size=16, color="#ffffff", family="Plus Jakarta Sans"),
+            font=dict(size=16, color="#ffffff", family="Inter"),
             x=0.01,
         ),
         xaxis_title="Año",
@@ -368,10 +368,10 @@ def create_comparative_growth_chart(
             y=-0.25,
             xanchor="center",
             x=0.5,
-            bgcolor="rgba(15, 23, 42, 0.6)",
+            bgcolor="rgba(24, 32, 21, 0.7)",
             bordercolor="rgba(255, 255, 255, 0.08)",
             borderwidth=1,
-            font=dict(color="#e2e8f0", size=11),
+            font=dict(color="#f2f4ef", size=11),
         ),
     )
 
