@@ -271,7 +271,24 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      log_chat_message: {
+        Args: {
+          p_session_id: string;
+          p_ip_hash: string | null;
+          p_role: "user" | "assistant";
+          p_content: string;
+        };
+        Returns: void;
+      };
+      check_chat_rate_limit: {
+        Args: {
+          p_ip_hash: string | null;
+          p_daily_limit?: number;
+        };
+        Returns: boolean;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
