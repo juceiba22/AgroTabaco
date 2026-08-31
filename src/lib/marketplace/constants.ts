@@ -122,6 +122,8 @@ export const HS_CODES: HsCodeEntry[] = [
   },
 ];
 
+export const CURRENCIES = ["USD", "ARS"] as const;
+
 export const LISTING_TYPE_LABELS: Record<"venta" | "compra", string> = {
   venta: "Vendo",
   compra: "Busco comprar",
