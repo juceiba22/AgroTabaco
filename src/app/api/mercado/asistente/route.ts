@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { getPostsByCategory } from "@/lib/data";
+import { MERCADO_ENABLED } from "@/lib/config";
 import { getMarketplaceStats } from "@/lib/marketplace/data";
 import { buildMarketContextSummary } from "@/lib/marketplace/market-context";
 import { createClient } from "@/lib/supabase/server";
@@ -42,6 +43,10 @@ Reglas estrictas:
 `.trim();
 
 export async function POST(request: Request) {
+  if (!MERCADO_ENABLED) {
+    return NextResponse.json({ error: "No disponible" }, { status: 404 });
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
