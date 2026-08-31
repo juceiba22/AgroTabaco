@@ -30,7 +30,7 @@ Plataforma analítica corporativa e interactiva para el estudio y visualización
 ## 📂 Estructura del Proyecto
 
 ```
-Mercado Global de tabaco/
+mercado-global-tabaco/
 ├── FAOstat/
 │   ├── tobacco-production.csv           # Datos históricos de producción mundial (FAO / OWID)
 │   ├── tobacco-production.metadata.json # Metadatos oficiales y citaciones

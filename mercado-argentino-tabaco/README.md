@@ -8,7 +8,7 @@
 ## 📁 Estructura del Proyecto
 
 ```text
-agrotabaco-labs/
+mercado-argentino-tabaco/
 ├── app.py                                          # Punto de entrada principal del Dashboard Streamlit
 ├── data_loader.py                                  # Módulo ETL: carga segura, limpieza y normalización de datos
 ├── charts.py                                       # Biblioteca de gráficos interactivos Plotly con estilo corporativo

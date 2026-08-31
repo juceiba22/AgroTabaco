@@ -41,7 +41,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# python (Mercado Argentino de Tabaco)
+# python (dashboards Streamlit)
 __pycache__/
 *.pyc
 .venv/
+
+# datasets grandes sin referenciar todavía por el código
+mercado-global-tabaco/psd_alldata_csv/
+mercado-global-tabaco/psd_alldata_csv.zip
