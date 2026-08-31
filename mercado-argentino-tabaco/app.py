@@ -10,6 +10,7 @@ Vistas integradas:
 5. 🏛️ Ejecución Presupuestaria y Recaudación Histórica FET (FET_Consolidado_Ejecuciones_Dashboard.csv)
 """
 
+import csv
 import os
 import streamlit as st
 import pandas as pd
@@ -460,10 +461,83 @@ def load_acopio_precios():
     df['anio_inicio'] = df['campana'].apply(lambda x: int(x.split('/')[0]) if '/' in str(x) else int(x[:4]))
     return df.sort_values(by=['anio_inicio', 'provincia_clean', 'tipo_tabaco_clean']).reset_index(drop=True)
 
+# Mapeo de subpartidas HS de EE.UU. (USDA GATS / Census Bureau) a variedad.
+# En 2011 la aduana partió los códigos genéricos de trillado (...8010 / ...8020)
+# en subpartidas para cigarrillos vs. otros usos; para tener una serie continua
+# sumamos, año a año, el código vigente en cada período (el otro da 0).
+HS_CODE_VARIETY = {
+    '2401208005': 'Virginia',  # FLU,ST,THRS,CIG (post-2011)
+    '2401208011': 'Virginia',  # FLU,ST,THRS,NCIG (post-2011)
+    '2401208010': 'Virginia',  # FLU,ST,THRS consolidado (pre-2011)
+    '2401208015': 'Burley',    # BLY,ST,THRS,CIG (post-2011)
+    '2401208021': 'Burley',    # BLY,ST,THRS,NCIG (post-2011)
+    '2401208020': 'Burley',    # BLY,ST,THRS consolidado (pre-2011)
+}
+
+@st.cache_data(show_spinner=False)
+def load_precios_internacionales():
+    """Carga Standard Query_40990.csv (USDA GATS / Census Bureau): valor FOB
+    de exportaciones de EE.UU. de tabaco trillado Virginia y Burley al mundo.
+
+    Se usa el módulo csv en vez de pd.read_csv porque el archivo trae filas
+    de largo desparejo (la fila de años tiene 3 columnas menos que la fila
+    de encabezados y las filas de datos), lo que rompe el parser de pandas.
+    """
+    with open(data_path("Standard Query_40990.csv"), encoding='utf-8-sig', newline='') as f:
+        rows = list(csv.reader(f))
+
+    year_row, label_row, data_rows = rows[3], rows[4], rows[5:]
+
+    hs_col = next(i for i, v in enumerate(label_row) if v.strip() == 'HS Code')
+
+    def cell(row, idx):
+        return row[idx] if idx < len(row) else ''
+
+    year_cols, ytd_cols = {}, {}
+    for i, v in enumerate(year_row):
+        v = v.strip()
+        if re.fullmatch(r'20\d\d', v):
+            year_cols[i] = int(v)
+        else:
+            m = re.fullmatch(r'Jan - Jun (20\d\d)', v)
+            if m:
+                ytd_cols[i] = int(m.group(1))
+
+    def clean_num(x):
+        x = str(x).replace(',', '').strip()
+        if x in ('', '0', 'nan'):
+            return 0.0
+        try:
+            return float(x)
+        except ValueError:
+            return 0.0
+
+    records, ytd_records = [], []
+    for row in data_rows:
+        hs_code = cell(row, hs_col).strip()
+        variety = HS_CODE_VARIETY.get(hs_code)
+        if variety is None:
+            continue
+        for col, year in year_cols.items():
+            records.append({'variety': variety, 'year': year, 'value_usd': clean_num(cell(row, col)) * 1000.0})
+        for col, year in ytd_cols.items():
+            ytd_records.append({'variety': variety, 'year': year, 'value_usd': clean_num(cell(row, col)) * 1000.0})
+
+    df_annual = pd.DataFrame.from_records(records)
+    df_annual = df_annual.groupby(['variety', 'year'], as_index=False)['value_usd'].sum()
+    df_annual = df_annual[df_annual['value_usd'] > 0].sort_values(['variety', 'year']).reset_index(drop=True)
+
+    df_ytd = pd.DataFrame.from_records(ytd_records)
+    if not df_ytd.empty:
+        df_ytd = df_ytd.groupby(['variety', 'year'], as_index=False)['value_usd'].sum()
+
+    return df_annual, df_ytd
+
 df_prod = load_produccion_primaria()
 df_clases = load_acopio_clases()
 df_emp = load_acopio_empresas()
 df_prec = load_acopio_precios()
+df_intl, df_intl_ytd = load_precios_internacionales()
 
 # -----------------------------------------------------------------------------
 # 3. Paletas de Colores y Helpers
@@ -520,11 +594,12 @@ def build_kpi_card(title, value, subtitle="", delta=None, delta_text="vs períod
 # -----------------------------------------------------------------------------
 # 4. Navegación Principal por Pestañas (Tabs)
 # -----------------------------------------------------------------------------
-tab_precios, tab_calidad, tab_empresas, tab_prod = st.tabs([
+tab_precios, tab_calidad, tab_empresas, tab_prod, tab_intl = st.tabs([
     "💰 Precios Acopio & Precio FET",
     "🏷️ Calidad & Clases Comerciales",
     "🏢 Acopio por Empresas",
     "📊 Producción Primaria y Hectáreas",
+    "🌍 Mercado Internacional",
 ])
 
 # =============================================================================
@@ -851,6 +926,111 @@ with tab_precios:
     fig_prec_stacked.add_trace(go.Scatter(x=df_prec_nat['campana'], y=df_prec_nat['pct_fet'], name="% Aporte FET", yaxis="y2", mode="lines+markers", line=dict(color='#b8860b', width=3, dash='dot'), hovertemplate="<b>%{x}</b><br>FET: %{y:.1f}%<extra></extra>"))
     fig_prec_stacked.update_layout(get_corporate_layout("", height=400), barmode='stack', yaxis=dict(title="Precio Promedio ($/kg)", showgrid=True, gridcolor="#f1f2ed"), yaxis2=dict(title="% FET s/ Total", overlaying="y", side="right", range=[0, 100], showgrid=False))
     st.plotly_chart(fig_prec_stacked, use_container_width=True)
+
+# =============================================================================
+# PESTAÑA: MERCADO INTERNACIONAL (Standard Query_40990.csv - USDA GATS)
+# =============================================================================
+with tab_intl:
+    st.markdown("""
+    <div class="executive-header">
+        <h1>Comercio Exterior de EE. UU.: Virginia y Burley</h1>
+        <p>Valor FOB de exportaciones estadounidenses de tabaco trillado al mundo, como referencia del mercado internacional (USDA GATS / Census Bureau, 2002-2025). Serie empalmada por el corte de subpartidas arancelarias de 2011.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.caption("⚠️ Esta fuente reporta valor FOB en USD, no volumen: es un indicador de mercado internacional, no un precio en $/kg.")
+
+    virginia_annual = df_intl[df_intl['variety'] == 'Virginia'].sort_values('year')
+    burley_annual = df_intl[df_intl['variety'] == 'Burley'].sort_values('year')
+
+    def last_two(df_v):
+        if len(df_v) == 0:
+            return 0.0, None
+        last_val = df_v.iloc[-1]['value_usd']
+        prev_val = df_v.iloc[-2]['value_usd'] if len(df_v) > 1 else None
+        delta = ((last_val - prev_val) / prev_val * 100.0) if prev_val else None
+        return last_val, delta
+
+    virginia_last, virginia_delta = last_two(virginia_annual)
+    burley_last, burley_delta = last_two(burley_annual)
+    last_year = int(df_intl['year'].max()) if not df_intl.empty else None
+    total_last = virginia_last + burley_last
+    virginia_share = (virginia_last / total_last * 100.0) if total_last > 0 else 0.0
+
+    ytd_years = sorted(df_intl_ytd['year'].unique()) if not df_intl_ytd.empty else []
+    ytd_curr = ytd_years[-1] if ytd_years else None
+    ytd_prev = ytd_years[-2] if len(ytd_years) > 1 else None
+    if ytd_curr:
+        val_curr = df_intl_ytd[df_intl_ytd['year'] == ytd_curr]['value_usd'].sum()
+        val_prev = df_intl_ytd[df_intl_ytd['year'] == ytd_prev]['value_usd'].sum() if ytd_prev else None
+        ytd_delta = ((val_curr - val_prev) / val_prev * 100.0) if val_prev else None
+    else:
+        val_curr, ytd_delta = 0.0, None
+
+    ci1, ci2, ci3, ci4 = st.columns(4)
+    with ci1:
+        st.markdown(build_kpi_card(
+            f"VIRGINIA ({last_year})", f"US$ {virginia_last / 1e6:.1f} M",
+            "Valor FOB exportado por EE.UU.", delta=virginia_delta, color="amber",
+        ), unsafe_allow_html=True)
+    with ci2:
+        st.markdown(build_kpi_card(
+            f"BURLEY ({last_year})", f"US$ {burley_last / 1e6:.1f} M",
+            "Valor FOB exportado por EE.UU.", delta=burley_delta, color="blue",
+        ), unsafe_allow_html=True)
+    with ci3:
+        st.markdown(build_kpi_card(
+            "PARTICIPACIÓN VIRGINIA", f"{virginia_share:.1f}%",
+            f"Sobre Virginia + Burley ({last_year})", color="emerald",
+        ), unsafe_allow_html=True)
+    with ci4:
+        ytd_label = f"ENE-JUN {ytd_curr}" if ytd_curr else "ACUMULADO"
+        st.markdown(build_kpi_card(
+            ytd_label, f"US$ {val_curr / 1e6:.1f} M" if ytd_curr else "S/D",
+            "Virginia + Burley, acumulado", delta=ytd_delta, color="purple",
+        ), unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    fig_intl = go.Figure()
+    fig_intl.add_trace(go.Scatter(
+        x=virginia_annual['year'], y=virginia_annual['value_usd'],
+        name="Virginia", mode="lines+markers",
+        line=dict(color=TOBACCO_PALETTE['Virginia'], width=3),
+        hovertemplate="<b>Virginia %{x}</b><br>US$ %{y:,.0f}<extra></extra>",
+    ))
+    fig_intl.add_trace(go.Scatter(
+        x=burley_annual['year'], y=burley_annual['value_usd'],
+        name="Burley", mode="lines+markers",
+        line=dict(color=TOBACCO_PALETTE['Burley'], width=3),
+        hovertemplate="<b>Burley %{x}</b><br>US$ %{y:,.0f}<extra></extra>",
+    ))
+    fig_intl.update_layout(
+        get_corporate_layout("Valor FOB de Exportaciones de EE. UU. al Mundo (USD)", height=420),
+        yaxis=dict(title="Valor FOB (USD)", showgrid=True, gridcolor="#f1f2ed", tickformat=",.0f"),
+        xaxis=dict(title="Año", dtick=2),
+        hovermode="x unified",
+    )
+    st.plotly_chart(fig_intl, use_container_width=True)
+
+    st.markdown("#### 📋 Serie Anual Completa")
+    table_intl = df_intl.pivot(index='year', columns='variety', values='value_usd').reset_index()
+    table_intl.columns = ['Año', 'Burley (USD)', 'Virginia (USD)']
+    table_intl = table_intl[['Año', 'Virginia (USD)', 'Burley (USD)']].sort_values('Año', ascending=False)
+    table_display = table_intl.copy()
+    for col in ['Virginia (USD)', 'Burley (USD)']:
+        table_display[col] = table_display[col].map(lambda v: f"${v:,.0f}")
+    st.dataframe(table_display, use_container_width=True, hide_index=True)
+
+    csv_intl = table_intl.to_csv(index=False).encode('utf-8-sig')
+    st.download_button(
+        label="📥 Descargar Serie Internacional (CSV)",
+        data=csv_intl,
+        file_name="mercado_internacional_virginia_burley.csv",
+        mime="text/csv",
+    )
+
+    st.caption("Fuente: USDA Global Agricultural Trade System (GATS) sobre datos de U.S. Census Bureau. Códigos HS 2401208005/2401208011/2401208010 (Virginia) y 2401208015/2401208021/2401208020 (Burley).")
 
 # -----------------------------------------------------------------------------
 # 5. Pie de Página Corporativo
