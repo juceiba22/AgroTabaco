@@ -39,7 +39,10 @@ export default async function MercadoPage({ searchParams }: PageProps) {
           </h1>
           <p className="mt-2 max-w-2xl text-muted-foreground">
             {stats.activeCount} {stats.activeCount === 1 ? "oferta activa" : "ofertas activas"} de
-            tabaco verde por clase comercial y tabaco procesado para exportación.
+            tabaco verde por clase comercial y tabaco procesado para exportación.{" "}
+            <Link href="/mercado/financiamiento" className="font-medium text-brand-green-dark hover:underline">
+              ¿Buscás financiamiento?
+            </Link>
           </p>
         </div>
         <Button
