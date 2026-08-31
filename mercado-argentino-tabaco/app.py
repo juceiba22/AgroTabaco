@@ -594,13 +594,22 @@ def build_kpi_card(title, value, subtitle="", delta=None, delta_text="vs períod
 # -----------------------------------------------------------------------------
 # 4. Navegación Principal por Pestañas (Tabs)
 # -----------------------------------------------------------------------------
-tab_precios, tab_calidad, tab_empresas, tab_prod, tab_intl = st.tabs([
+# Pestaña "Mercado Internacional" oculta a pedido del usuario (2026-08-31).
+# El código de la pestaña sigue intacto más abajo; poner en True para reactivarla.
+SHOW_MERCADO_INTERNACIONAL = False
+
+_tab_labels = [
     "💰 Precios Acopio & Precio FET",
     "🏷️ Calidad & Clases Comerciales",
     "🏢 Acopio por Empresas",
     "📊 Producción Primaria y Hectáreas",
-    "🌍 Mercado Internacional",
-])
+]
+if SHOW_MERCADO_INTERNACIONAL:
+    _tab_labels.append("🌍 Mercado Internacional")
+
+_tabs = st.tabs(_tab_labels)
+tab_precios, tab_calidad, tab_empresas, tab_prod = _tabs[:4]
+tab_intl = _tabs[4] if SHOW_MERCADO_INTERNACIONAL else None
 
 # =============================================================================
 # PESTAÑA 1: PRODUCCIÓN PRIMARIA (csv_anuario_produccion_primaria.csv)
@@ -930,7 +939,8 @@ with tab_precios:
 # =============================================================================
 # PESTAÑA: MERCADO INTERNACIONAL (Standard Query_40990.csv - USDA GATS)
 # =============================================================================
-with tab_intl:
+if SHOW_MERCADO_INTERNACIONAL:
+  with tab_intl:
     st.markdown("""
     <div class="executive-header">
         <h1>Comercio Exterior de EE. UU.: Virginia y Burley</h1>
