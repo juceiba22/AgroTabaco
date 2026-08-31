@@ -34,6 +34,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      profiles: {
+        Row: {
+          id: string;
+          role: "admin" | "trader";
+          full_name: string | null;
+          company_name: string | null;
+          phone: string | null;
+          province: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          role?: "admin" | "trader";
+          full_name?: string | null;
+          company_name?: string | null;
+          phone?: string | null;
+          province?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          role?: "admin" | "trader";
+          full_name?: string | null;
+          company_name?: string | null;
+          phone?: string | null;
+          province?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       posts: {
         Row: {
           id: string;
@@ -95,6 +128,146 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      listings: {
+        Row: {
+          id: string;
+          seller_id: string;
+          listing_type: "venta" | "compra";
+          product_type: "verde" | "procesado";
+          title: string;
+          variety: string;
+          trading_class: string | null;
+          hs_code: string | null;
+          quantity: number;
+          unit: "kg" | "ton";
+          price: number | null;
+          currency: string;
+          price_unit: "por_kg" | "total" | null;
+          province: string;
+          description: string;
+          cover_image: string | null;
+          status: "activa" | "pausada" | "cerrada";
+          admin_hidden: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          seller_id: string;
+          listing_type: "venta" | "compra";
+          product_type: "verde" | "procesado";
+          title: string;
+          variety: string;
+          trading_class?: string | null;
+          hs_code?: string | null;
+          quantity: number;
+          unit: "kg" | "ton";
+          price?: number | null;
+          currency?: string;
+          price_unit?: "por_kg" | "total" | null;
+          province: string;
+          description?: string;
+          cover_image?: string | null;
+          status?: "activa" | "pausada" | "cerrada";
+          admin_hidden?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          seller_id?: string;
+          listing_type?: "venta" | "compra";
+          product_type?: "verde" | "procesado";
+          title?: string;
+          variety?: string;
+          trading_class?: string | null;
+          hs_code?: string | null;
+          quantity?: number;
+          unit?: "kg" | "ton";
+          price?: number | null;
+          currency?: string;
+          price_unit?: "por_kg" | "total" | null;
+          province?: string;
+          description?: string;
+          cover_image?: string | null;
+          status?: "activa" | "pausada" | "cerrada";
+          admin_hidden?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      listing_interests: {
+        Row: {
+          id: string;
+          listing_id: string;
+          buyer_id: string;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          listing_id: string;
+          buyer_id: string;
+          message?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          listing_id?: string;
+          buyer_id?: string;
+          message?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "listing_interests_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      financing_interests: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          full_name: string;
+          email: string;
+          company_name: string | null;
+          phone: string | null;
+          interest_amount: number | null;
+          message: string | null;
+          status: "nuevo" | "contactado" | "descartado";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          full_name: string;
+          email: string;
+          company_name?: string | null;
+          phone?: string | null;
+          interest_amount?: number | null;
+          message?: string | null;
+          status?: "nuevo" | "contactado" | "descartado";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          full_name?: string;
+          email?: string;
+          company_name?: string | null;
+          phone?: string | null;
+          interest_amount?: number | null;
+          message?: string | null;
+          status?: "nuevo" | "contactado" | "descartado";
+          created_at?: string;
+        };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
