@@ -60,6 +60,30 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Mercado Argentino de Tabaco: publicar/gestionar ofertas requiere cuenta;
+  // el resto de /mercado (explorar, ver detalle, financiamiento) es público.
+  const mercadoAuthPaths = ["/mercado/publicar", "/mercado/mis-ofertas"];
+  const isMercadoAuthRoute = mercadoAuthPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+  const isMercadoAuthEntry =
+    request.nextUrl.pathname.startsWith("/mercado/login") ||
+    request.nextUrl.pathname.startsWith("/mercado/registro");
+
+  if (isMercadoAuthRoute && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/mercado/login";
+    url.searchParams.set("redirectTo", request.nextUrl.pathname);
+    return NextResponse.redirect(url);
+  }
+
+  if (isMercadoAuthEntry && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/mercado/mis-ofertas";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
   // IMPORTANTE: siempre devolver el objeto supabaseResponse tal cual.
   return supabaseResponse;
 }
