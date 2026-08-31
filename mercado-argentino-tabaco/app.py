@@ -213,6 +213,9 @@ html, body, [class*="css"] {
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5rem;
+    /* Despeja la barra nativa de Streamlit (~60px), que en Streamlit
+       Community Cloud se dibuja encima del contenido con fondo opaco. */
+    margin-top: 3rem;
     padding-bottom: 1rem;
     margin-bottom: 1.2rem;
     border-bottom: 1px solid #e3e6dc;
@@ -457,55 +460,10 @@ def load_acopio_precios():
     df['anio_inicio'] = df['campana'].apply(lambda x: int(x.split('/')[0]) if '/' in str(x) else int(x[:4]))
     return df.sort_values(by=['anio_inicio', 'provincia_clean', 'tipo_tabaco_clean']).reset_index(drop=True)
 
-@st.cache_data(show_spinner=False)
-def load_fet_consolidado():
-    """Carga y procesa FET_Consolidado_Ejecuciones_Dashboard.csv."""
-    df = None
-    for enc in ['utf-8-sig', 'latin-1', 'cp1252']:
-        try:
-            df = pd.read_csv(data_path("FET_Consolidado_Ejecuciones_Dashboard.csv"), encoding=enc)
-            break
-        except Exception: continue
-    if df is None: df = pd.read_csv(data_path("FET_Consolidado_Ejecuciones_Dashboard.csv"), encoding='latin-1', errors='replace')
-    df.columns = [c.replace('\ufeff', '').strip() for c in df.columns]
-    
-    def sanitize_concept(c):
-        if not isinstance(c, str): return ""
-        c = c.strip()
-        c = re.sub(r'[\x81\x91\xad\ufffd]', '', c)
-        c = re.sub(r'Recaudaci[\x81\x91\xad\ufffd\?]*n', 'Recaudación', c, flags=re.IGNORECASE)
-        c = re.sub(r'Ejecuci[\x81\x91\xad\ufffd\?]*n', 'Ejecución', c, flags=re.IGNORECASE)
-        c = re.sub(r'Retribuci[\x81\x91\xad\ufffd\?]*n|Retirbuci[\x81\x91\xad\ufffd\?]*n', 'Retribución', c, flags=re.IGNORECASE)
-        c = re.sub(r'Autom[\x81\x91\xad\ufffd\?]*ticas', 'Automáticas', c, flags=re.IGNORECASE)
-        c = re.sub(r'D[\x81\x91\xad\ufffd\?]*lares', 'Dólares', c, flags=re.IGNORECASE)
-        c = re.sub(r'A[\x81\x91\xad\ufffd\?]*o', 'Año', c, flags=re.IGNORECASE)
-        c = re.sub(r'\s+', ' ', c).strip()
-        return c
-
-    df['concepto_clean'] = df['concepto'].apply(sanitize_concept)
-    df['anio'] = pd.to_numeric(df['anio'], errors='coerce').fillna(0).astype(int)
-    df['mes'] = df['mes'].astype(str).str.strip().str.lower()
-    df['monto_ars'] = pd.to_numeric(df['monto_ars'], errors='coerce').fillna(0.0)
-    df['fecha'] = pd.to_datetime(df['fecha'], errors='coerce')
-    
-    def categorize_concept(c):
-        c_up = c.upper()
-        if 'RECAUDACI' in c_up: return 'Recaudación'
-        if 'PRECIO' in c_up or 'RETRIBUCI' in c_up or 'IMPUTADO' in c_up: return 'Retribución / Precio'
-        if 'PLAN' in c_up or 'POA' in c_up: return 'Planes y POAS'
-        if 'OBRA SOCIAL' in c_up: return 'Obras Sociales'
-        if 'TRANSFERENCIA' in c_up: return 'Transferencias Automáticas'
-        if 'SUELDO' in c_up or 'CONVENIO' in c_up or 'IICA' in c_up or 'LEY 19.800' in c_up: return 'Convenios y Gastos Operativos'
-        return 'Otros Conceptos'
-
-    df['categoria_concepto'] = df['concepto_clean'].apply(categorize_concept)
-    return df.sort_values(by=['fecha', 'concepto_clean']).reset_index(drop=True)
-
 df_prod = load_produccion_primaria()
 df_clases = load_acopio_clases()
 df_emp = load_acopio_empresas()
 df_prec = load_acopio_precios()
-df_fet = load_fet_consolidado()
 
 # -----------------------------------------------------------------------------
 # 3. Paletas de Colores y Helpers
@@ -562,12 +520,11 @@ def build_kpi_card(title, value, subtitle="", delta=None, delta_text="vs períod
 # -----------------------------------------------------------------------------
 # 4. Navegación Principal por Pestañas (Tabs)
 # -----------------------------------------------------------------------------
-tab_prod, tab_calidad, tab_empresas, tab_precios, tab_fet_ejec = st.tabs([
-    "📊 1. Producción Primaria & Rendimientos",
-    "🏷️ 2. Calidad & Clases Comerciales",
-    "🏢 3. Participación de Mercado & Empresas",
-    "💰 4. Precios & Fondo del Tabaco (FET)",
-    "🏛️ 5. Ejecución Presupuestaria FET"
+tab_precios, tab_calidad, tab_empresas, tab_prod = st.tabs([
+    "💰 Precios Acopio & Precio FET",
+    "🏷️ Calidad & Clases Comerciales",
+    "🏢 Acopio por Empresas",
+    "📊 Producción Primaria y Hectáreas",
 ])
 
 # =============================================================================
@@ -576,8 +533,8 @@ tab_prod, tab_calidad, tab_empresas, tab_precios, tab_fet_ejec = st.tabs([
 with tab_prod:
     st.markdown("""
     <div class="executive-header">
-        <h1>Producción Primaria y Rendimiento Agrícola</h1>
-        <p>Visualización oficial y análisis agronómico de siembra, cosecha y productividad (Serie histórica 1991/1992 - 2022/2023).</p>
+        <h1>Producción Primaria y Hectáreas</h1>
+        <p>(Serie histórica 1991/1992 - 2022/2023).</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -656,8 +613,8 @@ with tab_prod:
 with tab_calidad:
     st.markdown("""
     <div class="executive-header">
-        <h1>Calidad y Desglose por Clases Comerciales</h1>
-        <p>Estructura de acopio clasificado por grados comerciales de calidad (B1F, C1F, X1F, T1L, etc.), provincia y variedad.</p>
+        <h1>Producción tabacalera según clase y variedad</h1>
+        <p>acopio clasificado por grados comerciales de calidad (B1F, C1F, X1F, T1L, etc.), provincia y variedad.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -739,8 +696,8 @@ with tab_calidad:
 with tab_empresas:
     st.markdown("""
     <div class="executive-header">
-        <h1>Participación de Mercado y Empresas Acopiadoras</h1>
-        <p>Estructura competitiva, volúmenes de acopio, cuotas de mercado (Market Share) y valor monetario por razón social y cooperativa.</p>
+        <h1>Volúmenes acopiados por Empresa</h1>
+        <p>cuotas de mercado (Market Share) y valor monetario por razón social y cooperativa.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -824,8 +781,8 @@ with tab_empresas:
 with tab_precios:
     st.markdown("""
     <div class="executive-header">
-        <h1>Dinámica de Precios y Fondo Especial del Tabaco (FET)</h1>
-        <p>Análisis de la estructura del ingreso del productor: componente de Precio de Acopio base y complemento del Fondo Especial del Tabaco (Ley 19.800).</p>
+        <h1>Serie histórica de Precio Acopio Argentina</h1>
+        <p>componente de Precio de Acopio base y complemento del Fondo Especial del Tabaco (Ley 19.800).</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -894,277 +851,6 @@ with tab_precios:
     fig_prec_stacked.add_trace(go.Scatter(x=df_prec_nat['campana'], y=df_prec_nat['pct_fet'], name="% Aporte FET", yaxis="y2", mode="lines+markers", line=dict(color='#b8860b', width=3, dash='dot'), hovertemplate="<b>%{x}</b><br>FET: %{y:.1f}%<extra></extra>"))
     fig_prec_stacked.update_layout(get_corporate_layout("", height=400), barmode='stack', yaxis=dict(title="Precio Promedio ($/kg)", showgrid=True, gridcolor="#f1f2ed"), yaxis2=dict(title="% FET s/ Total", overlaying="y", side="right", range=[0, 100], showgrid=False))
     st.plotly_chart(fig_prec_stacked, use_container_width=True)
-
-# =============================================================================
-# PESTAÑA 5: EJECUCIÓN PRESUPUESTARIA FET (FET_Consolidado_Ejecuciones_Dashboard.csv)
-# =============================================================================
-with tab_fet_ejec:
-    st.markdown("""
-    <div class="executive-header">
-        <h1>Ejecución Presupuestaria y Recaudación Histórica del FET</h1>
-        <p>Análisis financiero de recaudación mensual, transferencias automáticas del 80%, complementos de precio y programas POAS (Ley 19.800).</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Filtros de Pestaña 5
-    col_fet_1, col_fet_2, col_fet_3 = st.columns([3, 4, 5])
-    
-    with col_fet_1:
-        anios_fet = sorted(df_fet['anio'].unique(), reverse=True)
-        selected_anio_fet = st.selectbox(
-            "📅 Año Presupuestario:",
-            options=["Todos los Años (2005 - 2026)"] + anios_fet,
-            index=0,
-            key="fet_anio"
-        )
-        
-    with col_fet_2:
-        categorias_fet = sorted(df_fet['categoria_concepto'].unique())
-        selected_cat_fet = st.selectbox(
-            "🏷️ Categoría Presupuestaria:",
-            options=["Todas las Categorías"] + categorias_fet,
-            index=0,
-            key="fet_cat"
-        )
-        
-    with col_fet_3:
-        # Conceptos filtrados dinámicamente según categoría y año
-        sub_fet_concepts = df_fet.copy()
-        if selected_anio_fet != "Todos los Años (2005 - 2026)":
-            sub_fet_concepts = sub_fet_concepts[sub_fet_concepts['anio'] == int(selected_anio_fet)]
-        if selected_cat_fet != "Todas las Categorías":
-            sub_fet_concepts = sub_fet_concepts[sub_fet_concepts['categoria_concepto'] == selected_cat_fet]
-            
-        conceptos_disponibles = sorted(sub_fet_concepts['concepto_clean'].unique())
-        selected_concept = st.selectbox(
-            "🔍 Concepto Específico (Opcional):",
-            options=["Todos los Conceptos"] + conceptos_disponibles,
-            index=0,
-            key="fet_concept"
-        )
-
-    # Filtrado del Dataset FET
-    def filter_fet_data(anio_filter):
-        dff = df_fet.copy()
-        if anio_filter != "Todos los Años (2005 - 2026)":
-            dff = dff[dff['anio'] == int(anio_filter)]
-        if selected_cat_fet != "Todas las Categorías":
-            dff = dff[dff['categoria_concepto'] == selected_cat_fet]
-        if selected_concept != "Todos los Conceptos":
-            dff = dff[dff['concepto_clean'] == selected_concept]
-        return dff
-
-    curr_fet = filter_fet_data(selected_anio_fet)
-    
-    # Período previo para Delta
-    prev_fet = pd.DataFrame()
-    if selected_anio_fet != "Todos los Años (2005 - 2026)":
-        prev_anio = int(selected_anio_fet) - 1
-        if prev_anio in anios_fet:
-            prev_fet = filter_fet_data(prev_anio)
-
-    # Cálculo de Métricas FET
-    total_monto_ars = curr_fet['monto_ars'].sum()
-    total_registros = len(curr_fet)
-    
-    # Calcular promedio mensual
-    if not curr_fet.empty:
-        n_meses = curr_fet[['anio', 'mes']].drop_duplicates().shape[0]
-        promedio_mensual = (total_monto_ars / n_meses) if n_meses > 0 else 0.0
-    else:
-        promedio_mensual = 0.0
-
-    # Concepto Líder
-    concepto_ranking = curr_fet.groupby('concepto_clean', as_index=False)['monto_ars'].sum().sort_values(by='monto_ars', ascending=False).reset_index(drop=True)
-    if not concepto_ranking.empty and total_monto_ars > 0:
-        top_concepto_name = concepto_ranking['concepto_clean'].iloc[0]
-        top_concepto_monto = concepto_ranking['monto_ars'].iloc[0]
-        top_concepto_share = (top_concepto_monto / total_monto_ars * 100.0)
-    else:
-        top_concepto_name, top_concepto_monto, top_concepto_share = "N/D", 0.0, 0.0
-
-    # Delta vs Año Previo
-    delta_fet_monto = None
-    if not prev_fet.empty:
-        prev_total = prev_fet['monto_ars'].sum()
-        if prev_total > 0:
-            delta_fet_monto = ((total_monto_ars - prev_total) / prev_total) * 100.0
-
-    # Formateo de Montos para las Tarjetas
-    def format_money_short(val):
-        if abs(val) >= 1e12: return f"${(val / 1e12):,.2f} T"
-        if abs(val) >= 1e9: return f"${(val / 1e9):,.2f} B"
-        if abs(val) >= 1e6: return f"${(val / 1e6):,.2f} M"
-        return f"${val:,.0f}"
-
-    # Tarjetas Métricas FET
-    f1, f2, f3, f4 = st.columns(4)
-    with f1:
-        st.markdown(build_kpi_card(
-            title="MONTO TOTAL EJECUTADO",
-            value=format_money_short(total_monto_ars),
-            subtitle=f"{selected_anio_fet}",
-            delta=delta_fet_monto,
-            color="blue"
-        ), unsafe_allow_html=True)
-    with f2:
-        st.markdown(build_kpi_card(
-            title="PROMEDIO MENSUAL",
-            value=format_money_short(promedio_mensual),
-            subtitle="Media mensual ejecutada",
-            color="emerald"
-        ), unsafe_allow_html=True)
-    with f3:
-        top_c_disp = (top_concepto_name[:20] + '...') if len(top_concepto_name) > 20 else top_concepto_name
-        st.markdown(build_kpi_card(
-            title="CONCEPTO PRINCIPAL",
-            value=f"{top_c_disp}",
-            subtitle=f"{format_money_short(top_concepto_monto)} ({top_concepto_share:.1f}%)",
-            color="purple"
-        ), unsafe_allow_html=True)
-    with f4:
-        st.markdown(build_kpi_card(
-            title="PARTIDAS ANALIZADAS",
-            value=f"{total_registros:,}",
-            subtitle="Registros financieros mensuales",
-            color="amber"
-        ), unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # -------------------------------------------------------------------------
-    # Visualización 1: Gráfico de Líneas Temporales (Serie Histórica 2005 - 2026)
-    # -------------------------------------------------------------------------
-    st.markdown('<div class="section-header"><h3>📈 Evolución Temporal de la Recaudación y Ejecución Presupuestaria FET</h3><p>Trayectoria multianual y mensual de los montos ejecutados en pesos corrientes.</p></div>', unsafe_allow_html=True)
-    
-    col_opt_t1, col_opt_t2 = st.columns([8, 4])
-    with col_opt_t2:
-        granularity = st.radio("Frecuencia Temporal:", ["Anual Agregada", "Mensual Detallada"], horizontal=True, key="fet_freq")
-
-    if "Anual" in granularity:
-        # Agrupar por año
-        ts_fet_annual = curr_fet.groupby('anio', as_index=False)['monto_ars'].sum().sort_values(by='anio')
-        fig_fet_ts = px.line(
-            ts_fet_annual,
-            x='anio',
-            y='monto_ars',
-            markers=True,
-            labels={'monto_ars': 'Monto Ejecutado (ARS)', 'anio': 'Año'},
-            line_shape='linear'
-        )
-        fig_fet_ts.update_traces(
-            line=dict(color='#1a4329', width=3),
-            marker=dict(size=7, color='#102b19'),
-            hovertemplate="<b>Año %{x}</b><br>Monto Total: $%{y:,.2f}<extra></extra>"
-        )
-    else:
-        # Agrupar por fecha mensual
-        ts_fet_monthly = curr_fet.groupby('fecha', as_index=False)['monto_ars'].sum().sort_values(by='fecha')
-        fig_fet_ts = px.line(
-            ts_fet_monthly,
-            x='fecha',
-            y='monto_ars',
-            labels={'monto_ars': 'Monto Ejecutado (ARS)', 'fecha': 'Fecha'},
-            line_shape='spline'
-        )
-        fig_fet_ts.update_traces(
-            line=dict(color='#2f6844', width=2.5),
-            hovertemplate="<b>%{x|%b %Y}</b><br>Monto: $%{y:,.2f}<extra></extra>"
-        )
-
-    fig_fet_ts.update_layout(
-        get_corporate_layout("", height=400),
-        yaxis=dict(title="Monto Ejecutado (ARS)", showgrid=True, gridcolor="#f1f2ed", tickformat=",$"),
-        xaxis=dict(showgrid=False)
-    )
-    st.plotly_chart(fig_fet_ts, use_container_width=True)
-
-    # -------------------------------------------------------------------------
-    # Visualización 2 & 3: Ranking de Conceptos y Composición por Categoría
-    # -------------------------------------------------------------------------
-    st.markdown("<br>", unsafe_allow_html=True)
-    col_fet_g1, col_fet_g2 = st.columns([7, 5])
-    
-    with col_fet_g1:
-        st.markdown('<div class="section-header"><h3>📊 Principales Conceptos Presupuestarios en ARS</h3><p>Ranking de las partidas de mayor impacto en el período seleccionado.</p></div>', unsafe_allow_html=True)
-        
-        if not concepto_ranking.empty:
-            top_conceptos = concepto_ranking.head(10).sort_values(by='monto_ars', ascending=True)
-            top_conceptos['share_pct'] = (top_conceptos['monto_ars'] / total_monto_ars * 100.0).round(2)
-            
-            fig_fet_bar = go.Figure()
-            fig_fet_bar.add_trace(go.Bar(
-                y=top_conceptos['concepto_clean'],
-                x=top_conceptos['monto_ars'],
-                orientation='h',
-                marker=dict(color=top_conceptos['monto_ars'], colorscale='Greens', showscale=False),
-                customdata=top_conceptos['share_pct'],
-                hovertemplate="<b>%{y}</b><br>Monto: $%{x:,.2f}<br>Participación: %{customdata:.2f}%<extra></extra>"
-            ))
-            fig_fet_bar.update_layout(
-                get_corporate_layout("", height=max(380, len(top_conceptos) * 35)),
-                xaxis=dict(title="Monto en Pesos (ARS)", showgrid=True, gridcolor="#f1f2ed", tickformat=",$"),
-                yaxis=dict(title="")
-            )
-            st.plotly_chart(fig_fet_bar, use_container_width=True)
-        else:
-            st.info("Sin registros presupuestarios para mostrar.")
-
-    with col_fet_g2:
-        st.markdown('<div class="section-header"><h3>🍩 Distribución por Categoría de Gasto / Recaudación</h3><p>Participación relativa de cada rubro en el presupuesto FET.</p></div>', unsafe_allow_html=True)
-        
-        if not curr_fet.empty:
-            cat_agg = curr_fet.groupby('categoria_concepto', as_index=False)['monto_ars'].sum()
-            cat_agg = cat_agg[cat_agg['monto_ars'] > 0].sort_values(by='monto_ars', ascending=False)
-            
-            fig_cat_pie = px.pie(
-                cat_agg,
-                names='categoria_concepto',
-                values='monto_ars',
-                hole=0.5,
-                color_discrete_sequence=['#1a4329', '#6b7a3a', '#8a5a2e', '#b8860b', '#3d5a4c', '#a0522d', '#5c6b5e']
-            )
-            fig_cat_pie.update_traces(
-                textposition='inside',
-                textinfo='percent+label',
-                hovertemplate="<b>%{label}</b><br>Total: $%{value:,.2f}<br>Participación: %{percent}<extra></extra>"
-            )
-            fig_cat_pie.update_layout(get_corporate_layout("", height=380))
-            st.plotly_chart(fig_cat_pie, use_container_width=True)
-        else:
-            st.info("Sin datos para el gráfico de torta.")
-
-    # -------------------------------------------------------------------------
-    # Tabla Interactiva Detallada de Ejecuciones FET
-    # -------------------------------------------------------------------------
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="section-header"><h3>📋 Registro Detallado de Ejecución Presupuestaria FET</h3><p>Detalle mensualizado por fecha, categoría presupuestaria, concepto y monto ejecutado en ARS.</p></div>', unsafe_allow_html=True)
-
-    # Preparación de tabla de display
-    df_table_fet = curr_fet[['fecha', 'anio', 'mes', 'categoria_concepto', 'concepto_clean', 'monto_ars']].copy()
-    df_table_fet = df_table_fet.sort_values(by=['fecha', 'monto_ars'], ascending=[False, False]).reset_index(drop=True)
-
-    df_disp_fet = pd.DataFrame()
-    df_disp_fet['Fecha'] = df_table_fet['fecha'].dt.strftime('%d/%m/%Y')
-    df_disp_fet['Año'] = df_table_fet['anio']
-    df_disp_fet['Mes'] = df_table_fet['mes'].str.upper()
-    df_disp_fet['Categoría'] = df_table_fet['categoria_concepto']
-    df_disp_fet['Concepto Presupuestario'] = df_table_fet['concepto_clean']
-    df_disp_fet['Monto Ejecutado (ARS)'] = df_table_fet['monto_ars'].map('${:,.2f}'.format)
-
-    st.dataframe(df_disp_fet, use_container_width=True, hide_index=True)
-
-    # Botón de Descarga CSV
-    csv_fet_export = df_table_fet.rename(columns={
-        'concepto_clean': 'concepto'
-    }).to_csv(index=False, sep=';').encode('utf-8-sig')
-
-    st.download_button(
-        label="📥 Descargar Registro de Ejecución Presupuestaria FET (CSV)",
-        data=csv_fet_export,
-        file_name=f"fet_ejecucion_presupuestaria_{selected_anio_fet}.csv",
-        mime="text/csv"
-    )
 
 # -----------------------------------------------------------------------------
 # 5. Pie de Página Corporativo

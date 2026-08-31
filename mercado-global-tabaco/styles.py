@@ -308,6 +308,9 @@ def apply_corporate_dark_theme():
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 0.5rem;
+        /* Despeja la barra nativa de Streamlit (~60px), que en Streamlit
+           Community Cloud se dibuja encima del contenido con fondo opaco. */
+        margin-top: 3rem;
         padding-bottom: 1rem;
         margin-bottom: 1.2rem;
         border-bottom: 1px solid var(--border-color);
