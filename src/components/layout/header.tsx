@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { BarChart3, Globe2, Menu, Search, Sprout } from "lucide-react";
+import { BarChart3, Globe2, Menu, Search, ShoppingCart, Sprout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -61,6 +61,13 @@ export function Header({ categories }: { categories: Category[] }) {
             </Link>
           ))}
           <span className="mx-1 h-4 w-px shrink-0 bg-white/20" aria-hidden="true" />
+          <Link
+            href="/mercado"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm font-medium tracking-wide text-white transition-colors hover:bg-white/10"
+          >
+            <ShoppingCart className="size-4" />
+            Mercado Argentino
+          </Link>
           <a
             href={STATS_DASHBOARD_URL}
             target="_blank"
@@ -158,6 +165,14 @@ function MobileNav({ categories }: { categories: Category[] }) {
               {category.name}
             </Link>
           ))}
+          <Link
+            href="/mercado"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-brand-green-dark transition-colors hover:bg-muted"
+          >
+            <ShoppingCart className="size-4" />
+            Mercado Argentino
+          </Link>
           <a
             href={STATS_DASHBOARD_URL}
             target="_blank"

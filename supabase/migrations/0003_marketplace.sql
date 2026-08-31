@@ -12,7 +12,12 @@
 -- ---------------------------------------------------------------------------
 create table if not exists public.listings (
   id uuid primary key default gen_random_uuid(),
-  seller_id uuid not null references auth.users(id) on delete cascade,
+  -- Referencia a profiles (no directamente a auth.users): profiles.id ya es
+  -- 1:1 con auth.users.id, y así PostgREST puede embeber el perfil del
+  -- vendedor en las consultas (select "*, profiles(...)"), cosa que no
+  -- puede hacer contra el esquema auth. El trigger handle_new_user de
+  -- 0002 garantiza que el profile exista para cualquier usuario logueado.
+  seller_id uuid not null references public.profiles(id) on delete cascade,
   listing_type text not null check (listing_type in ('venta', 'compra')),
   product_type text not null check (product_type in ('verde', 'procesado')),
   title text not null,
@@ -113,7 +118,9 @@ create policy "Ofertas: borrado propio o admin"
 create table if not exists public.listing_interests (
   id uuid primary key default gen_random_uuid(),
   listing_id uuid not null references public.listings(id) on delete cascade,
-  buyer_id uuid not null references auth.users(id) on delete cascade,
+  -- Idem seller_id arriba: referencia profiles, no auth.users, para poder
+  -- embeber el perfil del comprador en las consultas de PostgREST.
+  buyer_id uuid not null references public.profiles(id) on delete cascade,
   message text not null default '',
   created_at timestamptz not null default now()
 );
