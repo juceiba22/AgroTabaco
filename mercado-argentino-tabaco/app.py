@@ -637,7 +637,7 @@ _tab_labels = [
     "🏷️ Calidad & Clases Comerciales",
     "🏢 Acopio por Empresas",
     "📊 Producción Primaria y Hectáreas",
-    "💵 Precios en Dólares por Resolución",
+    "💵 Precio FET",
 ]
 if SHOW_MERCADO_INTERNACIONAL:
     _tab_labels.append("🌍 Mercado Internacional")
@@ -1078,146 +1078,187 @@ if SHOW_MERCADO_INTERNACIONAL:
     st.caption("Fuente: USDA Global Agricultural Trade System (GATS) sobre datos de U.S. Census Bureau. Códigos HS 2401208005/2401208011/2401208010 (Virginia) y 2401208015/2401208021/2401208020 (Burley).")
 
 # =============================================================================
-# PESTAÑA: PRECIOS EN DÓLARES POR RESOLUCIÓN (resumen_precios_tabaco_con_dolares.csv)
+# PESTAÑA: PRECIO FET (resumen_precios_tabaco_con_dolares.csv)
 # =============================================================================
+def _clean_resolucion_label(archivo_origen):
+    """'000001-Resolución Nº 362-2007.pdf' -> 'Resolución Nº 362-2007'."""
+    label = re.sub(r'^\d+-?', '', str(archivo_origen))
+    return label[:-4] if label.lower().endswith('.pdf') else label
+
+def _ordenar_campanas(valores):
+    return sorted(set(valores), key=lambda c: int(c.split('-')[0]) if '-' in str(c) and str(c)[:4].isdigit() else 0)
+
 with tab_dolar:
     st.markdown("""
     <div class="executive-header">
-        <h1>Precios de Tabaco por Resolución: Pesos y Dólares</h1>
-        <p>Adelanto 1, Adelanto 2 e Incremento de cada resolución/anexo de precios, en pesos y su equivalente en dólares al tipo de cambio de la fecha de la resolución.</p>
+        <h1>Evolución del Precio FET 2004 - 2025 en pesos y en dólares</h1>
+        <p>Adelantos, incrementos y total FET</p>
     </div>
     """, unsafe_allow_html=True)
 
-    fd1, fd2, fd3 = st.columns([1, 1.4, 1.6])
-    campanas_dolar = sorted(df_dolar['Campana'].unique(), key=lambda c: int(c.split('-')[0]) if '-' in c and c[:4].isdigit() else 0, reverse=True)
-    with fd1:
-        camp_d = st.selectbox("📅 Campaña:", options=["Todas las Campañas"] + campanas_dolar, index=0, key="d_camp")
-    with fd2:
+    # -------------------------------------------------------------------
+    # Filtros obligatorios: Variedad + Clase. Promediar "todas las clases"
+    # de una variedad mezcla series con escalas y vigencias distintas y la
+    # línea resultante queda en cero casi todo el histórico — por eso acá
+    # SIEMPRE se trabaja sobre una única combinación Variedad + Clase.
+    # -------------------------------------------------------------------
+    fv1, fv2 = st.columns(2)
+    with fv1:
         variedades_d = sorted(df_dolar['Tabaco'].dropna().unique())
-        tipos_d = st.multiselect("🍂 Variedad de Tabaco:", options=variedades_d, default=variedades_d, key="d_tipo")
-    with fd3:
-        fechas_validas_d = df_dolar['Fecha'].dropna()
-        fecha_min_d, fecha_max_d = fechas_validas_d.min().date(), fechas_validas_d.max().date()
-        rango_fecha_d = st.date_input(
-            "🗓️ Rango de Fechas:", value=(fecha_min_d, fecha_max_d),
-            min_value=fecha_min_d, max_value=fecha_max_d, key="d_fecha",
-        )
+        idx_virginia = variedades_d.index('Virginia') if 'Virginia' in variedades_d else 0
+        tipo_d = st.selectbox("🍂 Variedad de Tabaco:", options=variedades_d, index=idx_virginia, key="d_tipo")
+    with fv2:
+        # Clase con más campañas cubiertas primero: mejor default para que
+        # la serie no arranque vacía o casi vacía.
+        conteo_por_clase = df_dolar[df_dolar['Tabaco'] == tipo_d].groupby('Clase')['Campana'].nunique().sort_values(ascending=False)
+        clases_d = conteo_por_clase.index.tolist()
+        clase_d = st.selectbox("🏷️ Clase:", options=clases_d, index=0, key="d_clase")
 
-    df_dolar_f = df_dolar.copy()
-    if camp_d != "Todas las Campañas":
-        df_dolar_f = df_dolar_f[df_dolar_f['Campana'] == camp_d]
-    if tipos_d:
-        df_dolar_f = df_dolar_f[df_dolar_f['Tabaco'].isin(tipos_d)]
-    else:
-        df_dolar_f = df_dolar_f.iloc[0:0]
-    if isinstance(rango_fecha_d, tuple) and len(rango_fecha_d) == 2:
-        start_d, end_d = rango_fecha_d
-        df_dolar_f = df_dolar_f[
-            df_dolar_f['Fecha'].isna()
-            | ((df_dolar_f['Fecha'] >= pd.Timestamp(start_d)) & (df_dolar_f['Fecha'] <= pd.Timestamp(end_d)))
-        ]
+    serie_d = df_dolar[(df_dolar['Tabaco'] == tipo_d) & (df_dolar['Clase'] == clase_d)].copy()
 
-    precio_prom_ars = df_dolar_f['Precio_Total_Acumulado'].mean()
-    precio_prom_usd = df_dolar_f['Precio_Total_Acumulado_USD'].mean()
-    n_resoluciones = df_dolar_f['Archivo_Origen'].nunique()
+    precio_prom_ars = serie_d['Precio_Total_Acumulado'].mean()
+    precio_prom_usd = serie_d['Precio_Total_Acumulado_USD'].mean()
+    n_resoluciones = serie_d['Archivo_Origen'].nunique()
 
     kd1, kd2, kd3 = st.columns(3)
     with kd1:
         st.markdown(build_kpi_card(
             "PRECIO PROMEDIO ACUMULADO", f"${precio_prom_ars:,.2f}" if pd.notna(precio_prom_ars) else "S/D",
-            "Pesos, promedio simple de clases filtradas", color="blue",
+            f"Pesos — {tipo_d}, clase {clase_d}", color="blue",
         ), unsafe_allow_html=True)
     with kd2:
         st.markdown(build_kpi_card(
             "PRECIO PROMEDIO ACUMULADO", f"US$ {precio_prom_usd:,.2f}" if pd.notna(precio_prom_usd) else "S/D",
-            "Dólares, promedio simple de clases filtradas", color="emerald",
+            f"Dólares — {tipo_d}, clase {clase_d}", color="emerald",
         ), unsafe_allow_html=True)
     with kd3:
         st.markdown(build_kpi_card(
             "RESOLUCIONES ANALIZADAS", f"{n_resoluciones:,}",
-            f"{len(df_dolar_f):,} registros de clase/variedad", color="amber",
+            f"{len(serie_d):,} registros para esta variedad y clase", color="amber",
         ), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    if df_dolar_f.empty:
-        st.info("No hay datos para los filtros seleccionados.")
+    if serie_d.empty:
+        st.info("No hay datos para la variedad y clase seleccionadas.")
     else:
-        campanas_orden = sorted(df_dolar_f['Campana'].unique(), key=lambda c: int(c.split('-')[0]) if '-' in c and c[:4].isdigit() else 0)
+        campanas_orden = _ordenar_campanas(serie_d['Campana'].unique())
+        agg_campana = serie_d.groupby('Campana', as_index=False)[[
+            'Adelanto_1', 'Adelanto_2', 'Incremento',
+            'Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD',
+        ]].mean()
 
-        st.markdown('<div class="section-header"><h3>💵 Evolución del Precio Acumulado en Dólares</h3></div>', unsafe_allow_html=True)
-        melt_usd = df_dolar_f.melt(
-            id_vars=['Campana', 'Tabaco'],
-            value_vars=['Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD'],
+        # El "acumulado" es la suma de Adelanto 1 + Adelanto 2 + Incremento:
+        # se muestra como área apilada, donde el borde superior de la pila
+        # ES el total acumulado (no una línea aparte a reconciliar).
+        st.markdown('<div class="section-header"><h3>💵 Evolución del Precio FET en Dólares</h3></div>', unsafe_allow_html=True)
+        melt_usd = agg_campana.melt(
+            id_vars='Campana', value_vars=['Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD'],
             var_name='Componente', value_name='Valor_USD',
         ).dropna(subset=['Valor_USD'])
         melt_usd['Componente'] = melt_usd['Componente'].map({
             'Adelanto_1_USD': 'Adelanto 1', 'Adelanto_2_USD': 'Adelanto 2', 'Incremento_USD': 'Incremento',
         })
         if melt_usd.empty:
-            st.caption("Sin datos en dólares para estos filtros.")
+            st.caption("Sin datos en dólares para esta variedad y clase.")
         else:
-            agg_usd = melt_usd.groupby(['Campana', 'Tabaco', 'Componente'], as_index=False)['Valor_USD'].mean()
-            fig_usd = px.line(
-                agg_usd, x='Campana', y='Valor_USD', color='Tabaco', line_dash='Componente',
-                category_orders={'Campana': campanas_orden}, color_discrete_map=TOBACCO_PALETTE, markers=True,
+            fig_usd = px.area(
+                melt_usd, x='Campana', y='Valor_USD', color='Componente',
+                category_orders={'Campana': campanas_orden, 'Componente': ['Adelanto 1', 'Adelanto 2', 'Incremento']},
+                color_discrete_map={'Adelanto 1': '#c9a227', 'Adelanto 2': '#6b7a3a', 'Incremento': '#1a4329'},
             )
-            fig_usd.update_layout(get_corporate_layout("Adelanto 1, Adelanto 2 e Incremento (USD) por Campaña y Variedad", height=440))
-            fig_usd.update_yaxes(title="Valor promedio (USD)")
+            fig_usd.update_layout(get_corporate_layout(f"Total FET (USD) — {tipo_d}, clase {clase_d}", height=420))
+            fig_usd.update_yaxes(title="Valor acumulado (USD)")
             fig_usd.update_xaxes(title="Campaña")
             st.plotly_chart(fig_usd, use_container_width=True)
 
-        st.markdown('<div class="section-header"><h3>💰 Evolución del Precio Acumulado en Pesos</h3></div>', unsafe_allow_html=True)
-        melt_ars = df_dolar_f.melt(
-            id_vars=['Campana', 'Tabaco'],
-            value_vars=['Adelanto_1', 'Adelanto_2', 'Incremento'],
+        st.markdown('<div class="section-header"><h3>💰 Evolución del Precio FET en Pesos</h3></div>', unsafe_allow_html=True)
+        melt_ars = agg_campana.melt(
+            id_vars='Campana', value_vars=['Adelanto_1', 'Adelanto_2', 'Incremento'],
             var_name='Componente', value_name='Valor_ARS',
         ).dropna(subset=['Valor_ARS'])
         melt_ars['Componente'] = melt_ars['Componente'].map({
             'Adelanto_1': 'Adelanto 1', 'Adelanto_2': 'Adelanto 2', 'Incremento': 'Incremento',
         })
         if melt_ars.empty:
-            st.caption("Sin datos en pesos para estos filtros.")
+            st.caption("Sin datos en pesos para esta variedad y clase.")
         else:
-            agg_ars = melt_ars.groupby(['Campana', 'Tabaco', 'Componente'], as_index=False)['Valor_ARS'].mean()
-            fig_ars = px.line(
-                agg_ars, x='Campana', y='Valor_ARS', color='Tabaco', line_dash='Componente',
-                category_orders={'Campana': campanas_orden}, color_discrete_map=TOBACCO_PALETTE, markers=True,
+            fig_ars = px.area(
+                melt_ars, x='Campana', y='Valor_ARS', color='Componente',
+                category_orders={'Campana': campanas_orden, 'Componente': ['Adelanto 1', 'Adelanto 2', 'Incremento']},
+                color_discrete_map={'Adelanto 1': '#c9a227', 'Adelanto 2': '#6b7a3a', 'Incremento': '#1a4329'},
             )
-            fig_ars.update_layout(get_corporate_layout("Adelanto 1, Adelanto 2 e Incremento ($) por Campaña y Variedad", height=440))
-            fig_ars.update_yaxes(title="Valor promedio ($)")
+            fig_ars.update_layout(get_corporate_layout(f"Total FET ($) — {tipo_d}, clase {clase_d}", height=420))
+            fig_ars.update_yaxes(title="Valor acumulado ($)")
             fig_ars.update_xaxes(title="Campaña")
             st.plotly_chart(fig_ars, use_container_width=True)
 
-        st.markdown('<div class="section-header"><h3>📊 Comparativo por Variedad</h3></div>', unsafe_allow_html=True)
-        metrica_d = st.radio(
-            "Métrica a comparar:", options=["Precio Total Acumulado", "Adelanto 1"], horizontal=True, key="d_metrica",
-        )
-        col_ars, col_usd = (
-            ('Precio_Total_Acumulado', 'Precio_Total_Acumulado_USD') if metrica_d == "Precio Total Acumulado"
-            else ('Adelanto_1', 'Adelanto_1_USD')
-        )
-        comp = df_dolar_f.groupby('Tabaco', as_index=False)[[col_ars, col_usd]].mean()
-        comp_melt = comp.melt(id_vars='Tabaco', value_vars=[col_ars, col_usd], var_name='Moneda', value_name='Valor')
-        comp_melt['Moneda'] = comp_melt['Moneda'].map({col_ars: 'Pesos ($)', col_usd: 'Dólares (US$)'})
+    # -------------------------------------------------------------------
+    # Comparativo de clases por campaña: a diferencia de arriba, esta
+    # sección sí mezcla clases a propósito — el objetivo es comparar
+    # clases entre sí dentro de un mismo año/variedad, no seguir una
+    # serie histórica. Se agrupa por Tabaco + Resolución (Archivo_Origen)
+    # para no promediar entre resoluciones distintas del mismo año.
+    # -------------------------------------------------------------------
+    st.markdown('<div class="section-header"><h3>📊 Comparativo de Clases por Campaña</h3></div>', unsafe_allow_html=True)
+    cc1, cc2, cc3 = st.columns(3)
+    with cc1:
+        campanas_comp = _ordenar_campanas(df_dolar['Campana'].unique())[::-1]
+        campana_comp = st.selectbox("📅 Campaña:", options=campanas_comp, index=0, key="d_comp_campana")
+    with cc2:
+        tipo_comp = st.selectbox("🍂 Variedad de Tabaco:", options=variedades_d, index=variedades_d.index(tipo_d), key="d_comp_tipo")
+    with cc3:
+        moneda_comp = st.radio("Moneda:", options=["Pesos ($)", "Dólares (US$)"], horizontal=True, key="d_comp_moneda")
 
+    comp_df = df_dolar[(df_dolar['Campana'] == campana_comp) & (df_dolar['Tabaco'] == tipo_comp)].copy()
+    metric_comp = 'Precio_Total_Acumulado' if moneda_comp == "Pesos ($)" else 'Precio_Total_Acumulado_USD'
+
+    if comp_df.empty:
+        st.caption("No hay resoluciones para esta campaña y variedad.")
+    else:
+        comp_df['Resolución'] = comp_df['Archivo_Origen'].apply(_clean_resolucion_label)
+        comp_agg = comp_df.groupby(['Clase', 'Resolución'], as_index=False)[metric_comp].mean()
         fig_comp = px.bar(
-            comp_melt, x='Tabaco', y='Valor', color='Moneda', barmode='group',
-            color_discrete_map={'Pesos ($)': '#1a4329', 'Dólares (US$)': '#c9a227'},
+            comp_agg, x='Clase', y=metric_comp, color='Resolución', barmode='group',
         )
-        fig_comp.update_layout(get_corporate_layout(f"{metrica_d} promedio por variedad", height=400))
-        fig_comp.update_yaxes(title="Valor promedio")
-        fig_comp.update_xaxes(title="")
+        fig_comp.update_layout(get_corporate_layout(f"Precio por clase — {tipo_comp}, campaña {campana_comp}", height=420))
+        fig_comp.update_yaxes(title=f"Precio Total Acumulado ({moneda_comp})")
+        fig_comp.update_xaxes(title="Clase")
         st.plotly_chart(fig_comp, use_container_width=True)
 
-        st.markdown('<div class="section-header"><h3>📋 Detalle de Resoluciones</h3></div>', unsafe_allow_html=True)
-        table_cols = [
-            'Campana', 'Fecha', 'Etapa_Pago', 'Tabaco', 'Clase', 'Porcentaje',
-            'Adelanto_1', 'Adelanto_2', 'Incremento', 'Precio_Total_Acumulado',
-            'Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD', 'Precio_Total_Acumulado_USD',
-        ]
-        table_full = df_dolar_f[table_cols].sort_values(['Campana', 'Fecha'], ascending=[False, False]).reset_index(drop=True)
+    # -------------------------------------------------------------------
+    # Detalle de Resoluciones: selector de resolución puntual (Archivo_Origen)
+    # -------------------------------------------------------------------
+    st.markdown('<div class="section-header"><h3>📋 Detalle de Resoluciones</h3></div>', unsafe_allow_html=True)
+    dt1, dt2 = st.columns([1, 2])
+    with dt1:
+        campanas_tabla = ["Todas las Campañas"] + _ordenar_campanas(df_dolar['Campana'].unique())[::-1]
+        campana_tabla = st.selectbox("📅 Campaña:", options=campanas_tabla, index=0, key="d_tabla_campana")
 
+    df_tabla_base = df_dolar if campana_tabla == "Todas las Campañas" else df_dolar[df_dolar['Campana'] == campana_tabla]
+
+    with dt2:
+        resol_map = {
+            "Todas las Resoluciones": None,
+            **{
+                f"{_clean_resolucion_label(a)} ({c})": a
+                for a, c in df_tabla_base[['Archivo_Origen', 'Campana']].drop_duplicates().values
+            },
+        }
+        resol_label = st.selectbox("📄 Resolución:", options=list(resol_map.keys()), index=0, key="d_tabla_resolucion")
+
+    df_dolar_f = df_tabla_base if resol_map[resol_label] is None else df_tabla_base[df_tabla_base['Archivo_Origen'] == resol_map[resol_label]]
+
+    table_cols = [
+        'Campana', 'Fecha', 'Etapa_Pago', 'Tabaco', 'Clase', 'Porcentaje',
+        'Adelanto_1', 'Adelanto_2', 'Incremento', 'Precio_Total_Acumulado',
+        'Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD', 'Precio_Total_Acumulado_USD',
+    ]
+    table_full = df_dolar_f[table_cols].sort_values(['Campana', 'Fecha'], ascending=[False, False]).reset_index(drop=True)
+
+    if table_full.empty:
+        st.info("No hay registros para esta selección.")
+    else:
         tp1, tp2 = st.columns([1, 3])
         with tp1:
             page_size_d = st.selectbox("Filas por página:", options=[10, 25, 50, 100], index=1, key="d_page_size")
@@ -1234,15 +1275,15 @@ with tab_dolar:
             csv_dolar = table_full.to_csv(index=False, sep=';').encode('utf-8-sig')
             st.download_button(
                 "📥 Descargar CSV (todos los filtrados)", data=csv_dolar,
-                file_name="precios_tabaco_dolares_filtrado.csv", mime="text/csv", key="d_dl_csv",
+                file_name="precio_fet_filtrado.csv", mime="text/csv", key="d_dl_csv",
             )
         with dl2:
             excel_buffer_d = io.BytesIO()
             with pd.ExcelWriter(excel_buffer_d, engine='openpyxl') as writer:
-                table_full.to_excel(writer, index=False, sheet_name="Precios USD")
+                table_full.to_excel(writer, index=False, sheet_name="Precio FET")
             st.download_button(
                 "📥 Descargar Excel (todos los filtrados)", data=excel_buffer_d.getvalue(),
-                file_name="precios_tabaco_dolares_filtrado.xlsx",
+                file_name="precio_fet_filtrado.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="d_dl_xlsx",
             )
 
