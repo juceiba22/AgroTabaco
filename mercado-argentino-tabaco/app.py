@@ -8,9 +8,11 @@ Vistas integradas:
 3. 🏢 Participación de Mercado y Empresas Acopiadoras (acopio_empresas_historico_unificado.csv)
 4. 💰 Dinámica de Precios y Fondo Especial del Tabaco - FET (acopio_resumen_precios_historico_unificado.csv)
 5. 🏛️ Ejecución Presupuestaria y Recaudación Histórica FET (FET_Consolidado_Ejecuciones_Dashboard.csv)
+6. 💵 Precios en Dólares por Resolución (resumen_precios_tabaco_con_dolares.csv)
 """
 
 import csv
+import io
 import os
 import streamlit as st
 import pandas as pd
@@ -533,11 +535,43 @@ def load_precios_internacionales():
 
     return df_annual, df_ytd
 
+@st.cache_data(show_spinner=False)
+def load_resumen_precios_dolares():
+    """Carga resumen_precios_tabaco_con_dolares.csv: Adelanto 1, Adelanto 2 e
+    Incremento de cada resolución/anexo de precios, por clase y variedad, en
+    pesos y su equivalente en dólares al tipo de cambio de la fecha de la
+    resolución (columnas *_USD ya vienen calculadas en el archivo)."""
+    df = None
+    for enc in ['utf-8-sig', 'latin-1', 'cp1252']:
+        try:
+            df = pd.read_csv(data_path("resumen_precios_tabaco_con_dolares.csv"), sep=';', encoding=enc)
+            break
+        except Exception:
+            continue
+    if df is None:
+        df = pd.read_csv(data_path("resumen_precios_tabaco_con_dolares.csv"), sep=';', encoding='latin-1')
+
+    df.columns = [c.replace('﻿', '').strip() for c in df.columns]
+    df['Campana'] = df['Campana'].astype(str).str.strip()
+    df['Tabaco'] = df['Tabaco'].apply(sanitize_tobacco)
+    df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
+
+    numeric_cols = [
+        'Porcentaje', 'Adelanto_1', 'Adelanto_2', 'Incremento', 'Precio_Total_Acumulado',
+        'Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD', 'Precio_Total_Acumulado_USD',
+    ]
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    df['anio_inicio'] = df['Campana'].apply(lambda x: int(x.split('-')[0]) if '-' in str(x) and x[:4].isdigit() else 0)
+    return df.sort_values(by=['anio_inicio', 'Fecha']).reset_index(drop=True)
+
 df_prod = load_produccion_primaria()
 df_clases = load_acopio_clases()
 df_emp = load_acopio_empresas()
 df_prec = load_acopio_precios()
 df_intl, df_intl_ytd = load_precios_internacionales()
+df_dolar = load_resumen_precios_dolares()
 
 # -----------------------------------------------------------------------------
 # 3. Paletas de Colores y Helpers
@@ -603,13 +637,14 @@ _tab_labels = [
     "🏷️ Calidad & Clases Comerciales",
     "🏢 Acopio por Empresas",
     "📊 Producción Primaria y Hectáreas",
+    "💵 Precios en Dólares por Resolución",
 ]
 if SHOW_MERCADO_INTERNACIONAL:
     _tab_labels.append("🌍 Mercado Internacional")
 
 _tabs = st.tabs(_tab_labels)
-tab_precios, tab_calidad, tab_empresas, tab_prod = _tabs[:4]
-tab_intl = _tabs[4] if SHOW_MERCADO_INTERNACIONAL else None
+tab_precios, tab_calidad, tab_empresas, tab_prod, tab_dolar = _tabs[:5]
+tab_intl = _tabs[5] if SHOW_MERCADO_INTERNACIONAL else None
 
 # =============================================================================
 # PESTAÑA 1: PRODUCCIÓN PRIMARIA (csv_anuario_produccion_primaria.csv)
@@ -1041,6 +1076,177 @@ if SHOW_MERCADO_INTERNACIONAL:
     )
 
     st.caption("Fuente: USDA Global Agricultural Trade System (GATS) sobre datos de U.S. Census Bureau. Códigos HS 2401208005/2401208011/2401208010 (Virginia) y 2401208015/2401208021/2401208020 (Burley).")
+
+# =============================================================================
+# PESTAÑA: PRECIOS EN DÓLARES POR RESOLUCIÓN (resumen_precios_tabaco_con_dolares.csv)
+# =============================================================================
+with tab_dolar:
+    st.markdown("""
+    <div class="executive-header">
+        <h1>Precios de Tabaco por Resolución: Pesos y Dólares</h1>
+        <p>Adelanto 1, Adelanto 2 e Incremento de cada resolución/anexo de precios, en pesos y su equivalente en dólares al tipo de cambio de la fecha de la resolución.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    fd1, fd2, fd3 = st.columns([1, 1.4, 1.6])
+    campanas_dolar = sorted(df_dolar['Campana'].unique(), key=lambda c: int(c.split('-')[0]) if '-' in c and c[:4].isdigit() else 0, reverse=True)
+    with fd1:
+        camp_d = st.selectbox("📅 Campaña:", options=["Todas las Campañas"] + campanas_dolar, index=0, key="d_camp")
+    with fd2:
+        variedades_d = sorted(df_dolar['Tabaco'].dropna().unique())
+        tipos_d = st.multiselect("🍂 Variedad de Tabaco:", options=variedades_d, default=variedades_d, key="d_tipo")
+    with fd3:
+        fechas_validas_d = df_dolar['Fecha'].dropna()
+        fecha_min_d, fecha_max_d = fechas_validas_d.min().date(), fechas_validas_d.max().date()
+        rango_fecha_d = st.date_input(
+            "🗓️ Rango de Fechas:", value=(fecha_min_d, fecha_max_d),
+            min_value=fecha_min_d, max_value=fecha_max_d, key="d_fecha",
+        )
+
+    df_dolar_f = df_dolar.copy()
+    if camp_d != "Todas las Campañas":
+        df_dolar_f = df_dolar_f[df_dolar_f['Campana'] == camp_d]
+    if tipos_d:
+        df_dolar_f = df_dolar_f[df_dolar_f['Tabaco'].isin(tipos_d)]
+    else:
+        df_dolar_f = df_dolar_f.iloc[0:0]
+    if isinstance(rango_fecha_d, tuple) and len(rango_fecha_d) == 2:
+        start_d, end_d = rango_fecha_d
+        df_dolar_f = df_dolar_f[
+            df_dolar_f['Fecha'].isna()
+            | ((df_dolar_f['Fecha'] >= pd.Timestamp(start_d)) & (df_dolar_f['Fecha'] <= pd.Timestamp(end_d)))
+        ]
+
+    precio_prom_ars = df_dolar_f['Precio_Total_Acumulado'].mean()
+    precio_prom_usd = df_dolar_f['Precio_Total_Acumulado_USD'].mean()
+    n_resoluciones = df_dolar_f['Archivo_Origen'].nunique()
+
+    kd1, kd2, kd3 = st.columns(3)
+    with kd1:
+        st.markdown(build_kpi_card(
+            "PRECIO PROMEDIO ACUMULADO", f"${precio_prom_ars:,.2f}" if pd.notna(precio_prom_ars) else "S/D",
+            "Pesos, promedio simple de clases filtradas", color="blue",
+        ), unsafe_allow_html=True)
+    with kd2:
+        st.markdown(build_kpi_card(
+            "PRECIO PROMEDIO ACUMULADO", f"US$ {precio_prom_usd:,.2f}" if pd.notna(precio_prom_usd) else "S/D",
+            "Dólares, promedio simple de clases filtradas", color="emerald",
+        ), unsafe_allow_html=True)
+    with kd3:
+        st.markdown(build_kpi_card(
+            "RESOLUCIONES ANALIZADAS", f"{n_resoluciones:,}",
+            f"{len(df_dolar_f):,} registros de clase/variedad", color="amber",
+        ), unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if df_dolar_f.empty:
+        st.info("No hay datos para los filtros seleccionados.")
+    else:
+        campanas_orden = sorted(df_dolar_f['Campana'].unique(), key=lambda c: int(c.split('-')[0]) if '-' in c and c[:4].isdigit() else 0)
+
+        st.markdown('<div class="section-header"><h3>💵 Evolución del Precio Acumulado en Dólares</h3></div>', unsafe_allow_html=True)
+        melt_usd = df_dolar_f.melt(
+            id_vars=['Campana', 'Tabaco'],
+            value_vars=['Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD'],
+            var_name='Componente', value_name='Valor_USD',
+        ).dropna(subset=['Valor_USD'])
+        melt_usd['Componente'] = melt_usd['Componente'].map({
+            'Adelanto_1_USD': 'Adelanto 1', 'Adelanto_2_USD': 'Adelanto 2', 'Incremento_USD': 'Incremento',
+        })
+        if melt_usd.empty:
+            st.caption("Sin datos en dólares para estos filtros.")
+        else:
+            agg_usd = melt_usd.groupby(['Campana', 'Tabaco', 'Componente'], as_index=False)['Valor_USD'].mean()
+            fig_usd = px.line(
+                agg_usd, x='Campana', y='Valor_USD', color='Tabaco', line_dash='Componente',
+                category_orders={'Campana': campanas_orden}, color_discrete_map=TOBACCO_PALETTE, markers=True,
+            )
+            fig_usd.update_layout(get_corporate_layout("Adelanto 1, Adelanto 2 e Incremento (USD) por Campaña y Variedad", height=440))
+            fig_usd.update_yaxes(title="Valor promedio (USD)")
+            fig_usd.update_xaxes(title="Campaña")
+            st.plotly_chart(fig_usd, use_container_width=True)
+
+        st.markdown('<div class="section-header"><h3>💰 Evolución del Precio Acumulado en Pesos</h3></div>', unsafe_allow_html=True)
+        melt_ars = df_dolar_f.melt(
+            id_vars=['Campana', 'Tabaco'],
+            value_vars=['Adelanto_1', 'Adelanto_2', 'Incremento'],
+            var_name='Componente', value_name='Valor_ARS',
+        ).dropna(subset=['Valor_ARS'])
+        melt_ars['Componente'] = melt_ars['Componente'].map({
+            'Adelanto_1': 'Adelanto 1', 'Adelanto_2': 'Adelanto 2', 'Incremento': 'Incremento',
+        })
+        if melt_ars.empty:
+            st.caption("Sin datos en pesos para estos filtros.")
+        else:
+            agg_ars = melt_ars.groupby(['Campana', 'Tabaco', 'Componente'], as_index=False)['Valor_ARS'].mean()
+            fig_ars = px.line(
+                agg_ars, x='Campana', y='Valor_ARS', color='Tabaco', line_dash='Componente',
+                category_orders={'Campana': campanas_orden}, color_discrete_map=TOBACCO_PALETTE, markers=True,
+            )
+            fig_ars.update_layout(get_corporate_layout("Adelanto 1, Adelanto 2 e Incremento ($) por Campaña y Variedad", height=440))
+            fig_ars.update_yaxes(title="Valor promedio ($)")
+            fig_ars.update_xaxes(title="Campaña")
+            st.plotly_chart(fig_ars, use_container_width=True)
+
+        st.markdown('<div class="section-header"><h3>📊 Comparativo por Variedad</h3></div>', unsafe_allow_html=True)
+        metrica_d = st.radio(
+            "Métrica a comparar:", options=["Precio Total Acumulado", "Adelanto 1"], horizontal=True, key="d_metrica",
+        )
+        col_ars, col_usd = (
+            ('Precio_Total_Acumulado', 'Precio_Total_Acumulado_USD') if metrica_d == "Precio Total Acumulado"
+            else ('Adelanto_1', 'Adelanto_1_USD')
+        )
+        comp = df_dolar_f.groupby('Tabaco', as_index=False)[[col_ars, col_usd]].mean()
+        comp_melt = comp.melt(id_vars='Tabaco', value_vars=[col_ars, col_usd], var_name='Moneda', value_name='Valor')
+        comp_melt['Moneda'] = comp_melt['Moneda'].map({col_ars: 'Pesos ($)', col_usd: 'Dólares (US$)'})
+
+        fig_comp = px.bar(
+            comp_melt, x='Tabaco', y='Valor', color='Moneda', barmode='group',
+            color_discrete_map={'Pesos ($)': '#1a4329', 'Dólares (US$)': '#c9a227'},
+        )
+        fig_comp.update_layout(get_corporate_layout(f"{metrica_d} promedio por variedad", height=400))
+        fig_comp.update_yaxes(title="Valor promedio")
+        fig_comp.update_xaxes(title="")
+        st.plotly_chart(fig_comp, use_container_width=True)
+
+        st.markdown('<div class="section-header"><h3>📋 Detalle de Resoluciones</h3></div>', unsafe_allow_html=True)
+        table_cols = [
+            'Campana', 'Fecha', 'Etapa_Pago', 'Tabaco', 'Clase', 'Porcentaje',
+            'Adelanto_1', 'Adelanto_2', 'Incremento', 'Precio_Total_Acumulado',
+            'Adelanto_1_USD', 'Adelanto_2_USD', 'Incremento_USD', 'Precio_Total_Acumulado_USD',
+        ]
+        table_full = df_dolar_f[table_cols].sort_values(['Campana', 'Fecha'], ascending=[False, False]).reset_index(drop=True)
+
+        tp1, tp2 = st.columns([1, 3])
+        with tp1:
+            page_size_d = st.selectbox("Filas por página:", options=[10, 25, 50, 100], index=1, key="d_page_size")
+        total_pages_d = max(1, -(-len(table_full) // page_size_d))
+        with tp2:
+            page_d = st.number_input("Página:", min_value=1, max_value=total_pages_d, value=1, step=1, key="d_page")
+        start_idx_d = (page_d - 1) * page_size_d
+        table_page = table_full.iloc[start_idx_d:start_idx_d + page_size_d]
+        st.dataframe(table_page, use_container_width=True, hide_index=True)
+        st.caption(f"Mostrando {len(table_page)} de {len(table_full):,} registros — página {page_d} de {total_pages_d}.")
+
+        dl1, dl2 = st.columns(2)
+        with dl1:
+            csv_dolar = table_full.to_csv(index=False, sep=';').encode('utf-8-sig')
+            st.download_button(
+                "📥 Descargar CSV (todos los filtrados)", data=csv_dolar,
+                file_name="precios_tabaco_dolares_filtrado.csv", mime="text/csv", key="d_dl_csv",
+            )
+        with dl2:
+            excel_buffer_d = io.BytesIO()
+            with pd.ExcelWriter(excel_buffer_d, engine='openpyxl') as writer:
+                table_full.to_excel(writer, index=False, sheet_name="Precios USD")
+            st.download_button(
+                "📥 Descargar Excel (todos los filtrados)", data=excel_buffer_d.getvalue(),
+                file_name="precios_tabaco_dolares_filtrado.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="d_dl_xlsx",
+            )
+
+    st.caption("Fuente: resoluciones y anexos de precios del sector tabacalero argentino, con conversión a dólares al tipo de cambio de la fecha de cada resolución.")
 
 # -----------------------------------------------------------------------------
 # 5. Pie de Página Corporativo
