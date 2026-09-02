@@ -39,6 +39,11 @@ export function TopNav({ user, plan }: { user: User | null; plan: Plan }) {
           <a href={SITE_URL} className="text-sm font-semibold text-muted-foreground hover:text-brand-green-dark">
             ← Volver al portal de noticias
           </a>
+          {plan !== "pro" && (
+            <Link href="/planes" className="text-sm font-semibold text-amber-700 hover:text-amber-800">
+              Ver planes
+            </Link>
+          )}
 
           {user ? (
             <div className="flex items-center gap-2">

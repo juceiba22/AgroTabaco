@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { KpiCard } from "@/components/kpi-card";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LockedTabContent } from "@/components/paywall/locked-tab-content";
 import { breakdownByObjetoPrograma, totalArsNominal } from "@/lib/panels/observatorio-fet/filters";
 import { OBJETOS_PROGRAMA } from "@/lib/panels/observatorio-fet/config";
 import { ModuloAsistencia } from "@/components/panels/observatorio-fet/modules/modulo-asistencia";
@@ -12,11 +13,13 @@ import { ModuloEvolucion } from "@/components/panels/observatorio-fet/modules/mo
 import { ModuloProgramas } from "@/components/panels/observatorio-fet/modules/modulo-programas";
 import { ModuloProvincias } from "@/components/panels/observatorio-fet/modules/modulo-provincias";
 import { ModuloResumen } from "@/components/panels/observatorio-fet/modules/modulo-resumen";
+import type { Plan } from "@/lib/entitlements";
 import type { PoaTabaco } from "@/lib/panels/observatorio-fet/types";
 
 type TipoAsistenciaFiltro = "TODOS" | "SUBSIDIO" | "CREDITO";
 
-export function DashboardShell({ data }: { data: PoaTabaco[] }) {
+export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }) {
+  const isPro = plan === "pro";
   const hasData = data.length > 0;
   const anios = data.map((d) => d.anioResolucion).filter((a): a is number => a != null);
   const minYear = anios.length > 0 ? Math.min(...anios) : 0;
@@ -151,7 +154,7 @@ export function DashboardShell({ data }: { data: PoaTabaco[] }) {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <KpiCard
             icon="💵"
-            title="Total USD Histórico"
+            title={isPro ? "Total USD Histórico" : "Total USD (último año)"}
             value={`USD ${totalUsd.toLocaleString("en-US", { maximumFractionDigits: 0 })}`}
             subtitle={`Cobertura: ${coberturaPct.toFixed(1)}% de los POAs filtrados`}
             color="emerald"
@@ -188,19 +191,42 @@ export function DashboardShell({ data }: { data: PoaTabaco[] }) {
             <ModuloResumen dataFiltrado={dataFiltrado} rangoAnios={yearRange} />
           </TabsContent>
           <TabsContent value="evolucion" className="mt-6 space-y-6">
-            <ModuloEvolucion dataFiltrado={dataFiltrado} />
+            {isPro ? (
+              <ModuloEvolucion dataFiltrado={dataFiltrado} />
+            ) : (
+              <LockedTabContent title="📈 Evolución Histórica" benefit="Accedé a la serie completa del FET transferido, año por año." />
+            )}
           </TabsContent>
           <TabsContent value="provincias" className="mt-6 space-y-6">
-            <ModuloProvincias dataFiltrado={dataFiltrado} />
+            {isPro ? (
+              <ModuloProvincias dataFiltrado={dataFiltrado} />
+            ) : (
+              <LockedTabContent title="🗺️ Por Provincia" benefit="Comparativo histórico de FET recibido entre las provincias tabacaleras." />
+            )}
           </TabsContent>
           <TabsContent value="programas" className="mt-6 space-y-6">
-            <ModuloProgramas dataFiltrado={dataFiltrado} />
+            {isPro ? (
+              <ModuloProgramas dataFiltrado={dataFiltrado} />
+            ) : (
+              <LockedTabContent title="🧭 Por Programa" benefit="Desglose histórico del gasto por objeto_programa." />
+            )}
           </TabsContent>
           <TabsContent value="asistencia" className="mt-6 space-y-6">
-            <ModuloAsistencia dataFiltrado={dataFiltrado} />
+            {isPro ? (
+              <ModuloAsistencia dataFiltrado={dataFiltrado} />
+            ) : (
+              <LockedTabContent title="🏦 Tipo de Asistencia" benefit="Evolución histórica entre subsidios y créditos." />
+            )}
           </TabsContent>
           <TabsContent value="calidad" className="mt-6 space-y-6">
-            <ModuloCalidad dataFiltrado={dataFiltrado} />
+            {isPro ? (
+              <ModuloCalidad dataFiltrado={dataFiltrado} />
+            ) : (
+              <LockedTabContent
+                title="🔍 Calidad de Datos"
+                benefit="Buscá y exportá el detalle completo de los 2.737 registros del Observatorio."
+              />
+            )}
           </TabsContent>
         </Tabs>
       </main>

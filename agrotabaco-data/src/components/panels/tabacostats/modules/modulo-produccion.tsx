@@ -86,7 +86,13 @@ export function ModuloProduccion({ data }: { data: ProduccionPrimaria[] }) {
     <>
       <div className="executive-header">
         <h1>Producción Primaria y Hectáreas</h1>
-        <p>(Serie histórica 1991/1992 - 2022/2023).</p>
+        <p>
+          {campanas.length > 1
+            ? `(Campañas ${campanas[campanas.length - 1]} - ${campanas[0]}).`
+            : campanas.length === 1
+              ? `(Campaña ${campanas[0]}).`
+              : null}
+        </p>
       </div>
 
       <CampanaProvinciaVariedadFilter

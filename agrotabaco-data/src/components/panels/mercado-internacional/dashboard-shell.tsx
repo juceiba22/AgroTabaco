@@ -4,12 +4,14 @@ import { useMemo, useState } from "react";
 import { KpiCard } from "@/components/kpi-card";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LockedTabContent } from "@/components/paywall/locked-tab-content";
 import { PRESET_SUDAMERICA, PRESET_TOP5_GLOBAL } from "@/lib/panels/mercado-internacional/config";
 import { ModuloArgentina } from "@/components/panels/mercado-internacional/modules/modulo-argentina";
 import { ModuloDatos } from "@/components/panels/mercado-internacional/modules/modulo-datos";
 import { ModuloEvolucionHistorica } from "@/components/panels/mercado-internacional/modules/modulo-evolucion-historica";
 import { ModuloMapa } from "@/components/panels/mercado-internacional/modules/modulo-mapa";
 import { ModuloRanking } from "@/components/panels/mercado-internacional/modules/modulo-ranking";
+import type { Plan } from "@/lib/entitlements";
 import type { TobaccoProduction } from "@/lib/panels/mercado-internacional/types";
 
 const UNIT = "toneladas";
@@ -17,7 +19,8 @@ const DEFAULT_SELECTED = ["Argentina", "Brazil", "China", "India", "United State
 
 type EntityFilterMode = "countries" | "countries_aggregates" | "all";
 
-export function DashboardShell({ data }: { data: TobaccoProduction[] }) {
+export function DashboardShell({ data, plan }: { data: TobaccoProduction[]; plan: Plan }) {
+  const isPro = plan === "pro";
   const hasData = data.length > 0;
   const minYear = hasData ? Math.min(...data.map((d) => d.year)) : 0;
   const maxYear = hasData ? Math.max(...data.map((d) => d.year)) : 0;
@@ -221,27 +224,49 @@ export function DashboardShell({ data }: { data: TobaccoProduction[] }) {
           </TabsList>
 
           <TabsContent value="evolucion" className="mt-6 space-y-6">
-            <ModuloEvolucionHistorica
-              dataFiltrado={dataFiltrado}
-              selectedEntities={selectedCountries}
-              startYear={startYear}
-              endYear={endYear}
-              unit={UNIT}
-              logScale={useLogScale}
-              showMarkers={showDataPoints}
-            />
+            {isPro ? (
+              <ModuloEvolucionHistorica
+                dataFiltrado={dataFiltrado}
+                selectedEntities={selectedCountries}
+                startYear={startYear}
+                endYear={endYear}
+                unit={UNIT}
+                logScale={useLogScale}
+                showMarkers={showDataPoints}
+              />
+            ) : (
+              <LockedTabContent
+                title="📈 Evolución Histórica"
+                benefit="Accedé a la serie completa 1961-2024 de producción mundial de tabaco."
+              />
+            )}
           </TabsContent>
           <TabsContent value="ranking" className="mt-6 space-y-6">
             <ModuloRanking data={data} evalYear={evalYear} unit={UNIT} />
           </TabsContent>
           <TabsContent value="mapa" className="mt-6 space-y-6">
-            <ModuloMapa data={data} evalYear={evalYear} unit={UNIT} />
+            {isPro ? (
+              <ModuloMapa data={data} evalYear={evalYear} unit={UNIT} />
+            ) : (
+              <LockedTabContent title="🗺️ Mapa Global Interactivo" benefit="Explorá el mapa coroplético mundial año por año." />
+            )}
           </TabsContent>
           <TabsContent value="argentina" className="mt-6 space-y-6">
-            <ModuloArgentina dataFiltrado={dataFiltrado} unit={UNIT} />
+            {isPro ? (
+              <ModuloArgentina dataFiltrado={dataFiltrado} unit={UNIT} />
+            ) : (
+              <LockedTabContent
+                title="🇦🇷 Foco Estratégico: Argentina"
+                benefit="Comparativo histórico de Argentina contra sus vecinos sudamericanos."
+              />
+            )}
           </TabsContent>
           <TabsContent value="datos" className="mt-6 space-y-6">
-            <ModuloDatos dataFiltrado={dataFiltrado} unit={UNIT} startYear={startYear} endYear={endYear} />
+            {isPro ? (
+              <ModuloDatos dataFiltrado={dataFiltrado} unit={UNIT} startYear={startYear} endYear={endYear} />
+            ) : (
+              <LockedTabContent title="📊 Matriz de Datos & Descarga" benefit="Buscá, ordená y exportá el dataset completo en CSV." />
+            )}
           </TabsContent>
         </Tabs>
       </main>

@@ -1,10 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { KpiCard } from "@/components/kpi-card";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Plan } from "@/lib/entitlements";
 import type { ConsumoAnio, ParticipacionMes, VolumenPrecio } from "@/lib/panels/laboratorio/types";
 
 const PriceLinesChart = dynamic(
@@ -53,9 +55,10 @@ type Props = {
   volumenPrecios: VolumenPrecio[];
   participacion: ParticipacionMes[];
   consumoAparente: ConsumoAnio[];
+  plan: Plan;
 };
 
-export function DashboardShell({ volumenPrecios, participacion, consumoAparente }: Props) {
+export function DashboardShell({ volumenPrecios, participacion, consumoAparente, plan }: Props) {
   const hasAnyData = volumenPrecios.length > 0 || participacion.length > 0 || consumoAparente.length > 0;
 
   const monthTimestamps = useMemo(() => {
@@ -119,6 +122,16 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente 
             Mercado interno de tabaco — cigarrillos (paquetes eq. 20 un.)
           </p>
         </div>
+
+        {plan !== "pro" && (
+          <div className="data-notice">
+            Estás viendo los últimos 12 meses (y los últimos 5 años en Consumo Aparente). El{" "}
+            <Link href="/planes" className="font-semibold underline">
+              historial completo
+            </Link>{" "}
+            es parte de AgroTabaco Data.
+          </div>
+        )}
 
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-sm font-semibold text-foreground">Período mensual</p>

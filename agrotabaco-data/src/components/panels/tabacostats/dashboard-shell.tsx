@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LockedTabContent } from "@/components/paywall/locked-tab-content";
 import { MERCADO_INTERNACIONAL_ENABLED } from "@/lib/panels/tabacostats/config";
 import { ModuloCalidad } from "@/components/panels/tabacostats/modules/modulo-calidad";
 import { ModuloEmpresas } from "@/components/panels/tabacostats/modules/modulo-empresas";
@@ -8,6 +9,7 @@ import { ModuloMercadoInternacional } from "@/components/panels/tabacostats/modu
 import { ModuloPrecioFet } from "@/components/panels/tabacostats/modules/modulo-precio-fet";
 import { ModuloPrecios } from "@/components/panels/tabacostats/modules/modulo-precios";
 import { ModuloProduccion } from "@/components/panels/tabacostats/modules/modulo-produccion";
+import type { Plan } from "@/lib/entitlements";
 import type {
   AcopioClase,
   AcopioEmpresa,
@@ -24,9 +26,19 @@ type Props = {
   precios: AcopioPrecio[];
   precioFet: PrecioResolucion[];
   mercadoInternacional: MercadoInternacional[];
+  plan: Plan;
 };
 
-export function DashboardShell({ produccion, clases, empresas, precios, precioFet, mercadoInternacional }: Props) {
+export function DashboardShell({
+  produccion,
+  clases,
+  empresas,
+  precios,
+  precioFet,
+  mercadoInternacional,
+  plan,
+}: Props) {
+  const isPro = plan === "pro";
   const hasAnyData =
     produccion.length > 0 || clases.length > 0 || empresas.length > 0 || precios.length > 0 || precioFet.length > 0;
 
@@ -52,19 +64,47 @@ export function DashboardShell({ produccion, clases, empresas, precios, precioFe
       </TabsList>
 
       <TabsContent value="precios" className="mt-6 space-y-6">
-        <ModuloPrecios data={precios} />
+        {isPro ? (
+          <ModuloPrecios data={precios} />
+        ) : (
+          <LockedTabContent
+            title="💰 Precios Acopio & Precio FET"
+            benefit="Accedé a la serie completa de precios de acopio y complemento FET por campaña."
+          />
+        )}
       </TabsContent>
       <TabsContent value="calidad" className="mt-6 space-y-6">
-        <ModuloCalidad data={clases} />
+        {isPro ? (
+          <ModuloCalidad data={clases} />
+        ) : (
+          <LockedTabContent
+            title="🏷️ Calidad & Clases Comerciales"
+            benefit="Desbloqueá el detalle de producción por clase comercial y variedad."
+          />
+        )}
       </TabsContent>
       <TabsContent value="empresas" className="mt-6 space-y-6">
-        <ModuloEmpresas data={empresas} />
+        {isPro ? (
+          <ModuloEmpresas data={empresas} />
+        ) : (
+          <LockedTabContent
+            title="🏢 Acopio por Empresas"
+            benefit="Vé el ranking de empresas acopiadoras y su participación de mercado."
+          />
+        )}
       </TabsContent>
       <TabsContent value="produccion" className="mt-6 space-y-6">
         <ModuloProduccion data={produccion} />
       </TabsContent>
       <TabsContent value="precio-fet" className="mt-6 space-y-6">
-        <ModuloPrecioFet data={precioFet} />
+        {isPro ? (
+          <ModuloPrecioFet data={precioFet} />
+        ) : (
+          <LockedTabContent
+            title="💵 Precio FET"
+            benefit="Accedé al historial completo del complemento del Fondo Especial del Tabaco."
+          />
+        )}
       </TabsContent>
       {MERCADO_INTERNACIONAL_ENABLED && (
         <TabsContent value="mercado-internacional" className="mt-6 space-y-6">
