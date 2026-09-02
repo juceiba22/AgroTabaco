@@ -240,6 +240,24 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["fact_poas_tabaco"]["Row"]>;
         Relationships: [];
       };
+
+      // --- AgroTabaco Data: suscripciones (Fase 2) ---
+      data_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          status: "free" | "active" | "expired" | "cancelled";
+          plan: string;
+          current_period_end: string | null;
+          mercadopago_subscription_id: string | null;
+          mercadopago_payer_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["data_subscriptions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["data_subscriptions"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

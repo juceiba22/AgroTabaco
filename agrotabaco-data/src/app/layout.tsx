@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { TopNav } from "@/components/nav/topnav";
+import { getEntitlement } from "@/lib/entitlements";
 import "./globals.css";
 
 const fontSans = Inter({
@@ -19,12 +20,14 @@ export const metadata: Metadata = {
     "La capa de inteligencia de datos de AgroTabaco: Laboratorio Estadístico, TabacoStats Argentina, Mercado Internacional de Tabaco y Observatorio del FET, en un solo lugar.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { user, plan } = await getEntitlement();
+
   return (
     <html lang="es" className={`${fontSans.variable} ${fontSerif.variable} h-full antialiased`}>
       <body className="min-h-full bg-brand-gray text-foreground">
         <div className="mx-auto max-w-[1440px] px-6 py-6">
-          <TopNav />
+          <TopNav user={user} plan={plan} />
           {children}
           <footer className="mt-10 border-t border-border py-6 text-center text-sm text-muted-foreground">
             AgroTabaco Data &copy; 2026 | Un desarrollo de AgroTabaco | Inteligencia de datos del sector
