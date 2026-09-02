@@ -1,0 +1,24 @@
+# dependencies
+node_modules
+
+# next.js
+.next/
+out/
+
+# production
+build
+
+# env (mantener .env.example versionado)
+.env*.local
+.env.local
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# misc
+.DS_Store

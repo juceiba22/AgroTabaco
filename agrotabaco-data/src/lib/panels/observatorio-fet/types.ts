@@ -1,0 +1,24 @@
+export type PoaTabaco = {
+  archivoOrigen: string;
+  provincia: string;
+  provinciaDisplay: string;
+  anioResolucion: number | null;
+  fecha: string | null;
+  campanaDisplay: string | null;
+  norma: string | null;
+  nroExpediente: string | null;
+  componente: string | null;
+  subcomponente: string | null;
+  objetoPrograma: string | null;
+  tipoAsistencia: string | null;
+  modalidadDesembolso: string | null;
+  zonaODepartamento: string | null;
+  montoArs: number | null;
+  cotizacionUsd: number | null;
+  montoUsd: number | null;
+  organismoEjecutor: string | null;
+  firmanteAutoridad: string | null;
+  cuentaBancariaDebito: string | null;
+  convenioMarco: string | null;
+  esAnexo: boolean;
+};

@@ -8,28 +8,10 @@
       "port": 3000
     },
     {
-      "name": "laboratorio-nativo-dev",
+      "name": "agrotabaco-data-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "laboratorio-nativo", "run", "dev"],
-      "port": 3001
-    },
-    {
-      "name": "tabacostats-nativo-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "tabacostats-nativo", "run", "dev"],
-      "port": 3002
-    },
-    {
-      "name": "mercado-global-nativo-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "mercado-global-nativo", "run", "dev"],
-      "port": 3003
-    },
-    {
-      "name": "observatorio-fet-nativo-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "observatorio-fet-nativo", "run", "dev"],
-      "port": 3004
+      "runtimeArgs": ["--prefix", "agrotabaco-data", "run", "dev"],
+      "port": 3005
     }
   ]
 }
