@@ -25,11 +25,18 @@ Limpieza aplicada (ver plan para el detalle completo de cada decisión):
 
 No toca la base de datos — sólo lee el CSV local y escribe un .sql. El
 usuario lo corre en el SQL Editor de Supabase, igual que las migraciones.
-Re-ejecutable: la tabla se trunca antes de insertar.
+Re-ejecutable: la tabla se trunca antes de insertar (en la primera parte).
+
+El resultado se parte en varios archivos seed_poas_tabaco_parteXdeN.sql
+porque el texto libre de este dataset (componente, convenio_marco, etc.)
+lo hace mucho más pesado por fila que los otros datasets del ecosistema
+nativo, y el SQL Editor de Supabase rechaza pegar un archivo único
+("Query is too large"). Correr los N archivos en orden.
 
 Uso: python scripts/build_seed_sql.py
 """
 
+import math
 import os
 import re
 
@@ -41,6 +48,7 @@ SOURCE_PATH = os.path.join(REPO_ROOT, "observatorio-fet-data", "base_datos_poas_
 OUTPUT_PATH = os.path.join(REPO_ROOT, "supabase", "seed_poas_tabaco.sql")
 
 CHUNK_SIZE = 200
+ROWS_PER_FILE = 700
 
 PROVINCIA_DISPLAY = {
     "CATAMARCA": "Catamarca",
@@ -187,28 +195,46 @@ def main():
         )
         rows_sql.append(values)
 
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(
-            "-- Generado por observatorio-fet-nativo/scripts/build_seed_sql.py a partir de\n"
-            '-- "Observatorio FET/base_datos_poas_tabaco_local.csv". Correr una sola vez\n'
-            "-- en el SQL Editor de Supabase, después de 0009_fact_poas_tabaco.sql.\n"
-            f"-- Filas: {len(rows_sql)} (excluye 1 fila ERROR del CSV original).\n\n"
-        )
-        f.write("truncate table public.fact_poas_tabaco;\n")
-        cols = (
-            "archivo_origen, provincia, provincia_display, anio_resolucion, fecha, "
-            "campana_display, norma, nro_expediente, componente, subcomponente, "
-            "objeto_programa, tipo_asistencia, modalidad_desembolso, zona_o_departamento, "
-            "monto_ars, cotizacion_usd, monto_usd, organismo_ejecutor, firmante_autoridad, "
-            "cuenta_bancaria_debito, convenio_marco, es_anexo"
-        )
-        for i in range(0, len(rows_sql), CHUNK_SIZE):
-            chunk = rows_sql[i : i + CHUNK_SIZE]
-            values_sql = ",\n  ".join(chunk)
-            f.write(f"insert into public.fact_poas_tabaco ({cols}) values\n  {values_sql};\n")
+    cols = (
+        "archivo_origen, provincia, provincia_display, anio_resolucion, fecha, "
+        "campana_display, norma, nro_expediente, componente, subcomponente, "
+        "objeto_programa, tipo_asistencia, modalidad_desembolso, zona_o_departamento, "
+        "monto_ars, cotizacion_usd, monto_usd, organismo_ejecutor, firmante_autoridad, "
+        "cuenta_bancaria_debito, convenio_marco, es_anexo"
+    )
+
+    # El SQL Editor de Supabase rechaza pegar todo el archivo de una vez
+    # ("Query is too large") si supera ~800 KB por el texto largo de
+    # componente/subcomponente/convenio_marco (a diferencia de los otros
+    # datasets nativos, más numéricos y livianos por fila). Se parte en
+    # varios archivos secuenciales, bien por debajo de ese límite.
+    base, ext = os.path.splitext(OUTPUT_PATH)
+    n_parts = math.ceil(len(rows_sql) / ROWS_PER_FILE)
+    output_paths = []
+
+    for part in range(n_parts):
+        part_rows = rows_sql[part * ROWS_PER_FILE : (part + 1) * ROWS_PER_FILE]
+        part_path = f"{base}_parte{part + 1}de{n_parts}{ext}"
+        output_paths.append(part_path)
+
+        with open(part_path, "w", encoding="utf-8") as f:
+            f.write(
+                "-- Generado por observatorio-fet-nativo/scripts/build_seed_sql.py a partir de\n"
+                '-- "observatorio-fet-data/base_datos_poas_tabaco_local.csv".\n'
+                f"-- Parte {part + 1} de {n_parts} — correr los {n_parts} archivos EN ORDEN en el\n"
+                "-- SQL Editor de Supabase, después de 0009_fact_poas_tabaco.sql.\n"
+                f"-- Filas en esta parte: {len(part_rows)} (total: {len(rows_sql)}, excluye 1 fila ERROR del CSV original).\n\n"
+            )
+            if part == 0:
+                f.write("truncate table public.fact_poas_tabaco;\n")
+            for i in range(0, len(part_rows), CHUNK_SIZE):
+                chunk = part_rows[i : i + CHUNK_SIZE]
+                values_sql = ",\n  ".join(chunk)
+                f.write(f"insert into public.fact_poas_tabaco ({cols}) values\n  {values_sql};\n")
 
     print(f"fact_poas_tabaco: {len(rows_sql)} filas")
-    print(f"Escrito: {OUTPUT_PATH}")
+    for p in output_paths:
+        print(f"Escrito: {p} ({os.path.getsize(p):,} bytes)")
 
 
 if __name__ == "__main__":

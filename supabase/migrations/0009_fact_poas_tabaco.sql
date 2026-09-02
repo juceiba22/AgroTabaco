@@ -8,9 +8,12 @@
 -- (definida en 0001).
 --
 -- Correr una sola vez en el SQL Editor de Supabase, después de 0008. Después
--- correr supabase/seed_poas_tabaco.sql para cargar los datos (~2.737 filas —
--- el fetch en la app pagina con .range(), igual que fact_tobacco_production,
--- porque supera el límite default de 1000 filas de PostgREST).
+-- correr, EN ORDEN, los 4 archivos supabase/seed_poas_tabaco_parteXde4.sql
+-- para cargar los datos (~2.737 filas en total — partidos en 4 archivos
+-- porque el texto libre de este dataset hace que un único archivo supere el
+-- límite de tamaño de query del SQL Editor de Supabase). El fetch en la app
+-- pagina con .range(), igual que fact_tobacco_production, porque supera el
+-- límite default de 1000 filas de PostgREST.
 
 create table if not exists public.fact_poas_tabaco (
   id uuid primary key default gen_random_uuid(),
