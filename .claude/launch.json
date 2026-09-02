@@ -18,6 +18,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "tabacostats-nativo", "run", "dev"],
       "port": 3002
+    },
+    {
+      "name": "mercado-global-nativo-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "mercado-global-nativo", "run", "dev"],
+      "port": 3003
     }
   ]
 }
