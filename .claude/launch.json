@@ -24,6 +24,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "mercado-global-nativo", "run", "dev"],
       "port": 3003
+    },
+    {
+      "name": "observatorio-fet-nativo-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "observatorio-fet-nativo", "run", "dev"],
+      "port": 3004
     }
   ]
 }
