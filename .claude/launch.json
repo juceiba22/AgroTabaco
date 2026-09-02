@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "laboratorio-nativo-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "laboratorio-nativo", "run", "dev"],
+      "port": 3001
     }
   ]
 }
