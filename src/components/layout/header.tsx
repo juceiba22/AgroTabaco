@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, Search, Sprout } from "lucide-react";
+import { BarChart3, Menu, Search, Sprout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,6 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { AGROTABACO_DATA_URL } from "@/lib/config";
 import type { Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +60,16 @@ export function Header({ categories }: { categories: Category[] }) {
               {category.name}
             </Link>
           ))}
+          <span className="mx-1 h-4 w-px shrink-0 bg-white/20" aria-hidden="true" />
+          <a
+            href={AGROTABACO_DATA_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm font-medium tracking-wide text-brand-olive-light transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <BarChart3 className="size-4" />
+            AgroTabaco Data
+          </a>
         </div>
       </nav>
     </header>
@@ -138,6 +149,15 @@ function MobileNav({ categories }: { categories: Category[] }) {
               {category.name}
             </Link>
           ))}
+          <a
+            href={AGROTABACO_DATA_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-brand-green-dark transition-colors hover:bg-muted"
+          >
+            <BarChart3 className="size-4" />
+            AgroTabaco Data
+          </a>
           <Link
             href="/quienes-somos"
             onClick={() => setOpen(false)}

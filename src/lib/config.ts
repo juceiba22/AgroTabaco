@@ -1,3 +1,13 @@
+// AgroTabaco Data: producto de suscripción con los 4 paneles nativos
+// (Laboratorio Estadístico, TabacoStats Argentina, Mercado Internacional,
+// Observatorio del FET) — reemplaza a los dashboards Streamlit que este
+// portal linkeaba antes. Vive en un proyecto de Vercel separado; acá sólo
+// se configura la URL para no hardcodearla en el header. Cuando se cuelgue
+// el subdominio data.agrotabaco.com, cambiar el valor por defecto (o
+// setear NEXT_PUBLIC_AGROTABACO_DATA_URL en Vercel) sin tocar el código.
+export const AGROTABACO_DATA_URL =
+  process.env.NEXT_PUBLIC_AGROTABACO_DATA_URL || "https://agrotabaco-data.vercel.app";
+
 // Mercado Argentino de Tabaco: oculto a pedido del usuario (2026-08-31) — la
 // idea es mudarlo a un sitio externo propio, como los dashboards Streamlit,
 // en vez de vivir dentro del portal informativo de noticias. El código
