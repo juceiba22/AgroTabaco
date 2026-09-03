@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, Newspaper, Plus, Sprout } from "lucide-react";
+import { LogOut, Newspaper, Plus, Sparkles, Sprout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/admin/actions";
@@ -45,6 +45,15 @@ export default async function AdminDashboardLayout({
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/admin/posts/import" />}
+            >
+              <Sparkles className="size-4" />
+              Importar boletín
+            </Button>
             <Button
               size="sm"
               className="bg-brand-green-dark text-white hover:bg-brand-green-darker"
