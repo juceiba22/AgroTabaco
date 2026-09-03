@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { Plan } from "@/lib/entitlements";
 import type { User } from "@supabase/supabase-js";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://agro-tabaco.vercel.app";
 
 const PANELS = [
   { href: "/laboratorio", label: "Laboratorio Estadístico", icon: FlaskConical },

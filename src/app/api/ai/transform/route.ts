@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel, Type } from "@google/genai";
 import { createClient } from "@/lib/supabase/server";
 import { getCategories } from "@/lib/data";
 
@@ -67,6 +67,10 @@ export async function POST(request: Request) {
       contents: `Borrador original:\n"""${rawText}"""`,
       config: {
         systemInstruction,
+        // Reescritura editorial simple, no requiere razonamiento profundo —
+        // el nivel de thinking por default de gemini-3.6-flash es la causa
+        // principal de la lentitud reportada en el autocompletado.
+        thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,

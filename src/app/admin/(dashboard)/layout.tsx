@@ -24,7 +24,7 @@ export default async function AdminDashboardLayout({
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-6">
-            <Link href="/admin" className="flex items-center gap-2 font-serif text-lg font-bold text-brand-green-dark">
+            <Link href="/" className="flex items-center gap-2 font-serif text-lg font-bold text-brand-green-dark">
               <span className="flex size-8 items-center justify-center rounded-full bg-brand-green-dark text-white">
                 <Sprout className="size-4" />
               </span>
