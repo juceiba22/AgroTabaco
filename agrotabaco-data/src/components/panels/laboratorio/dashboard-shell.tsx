@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Plan } from "@/lib/entitlements";
 import type { ConsumoAnio, ParticipacionMes, VolumenPrecio } from "@/lib/panels/laboratorio/types";
+import { cn } from "@/lib/utils";
 
 const PriceLinesChart = dynamic(
   () => import("@/components/panels/laboratorio/charts/price-lines-chart").then((m) => m.PriceLinesChart),
@@ -113,10 +114,29 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente,
     );
   }
 
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[280px_1fr] items-start">
-      <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-        <div className="rounded-2xl border border-border bg-white p-5 shadow-xs">
+    <div className="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+      {/* Botón para expandir/ocultar filtros en pantallas móviles */}
+      <div className="w-full lg:hidden flex items-center justify-between p-3.5 bg-white rounded-xl border border-border shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[#C59B27]" />
+          <span className="text-xs font-bold uppercase tracking-wider text-[#132A1E]">Filtros y Rango</span>
+        </div>
+        <button
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          className="px-3 py-1.5 rounded-lg bg-[#EDF6EF] text-[#132A1E] text-xs font-bold uppercase tracking-wider hover:bg-[#E2EAE4] transition-colors"
+        >
+          {showMobileFilters ? "Ocultar Filtros ▲" : "Configurar Filtros ▼"}
+        </button>
+      </div>
+
+      <aside className={cn(
+        "w-full space-y-4 lg:sticky lg:top-6 lg:self-start",
+        showMobileFilters ? "block" : "hidden lg:block"
+      )}>
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[#C59B27] animate-pulse" />
             <h2 className="font-serif text-sm font-bold text-[#132A1E]">Laboratorio Estadístico</h2>
@@ -136,7 +156,7 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente,
           </div>
         )}
 
-        <div className="rounded-2xl border border-border bg-white p-5 shadow-xs flex flex-col gap-3">
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold uppercase tracking-wider text-[#132A1E]">Período Mensual</p>
             <span className="text-[10px] font-mono font-bold text-[#C59B27] bg-[#EDF6EF] px-1.5 py-0.5 rounded">
@@ -158,7 +178,7 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente,
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-5 shadow-xs flex flex-col gap-3">
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold uppercase tracking-wider text-[#132A1E]">Rango Histórico</p>
             <span className="text-[10px] font-mono font-bold text-[#C59B27] bg-[#EDF6EF] px-1.5 py-0.5 rounded">
@@ -182,28 +202,30 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente,
         </div>
       </aside>
 
-      <main className="min-w-0">
-        <Tabs defaultValue="precios">
-          <TabsList className="bg-[#EDF6EF] p-1 rounded-xl gap-1">
-            <TabsTrigger
-              value="precios"
-              className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
-            >
-              Evolución Precios &amp; Cuartiles
-            </TabsTrigger>
-            <TabsTrigger
-              value="participacion"
-              className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
-            >
-              Participación de Mercado
-            </TabsTrigger>
-            <TabsTrigger
-              value="consumo"
-              className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
-            >
-              Consumo Histórico
-            </TabsTrigger>
-          </TabsList>
+      <main className="w-full min-w-0">
+        <Tabs defaultValue="precios" className="w-full">
+          <div className="w-full overflow-x-auto whitespace-nowrap scrollbar-none pb-1">
+            <TabsList className="bg-[#EDF6EF] p-1 rounded-xl gap-1 inline-flex w-auto">
+              <TabsTrigger
+                value="precios"
+                className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
+              >
+                Evolución Precios &amp; Cuartiles
+              </TabsTrigger>
+              <TabsTrigger
+                value="participacion"
+                className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
+              >
+                Participación de Mercado
+              </TabsTrigger>
+              <TabsTrigger
+                value="consumo"
+                className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
+              >
+                Consumo Histórico
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="precios" className="mt-6 space-y-6">
             <ModuloPrecios data={volFiltrado} />

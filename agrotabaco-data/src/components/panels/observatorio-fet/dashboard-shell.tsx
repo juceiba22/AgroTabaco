@@ -15,6 +15,7 @@ import { ModuloProvincias } from "@/components/panels/observatorio-fet/modules/m
 import { ModuloResumen } from "@/components/panels/observatorio-fet/modules/modulo-resumen";
 import type { Plan } from "@/lib/entitlements";
 import type { PoaTabaco } from "@/lib/panels/observatorio-fet/types";
+import { cn } from "@/lib/utils";
 
 type TipoAsistenciaFiltro = "TODOS" | "SUBSIDIO" | "CREDITO";
 
@@ -69,19 +70,38 @@ export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }
   const programaTop = breakdownByObjetoPrograma(dataFiltrado)[0];
   const esRangoAmplio = endYear - startYear > 1;
 
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-      <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-        <div className="rounded-xl border border-border bg-card p-4">
-          <h2 className="font-serif text-sm font-bold text-brand-green-dark">🏛️ OBSERVATORIO FET</h2>
-          <p className="text-xs font-semibold uppercase tracking-wide text-brand-olive">Ley Nº 19.800</p>
+    <div className="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+      {/* Botón para expandir/ocultar filtros en pantallas móviles */}
+      <div className="w-full lg:hidden flex items-center justify-between p-3.5 bg-white rounded-xl border border-border shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[#C59B27]" />
+          <span className="text-xs font-bold uppercase tracking-wider text-[#132A1E]">Filtros POAs FET</span>
+        </div>
+        <button
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          className="px-3 py-1.5 rounded-lg bg-[#EDF6EF] text-[#132A1E] text-xs font-bold uppercase tracking-wider hover:bg-[#E2EAE4] transition-colors"
+        >
+          {showMobileFilters ? "Ocultar Filtros ▲" : "Configurar Filtros ▼"}
+        </button>
+      </div>
+
+      <aside className={cn(
+        "w-full space-y-4 lg:sticky lg:top-6 lg:self-start",
+        showMobileFilters ? "block" : "hidden lg:block"
+      )}>
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs">
+          <h2 className="font-serif text-sm font-bold text-[#132A1E]">🏛️ OBSERVATORIO FET</h2>
+          <p className="text-xs font-semibold uppercase tracking-wide text-[#C59B27]">Ley Nº 19.800</p>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="mb-1 text-sm font-semibold text-foreground">Provincias</p>
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs">
+          <p className="mb-1 text-xs font-bold uppercase tracking-wider text-[#132A1E]">Provincias</p>
           <select
             multiple
-            className="h-32 w-full rounded-md border border-input bg-background p-1.5 text-sm"
+            className="h-32 w-full rounded-lg border border-input bg-background p-1.5 text-xs"
             value={selectedProvincias}
             onChange={(e) => setSelectedProvincias(Array.from(e.target.selectedOptions, (o) => o.value))}
           >
@@ -93,22 +113,23 @@ export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }
           </select>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="mb-1 text-sm font-semibold text-foreground">⏳ Rango de Años (fecha de resolución)</p>
-          <div className="px-1">
-            <Slider min={minYear} max={maxYear} value={yearRange} onValueChange={(v) => setYearRange(v as [number, number])} />
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#132A1E]">Rango de Años</p>
+            <span className="text-[10px] font-mono font-bold text-[#C59B27] bg-[#EDF6EF] px-1.5 py-0.5 rounded">
+              {startYear} — {endYear}
+            </span>
           </div>
-          <div className="mt-1 flex justify-between text-xs text-muted-foreground">
-            <span>{startYear}</span>
-            <span>{endYear}</span>
+          <div className="px-1 mt-2">
+            <Slider min={minYear} max={maxYear} value={yearRange} onValueChange={(v) => setYearRange(v as [number, number])} />
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="mb-1 text-sm font-semibold text-foreground">Programa (objeto_programa)</p>
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs">
+          <p className="mb-1 text-xs font-bold uppercase tracking-wider text-[#132A1E]">Programa (objeto_programa)</p>
           <select
             multiple
-            className="h-32 w-full rounded-md border border-input bg-background p-1.5 text-sm"
+            className="h-32 w-full rounded-lg border border-input bg-background p-1.5 text-xs"
             value={selectedProgramas}
             onChange={(e) => setSelectedProgramas(Array.from(e.target.selectedOptions, (o) => o.value))}
           >
@@ -120,9 +141,9 @@ export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }
           </select>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="mb-2 text-sm font-semibold text-foreground">Tipo de Asistencia</p>
-          <div className="flex flex-col gap-1.5 text-sm">
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 shadow-xs">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#132A1E]">Tipo de Asistencia</p>
+          <div className="flex flex-col gap-1.5 text-xs text-[#151D19]">
             {[
               { value: "TODOS", label: "Todos" },
               { value: "SUBSIDIO", label: "Aporte No Reintegrable (Subsidio)" },
@@ -134,6 +155,7 @@ export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }
                   name="tipoAsistencia"
                   checked={tipoAsistencia === opt.value}
                   onChange={() => setTipoAsistencia(opt.value as TipoAsistenciaFiltro)}
+                  className="accent-[#C59B27]"
                 />
                 {opt.label}
               </label>
@@ -142,7 +164,7 @@ export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }
         </div>
       </aside>
 
-      <main className="space-y-6">
+      <main className="w-full min-w-0 space-y-6">
         <div className="executive-header">
           <h1>Observatorio del FET</h1>
           <p>
@@ -151,7 +173,7 @@ export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <KpiCard
             icon="💵"
             title={isPro ? "Total USD Histórico" : "Total USD (último año)"}
@@ -163,29 +185,31 @@ export function DashboardShell({ data, plan }: { data: PoaTabaco[]; plan: Plan }
             icon="💰"
             title="Total ARS del Rango"
             value={`$ ${totalArs.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`}
-            subtitle={esRangoAmplio ? "Nominal — no comparable entre años por inflación" : "Nominal, año único"}
+            subtitle={esRangoAmplio ? "Nominal — no comparable por inflación" : "Nominal, año único"}
             color="amber"
           />
           <KpiCard icon="📄" title="Cantidad de POAs" value={dataFiltrado.length.toLocaleString("es-AR")} color="blue" />
           <KpiCard icon="🗺️" title="Provincias Cubiertas" value={`${provinciasCubiertas}`} color="cyan" />
           <KpiCard
             icon="🏆"
-            title="Programa Más Financiado"
+            title="Programa Principal"
             value={programaTop?.objetoPrograma ?? "N/A"}
             subtitle={programaTop ? `${programaTop.percentage.toFixed(1)}% del USD filtrado` : undefined}
             color="purple"
           />
         </div>
 
-        <Tabs defaultValue="resumen">
-          <TabsList>
-            <TabsTrigger value="resumen">📋 Resumen Ejecutivo</TabsTrigger>
-            <TabsTrigger value="evolucion">📈 Evolución Histórica</TabsTrigger>
-            <TabsTrigger value="provincias">🗺️ Por Provincia</TabsTrigger>
-            <TabsTrigger value="programas">🧭 Por Programa</TabsTrigger>
-            <TabsTrigger value="asistencia">🏦 Tipo de Asistencia</TabsTrigger>
-            <TabsTrigger value="calidad">🔍 Calidad de Datos</TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="resumen" className="w-full">
+          <div className="w-full overflow-x-auto whitespace-nowrap scrollbar-none pb-1">
+            <TabsList className="bg-[#EDF6EF] p-1 rounded-xl gap-1 inline-flex w-auto">
+              <TabsTrigger value="resumen" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">📋 Resumen Ejecutivo</TabsTrigger>
+              <TabsTrigger value="evolucion" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">📈 Evolución Histórica</TabsTrigger>
+              <TabsTrigger value="provincias" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">🗺️ Por Provincia</TabsTrigger>
+              <TabsTrigger value="programas" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">🧭 Por Programa</TabsTrigger>
+              <TabsTrigger value="asistencia" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">🏦 Tipo de Asistencia</TabsTrigger>
+              <TabsTrigger value="calidad" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">🔍 Calidad de Datos</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="resumen" className="mt-6 space-y-6">
             <ModuloResumen dataFiltrado={dataFiltrado} rangoAnios={yearRange} />

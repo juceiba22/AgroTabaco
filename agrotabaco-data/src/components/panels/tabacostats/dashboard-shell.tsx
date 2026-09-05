@@ -53,15 +53,17 @@ export function DashboardShell({
   }
 
   return (
-    <Tabs defaultValue="precios">
-      <TabsList>
-        <TabsTrigger value="precios">💰 Precios Acopio & Precio FET</TabsTrigger>
-        <TabsTrigger value="calidad">🏷️ Calidad & Clases Comerciales</TabsTrigger>
-        <TabsTrigger value="empresas">🏢 Acopio por Empresas</TabsTrigger>
-        <TabsTrigger value="produccion">📊 Producción Primaria y Hectáreas</TabsTrigger>
-        <TabsTrigger value="precio-fet">💵 Precio FET</TabsTrigger>
-        {MERCADO_INTERNACIONAL_ENABLED && <TabsTrigger value="mercado-internacional">🌍 Mercado Internacional</TabsTrigger>}
-      </TabsList>
+    <Tabs defaultValue="precios" className="w-full">
+      <div className="w-full overflow-x-auto whitespace-nowrap scrollbar-none pb-1">
+        <TabsList className="bg-[#EDF6EF] p-1 rounded-xl gap-1 inline-flex w-auto">
+          <TabsTrigger value="precios" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">💰 Precios Acopio &amp; FET</TabsTrigger>
+          <TabsTrigger value="calidad" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">🏷️ Calidad &amp; Clases</TabsTrigger>
+          <TabsTrigger value="empresas" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">🏢 Acopio por Empresas</TabsTrigger>
+          <TabsTrigger value="produccion" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">📊 Producción &amp; Hectáreas</TabsTrigger>
+          <TabsTrigger value="precio-fet" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">💵 Precio FET</TabsTrigger>
+          {MERCADO_INTERNACIONAL_ENABLED && <TabsTrigger value="mercado-internacional" className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs">🌍 Mercado Internacional</TabsTrigger>}
+        </TabsList>
+      </div>
 
       <TabsContent value="precios" className="mt-6 space-y-6">
         {isPro ? (
