@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Playfair_Display, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const fontSans = Inter({
+const fontSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const fontSerif = Source_Serif_4({
+const fontSerif = Playfair_Display({
   variable: "--font-serif",
   subsets: ["latin"],
+  weight: ["600", "700", "800", "900"],
 });
 
 const fontMono = Geist_Mono({

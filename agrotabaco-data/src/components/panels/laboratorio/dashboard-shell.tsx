@@ -114,29 +114,37 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente,
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-      <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-        <div className="rounded-xl border border-border bg-card p-4">
-          <h2 className="font-serif text-sm font-bold text-brand-green-dark">🔬 Laboratorio Estadístico</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Mercado interno de tabaco — cigarrillos (paquetes eq. 20 un.)
+    <div className="grid gap-6 lg:grid-cols-[280px_1fr] items-start">
+      <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+        <div className="rounded-2xl border border-border bg-white p-5 shadow-xs">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#C59B27] animate-pulse" />
+            <h2 className="font-serif text-sm font-bold text-[#132A1E]">Laboratorio Estadístico</h2>
+          </div>
+          <p className="mt-1.5 text-xs text-[#506859] leading-relaxed">
+            Mercado interno de tabaco argentino — cigarrillos (paquetes eq. 20 unidades)
           </p>
         </div>
 
         {plan !== "pro" && (
-          <div className="data-notice">
-            Estás viendo los últimos 12 meses (y los últimos 5 años en Consumo Aparente). El{" "}
-            <Link href="/planes" className="font-semibold underline">
-              historial completo
+          <div className="data-notice rounded-xl">
+            Estás visualizando los últimos 12 meses (y 5 años en Consumo). El{" "}
+            <Link href="/planes" className="font-bold underline text-[#C59B27]">
+              historial completo (1910-2026)
             </Link>{" "}
-            es parte de AgroTabaco Data.
+            está disponible con licencia PRO.
           </div>
         )}
 
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm font-semibold text-foreground">Período mensual</p>
-          <p className="text-xs text-muted-foreground">Aplica a Precios/Cuartiles y Participación</p>
-          <div className="mt-4 px-1">
+        <div className="rounded-2xl border border-border bg-white p-5 shadow-xs flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#132A1E]">Período Mensual</p>
+            <span className="text-[10px] font-mono font-bold text-[#C59B27] bg-[#EDF6EF] px-1.5 py-0.5 rounded">
+              {formatMonth(new Date(rangoMensual[0]).toISOString())} — {formatMonth(new Date(rangoMensual[1]).toISOString())}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground">Aplica a Precios, Cuartiles y Participación</p>
+          <div className="mt-2 px-1">
             <Slider
               min={monthTimestamps.min}
               max={monthTimestamps.max}
@@ -144,16 +152,21 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente,
               onValueChange={(value) => setRangoMensual(value as [number, number])}
             />
           </div>
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between font-mono text-[10px] text-muted-foreground">
             <span>{formatMonth(new Date(rangoMensual[0]).toISOString())}</span>
             <span>{formatMonth(new Date(rangoMensual[1]).toISOString())}</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm font-semibold text-foreground">Rango histórico</p>
-          <p className="text-xs text-muted-foreground">Aplica a Consumo Aparente (1910-2026)</p>
-          <div className="mt-4 px-1">
+        <div className="rounded-2xl border border-border bg-white p-5 shadow-xs flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#132A1E]">Rango Histórico</p>
+            <span className="text-[10px] font-mono font-bold text-[#C59B27] bg-[#EDF6EF] px-1.5 py-0.5 rounded">
+              {rangoAnual[0]} — {rangoAnual[1]}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground">Aplica a Consumo Aparente Histórico</p>
+          <div className="mt-2 px-1">
             <Slider
               min={yearBounds.min}
               max={yearBounds.max}
@@ -162,19 +175,34 @@ export function DashboardShell({ volumenPrecios, participacion, consumoAparente,
               onValueChange={(value) => setRangoAnual(value as [number, number])}
             />
           </div>
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between font-mono text-[10px] text-muted-foreground">
             <span>{rangoAnual[0]}</span>
             <span>{rangoAnual[1]}</span>
           </div>
         </div>
       </aside>
 
-      <main>
+      <main className="min-w-0">
         <Tabs defaultValue="precios">
-          <TabsList>
-            <TabsTrigger value="precios">💰 Evolución de Precios y Cuartiles</TabsTrigger>
-            <TabsTrigger value="participacion">🏢 Participación de Mercado</TabsTrigger>
-            <TabsTrigger value="consumo">📈 Consumo Aparente Histórico</TabsTrigger>
+          <TabsList className="bg-[#EDF6EF] p-1 rounded-xl gap-1">
+            <TabsTrigger
+              value="precios"
+              className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
+            >
+              Evolución Precios &amp; Cuartiles
+            </TabsTrigger>
+            <TabsTrigger
+              value="participacion"
+              className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
+            >
+              Participación de Mercado
+            </TabsTrigger>
+            <TabsTrigger
+              value="consumo"
+              className="rounded-lg text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-[#132A1E] data-[state=active]:shadow-xs"
+            >
+              Consumo Histórico
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="precios" className="mt-6 space-y-6">

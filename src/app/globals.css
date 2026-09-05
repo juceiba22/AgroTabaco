@@ -49,57 +49,65 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Paleta de marca AgroTabaco */
+  /* Paleta Stitch Agro-Financial Intelligence & Editorial */
   --color-brand-green-dark: var(--brand-green-dark);
   --color-brand-green-darker: var(--brand-green-darker);
   --color-brand-green-light: var(--brand-green-light);
   --color-brand-olive: var(--brand-olive);
   --color-brand-olive-light: var(--brand-olive-light);
+  --color-brand-gold: var(--brand-gold);
   --color-brand-cream: var(--brand-cream);
   --color-brand-gray: var(--brand-gray);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container-lowest: var(--surface-container-lowest);
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #1b241d;
+  --background: #f3fcf5;
+  --foreground: #151d19;
   --card: #ffffff;
-  --card-foreground: #1b241d;
+  --card-foreground: #151d19;
   --popover: #ffffff;
-  --popover-foreground: #1b241d;
-  --primary: #1a4329;
-  --primary-foreground: #ffffff;
-  --secondary: #eef1e8;
-  --secondary-foreground: #1a4329;
-  --muted: #f4f5f0;
-  --muted-foreground: #5c6b5e;
-  --accent: #6b7a3a;
+  --popover-foreground: #151d19;
+  --primary: #c59b27;
+  --primary-foreground: #151d19;
+  --secondary: #132a1e;
+  --secondary-foreground: #ffffff;
+  --muted: #edf6ef;
+  --muted-foreground: #4e4635;
+  --accent: #1a3b2b;
   --accent-foreground: #ffffff;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e3e6dc;
-  --input: #e3e6dc;
-  --ring: #1a4329;
-  --chart-1: #1a4329;
-  --chart-2: #6b7a3a;
-  --chart-3: #a9b87a;
-  --chart-4: #8a5a2e;
-  --chart-5: #5c6b5e;
+  --destructive: #ba1a1a;
+  --border: #e2e8e0;
+  --input: #d1c5af;
+  --ring: #c59b27;
+  --chart-1: #c59b27;
+  --chart-2: #132a1e;
+  --chart-3: #1a3b2b;
+  --chart-4: #446553;
+  --chart-5: #85a994;
   --radius: 0.5rem;
-  --sidebar: #f7f7f2;
-  --sidebar-foreground: #1b241d;
-  --sidebar-primary: #1a4329;
+  --sidebar: #edf6ef;
+  --sidebar-foreground: #151d19;
+  --sidebar-primary: #132a1e;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef1e8;
-  --sidebar-accent-foreground: #1a4329;
-  --sidebar-border: #e3e6dc;
-  --sidebar-ring: #1a4329;
+  --sidebar-accent: #e7f0e9;
+  --sidebar-accent-foreground: #132a1e;
+  --sidebar-border: #e2e8e0;
+  --sidebar-ring: #c59b27;
 
-  --brand-green-dark: #1a4329;
-  --brand-green-darker: #102b19;
+  --brand-green-dark: #132a1e;
+  --brand-green-darker: #0d1f15;
   --brand-green-light: #2f6844;
-  --brand-olive: #6b7a3a;
-  --brand-olive-light: #a9b87a;
-  --brand-cream: #f7f7f2;
-  --brand-gray: #f1f2ed;
+  --brand-olive: #446553;
+  --brand-olive-light: #85a994;
+  --brand-gold: #c59b27;
+  --brand-cream: #f3fcf5;
+  --brand-gray: #edf6ef;
+  --surface-container: #e7f0e9;
+  --surface-container-low: #edf6ef;
+  --surface-container-lowest: #ffffff;
 }
 
 .dark {
@@ -109,19 +117,19 @@
   --card-foreground: #f2f4ef;
   --popover: #182015;
   --popover-foreground: #f2f4ef;
-  --primary: #4f9169;
-  --primary-foreground: #0c150e;
+  --primary: #eec14b;
+  --primary-foreground: #151d19;
   --secondary: #1f291b;
   --secondary-foreground: #f2f4ef;
   --muted: #1f291b;
   --muted-foreground: #a3ae9d;
   --accent: #8a9c52;
   --accent-foreground: #0c150e;
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: #ffb4ab;
   --border: color-mix(in oklab, #f2f4ef 12%, transparent);
   --input: color-mix(in oklab, #f2f4ef 15%, transparent);
-  --ring: #4f9169;
-  --chart-1: #4f9169;
+  --ring: #eec14b;
+  --chart-1: #eec14b;
   --chart-2: #8a9c52;
   --chart-3: #a9b87a;
   --chart-4: #c68a4e;
@@ -133,15 +141,19 @@
   --sidebar-accent: #1f291b;
   --sidebar-accent-foreground: #f2f4ef;
   --sidebar-border: color-mix(in oklab, #f2f4ef 12%, transparent);
-  --sidebar-ring: #4f9169;
+  --sidebar-ring: #eec14b;
 
   --brand-green-dark: #4f9169;
   --brand-green-darker: #2f6844;
   --brand-green-light: #6fae87;
   --brand-olive: #8a9c52;
   --brand-olive-light: #b7c68f;
+  --brand-gold: #eec14b;
   --brand-cream: #182015;
   --brand-gray: #1f291b;
+  --surface-container: #1b241d;
+  --surface-container-low: #141a11;
+  --surface-container-lowest: #10150f;
 }
 
 @layer base {

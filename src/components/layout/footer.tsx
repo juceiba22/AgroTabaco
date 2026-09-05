@@ -1,45 +1,40 @@
 import Link from "next/link";
-import { Sprout } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
+import { AGROTABACO_DATA_URL } from "@/lib/config";
 import type { Category } from "@/lib/types";
 
 export function Footer({ categories }: { categories: Category[] }) {
   return (
-    <footer className="mt-16 bg-brand-green-darker text-white">
+    <footer className="mt-20 bg-[#0D1F15] text-white border-t border-[#1A3B2B]">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
-        <div className="md:col-span-1">
-          <Link href="/" className="flex items-center gap-2 font-serif text-xl font-bold">
-            <span className="flex size-9 items-center justify-center rounded-full bg-white/10">
-              <Sprout className="size-5" />
-            </span>
-            Agro<span className="text-brand-olive-light">Tabaco</span>
-          </Link>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/70">
-            Noticias y actualidad del agro, la ganadería, el tabaco y las
-            economías regionales.
+        <div className="md:col-span-1 flex flex-col gap-4">
+          <Logo variant="light" subtext="PORTAL EDITORIAL & DATA HUB" />
+          <p className="text-xs leading-relaxed text-white/70">
+            Periodismo de investigación, análisis sectorial e inteligencia cuantitativa del tabaco y las economías regionales argentinas.
           </p>
-          <div className="mt-5 flex gap-3">
+          <div className="flex gap-2.5 mt-2">
             <SocialIcon href="#" label="Facebook">
-              <FacebookIcon className="size-4" />
+              <FacebookIcon className="h-4 w-4" />
             </SocialIcon>
             <SocialIcon href="#" label="Instagram">
-              <InstagramIcon className="size-4" />
+              <InstagramIcon className="h-4 w-4" />
             </SocialIcon>
             <SocialIcon href="#" label="Twitter / X">
-              <XIcon className="size-4" />
+              <XIcon className="h-4 w-4" />
             </SocialIcon>
           </div>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[#C59B27]">
             Categorías
           </h3>
-          <ul className="mt-4 space-y-2 text-sm">
+          <ul className="mt-4 space-y-2 text-xs">
             {categories.map((category) => (
               <li key={category.id}>
                 <Link
                   href={`/categoria/${category.slug}`}
-                  className="text-white/80 transition-colors hover:text-white"
+                  className="text-white/80 transition-colors hover:text-[#C59B27]"
                 >
                   {category.name}
                 </Link>
@@ -49,44 +44,85 @@ export function Footer({ categories }: { categories: Category[] }) {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">
-            Institucional
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[#C59B27]">
+            Ecosistema & Datos
           </h3>
-          <ul className="mt-4 space-y-2 text-sm">
+          <ul className="mt-4 space-y-2 text-xs">
             <li>
-              <Link href="/quienes-somos" className="text-white/80 transition-colors hover:text-white">
-                Quiénes somos
-              </Link>
+              <a
+                href={`${AGROTABACO_DATA_URL}/laboratorio`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/80 transition-colors hover:text-[#C59B27]"
+              >
+                Laboratorio Estadístico
+              </a>
             </li>
             <li>
-              <Link href="/quienes-somos#contacto" className="text-white/80 transition-colors hover:text-white">
-                Contacto
-              </Link>
+              <a
+                href={`${AGROTABACO_DATA_URL}/tabacostats`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/80 transition-colors hover:text-[#C59B27]"
+              >
+                TabacoStats Argentina
+              </a>
             </li>
             <li>
-              <Link href="/admin/login" className="text-white/80 transition-colors hover:text-white">
-                Acceso redacción
-              </Link>
+              <a
+                href={`${AGROTABACO_DATA_URL}/observatorio-fet`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/80 transition-colors hover:text-[#C59B27]"
+              >
+                Observatorio FET
+              </a>
+            </li>
+            <li>
+              <a
+                href={`${AGROTABACO_DATA_URL}/mercado-internacional`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/80 transition-colors hover:text-[#C59B27]"
+              >
+                Mercado Global & FOB
+              </a>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">
-            Contacto
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[#C59B27]">
+            Institucional
           </h3>
-          <ul className="mt-4 space-y-2 text-sm text-white/80">
-            <li>redaccion@agrotabaco.com.ar</li>
-            <li>+54 387 400-0000</li>
-            <li>Salta, Argentina</li>
+          <ul className="mt-4 space-y-2 text-xs text-white/80">
+            <li>
+              <Link href="/quienes-somos" className="transition-colors hover:text-[#C59B27]">
+                Quiénes somos
+              </Link>
+            </li>
+            <li>
+              <Link href="/quienes-somos#contacto" className="transition-colors hover:text-[#C59B27]">
+                Contacto & Redacción
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/login" className="transition-colors hover:text-[#C59B27]">
+                Acceso Redacción
+              </Link>
+            </li>
+            <li className="pt-2 text-white/60">
+              Salta &amp; Jujuy, Argentina
+            </li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-white/10 py-5">
-        <p className="mx-auto max-w-7xl px-4 text-center text-xs text-white/60 sm:px-6 lg:px-8">
-          © {new Date().getFullYear()} AgroTabaco. Todos los derechos reservados.
-        </p>
+      <div className="border-t border-white/10 py-5 bg-[#08140E]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-white/50">
+          <p>© {new Date().getFullYear()} AgroTabaco. Todos los derechos reservados.</p>
+          <p className="font-mono text-[10px]">Agro-Financial Intelligence &amp; Editorial System</p>
+        </div>
       </div>
     </footer>
   );
@@ -105,7 +141,7 @@ function SocialIcon({
     <Link
       href={href}
       aria-label={label}
-      className="flex size-8 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+      className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white transition-colors hover:bg-[#C59B27] hover:text-[#151D19]"
     >
       {children}
     </Link>

@@ -16,7 +16,7 @@ export function KpiCard({
   subtitle,
   delta,
   deltaText = "vs período anterior",
-  color = "blue",
+  color = "amber",
   icon,
 }: KpiCardProps) {
   const hasDelta = delta !== null && delta !== undefined;
@@ -24,13 +24,16 @@ export function KpiCard({
 
   return (
     <div className={cn("kpi-card", color)}>
-      {icon && <span className="kpi-icon">{icon}</span>}
+      {icon && <span className="kpi-icon text-muted-foreground">{icon}</span>}
       <div className="kpi-label">{title}</div>
-      <div className="kpi-value">{value}</div>
+      <div className="kpi-value font-black">{value}</div>
       {hasDelta && (
-        <div className={isPos ? "kpi-delta-pos" : "kpi-delta-neg"}>
-          {isPos ? "▲" : "▼"} {isPos ? "+" : ""}
-          {delta.toFixed(1)}% {deltaText}
+        <div className="mt-2">
+          <span className={isPos ? "kpi-delta-pos" : "kpi-delta-neg"}>
+            {isPos ? "▲" : "▼"} {isPos ? "+" : ""}
+            {delta.toFixed(1)}%
+          </span>
+          <span className="ml-1.5 text-[11px] text-[#506859]">{deltaText}</span>
         </div>
       )}
       {subtitle && <div className="kpi-subtitle">{subtitle}</div>}

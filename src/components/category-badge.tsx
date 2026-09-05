@@ -15,7 +15,7 @@ export function CategoryBadge({
   const badge = (
     <Badge
       className={cn(
-        "border-transparent bg-brand-olive text-white hover:bg-brand-olive/90",
+        "rounded-full border-0 bg-[#EDF6EF] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#132A1E] shadow-none hover:bg-[#E2EAE4]",
         className
       )}
     >
