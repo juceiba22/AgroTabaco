@@ -69,14 +69,15 @@ export function Footer({ categories }: { categories: Category[] }) {
               </a>
             </li>
             <li>
-              <a
-                href={`${AGROTABACO_DATA_URL}/observatorio-fet`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/80 transition-colors hover:text-[#C59B27]"
+              <Link
+                href="/bot"
+                className="text-white/80 transition-colors hover:text-[#C59B27] flex items-center gap-1.5"
               >
-                Observatorio FET
-              </a>
+                <span>Bot de AgroTabaco</span>
+                <span className="text-[9px] font-mono font-bold text-[#FFDEAC] bg-[#1A4329] px-1 py-0.2 rounded">
+                  IA
+                </span>
+              </Link>
             </li>
             <li>
               <a

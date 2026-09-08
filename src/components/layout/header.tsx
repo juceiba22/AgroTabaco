@@ -5,11 +5,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   BarChart3,
+  Bot,
   Clock,
   ExternalLink,
   FileText,
   Menu,
   Search,
+  Sparkles,
   TrendingUp,
   User,
 } from "lucide-react";
@@ -23,7 +25,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Logo } from "@/components/ui/logo";
-import { AGROTABACO_DATA_URL } from "@/lib/config";
+import { AGROTABACO_DATA_URL, AGROTABACO_LABS_URL } from "@/lib/config";
 import type { Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -115,6 +117,15 @@ export function Header({ categories }: { categories: Category[] }) {
                 LIVE DATA
               </span>
             </a>
+            <a
+              href={AGROTABACO_LABS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs uppercase font-bold tracking-wider text-[#506859] hover:text-[#132A1E] transition-all"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-[#C59B27]" />
+              AgroTabaco Labs
+            </a>
           </nav>
         </div>
 
@@ -196,15 +207,21 @@ export function Header({ categories }: { categories: Category[] }) {
                 </Link>
               );
             })}
-            <a
-              href={`${AGROTABACO_DATA_URL}/observatorio-fet`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1 rounded font-bold uppercase tracking-wider text-[#4E4635] hover:text-[#132A1E] hover:bg-white/50 transition-colors"
+            <Link
+              href="/bot"
+              className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1 rounded font-bold uppercase tracking-wider transition-colors",
+                pathname === "/bot" || pathname === "/federico"
+                  ? "bg-white text-[#132A1E] shadow-xs"
+                  : "text-[#4E4635] hover:text-[#132A1E] hover:bg-white/50"
+              )}
             >
-              Observatorio FET
-              <ExternalLink className="h-3 w-3 text-[#C59B27]" />
-            </a>
+              <Bot className="h-3.5 w-3.5 text-[#C59B27]" />
+              <span>Bot de AgroTabaco</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-[#132A1E] text-white text-[9px] font-extrabold">
+                IA
+              </span>
+            </Link>
           </nav>
 
           <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono text-[#506859]">
@@ -294,6 +311,30 @@ function MobileNav({ categories }: { categories: Category[] }) {
             </span>
             <span className="rounded-full bg-[#C59B27] px-2 py-0.5 text-[9px] font-extrabold text-[#151D19]">
               LIVE
+            </span>
+          </a>
+          <Link
+            href="/bot"
+            onClick={() => setOpen(false)}
+            className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-bold text-[#132A1E] bg-[#EAF5EC] transition-colors hover:bg-[#DEEDE1]"
+          >
+            <span className="flex items-center gap-2">
+              <Bot className="h-4 w-4 text-[#C59B27]" />
+              Bot de AgroTabaco
+            </span>
+            <span className="rounded-full bg-[#132A1E] px-2 py-0.5 text-[9px] font-extrabold text-white">
+              IA
+            </span>
+          </Link>
+          <a
+            href={AGROTABACO_LABS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-bold text-[#132A1E] bg-[#F7F1E2] transition-colors hover:bg-[#F1E7CD]"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[#C59B27]" />
+              AgroTabaco Labs
             </span>
           </a>
           <Link

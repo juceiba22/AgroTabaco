@@ -8,6 +8,9 @@
 export const AGROTABACO_DATA_URL =
   process.env.NEXT_PUBLIC_AGROTABACO_DATA_URL || "https://agrotabaco-data.vercel.app";
 
+export const AGROTABACO_LABS_URL =
+  process.env.NEXT_PUBLIC_AGROTABACO_LABS_URL || "https://agrotabaco-labs.vercel.app";
+
 // Mercado Argentino de Tabaco: oculto a pedido del usuario (2026-08-31) — la
 // idea es mudarlo a un sitio externo propio, como los dashboards Streamlit,
 // en vez de vivir dentro del portal informativo de noticias. El código

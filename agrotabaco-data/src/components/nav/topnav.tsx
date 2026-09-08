@@ -2,6 +2,7 @@
 
 import {
   ArrowLeft,
+  Bot,
   CheckCircle2,
   FlaskConical,
   Globe2,
@@ -84,6 +85,14 @@ export function TopNav({ user, plan }: { user: SupabaseUser | null; plan: Plan }
         </div>
 
         <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-wrap">
+          <a
+            href={`${SITE_URL}/bot`}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#EDF6EF] px-2.5 py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#132A1E] hover:bg-[#E2EAE4] transition-colors border border-border"
+          >
+            <Bot className="h-3.5 w-3.5 text-[#00A884]" />
+            <span>Bot de AgroTabaco</span>
+          </a>
+
           <a
             href={SITE_URL}
             className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#4E4635] hover:text-[#132A1E] transition-colors"

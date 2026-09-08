@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><title>Federico — Asistente WhatsApp del Tabacalero</title><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-primary-container":"#84b08e","primary":"#012d15","secondary-container":"#fdc668","tertiary-fixed-dim":"#afceb3","surface-container-highest":"#dbe5da","primary-container":"#1a4329","surface-container-high":"#e1ebe0","on-primary-fixed":"#00210e","error-container":"#ffdad6","on-tertiary":"#ffffff","on-surface":"#151e17","on-tertiary-fixed":"#05200f","on-primary-fixed-variant":"#264f34","surface-variant":"#dbe5da","surface-container-lowest":"#ffffff","inverse-primary":"#a4d1ae","on-secondary":"#ffffff","outline":"#727971","on-tertiary-container":"#8ead93","outline-variant":"#c1c8c0","on-tertiary-fixed-variant":"#314d38","surface":"#f2fcf1","surface-container":"#e6f1e5","surface-dim":"#d2ddd2","background":"#f2fcf1","on-secondary-fixed":"#281900","error":"#ba1a1a","inverse-surface":"#29332b","on-surface-variant":"#414942","surface-container-low":"#ecf6eb","on-error":"#ffffff","surface-tint":"#3e674a","secondary-fixed":"#ffdeac","secondary-fixed-dim":"#f4bd60","on-background":"#151e17","tertiary-container":"#26412d","tertiary-fixed":"#cbebcf","on-secondary-fixed-variant":"#604100","secondary":"#7e5700","on-error-container":"#93000a","tertiary":"#102b19","primary-fixed-dim":"#a4d1ae","on-secondary-container":"#765100","on-primary":"#ffffff","inverse-on-surface":"#e9f4e8","primary-fixed":"#c0eec9","surface-bright":"#f2fcf1"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-xl":"2rem","space-xs":"0.5rem","layout-margin-mobile":"1rem","space-2xs":"0.25rem","space-lg":"1.5rem","space-2xl":"3rem","layout-gutter":"1.25rem","layout-margin-desktop":"2.5rem","space-md":"1rem","space-3xs":"0.125rem","space-sm":"0.75rem","layout-max-width":"88rem","space-3xl":"4rem"},fontFamily:{"title-md":["IBM Plex Sans"],"ticker-badge":["JetBrains Mono"],"body-sm":["IBM Plex Sans"],"headline-lg-mobile":["\"Source Serif 4\""],"label-md":["IBM Plex Sans"],"body-lg":["\"Source Serif 4\""],"headline-md":["\"Source Serif 4\""],"data-mono":["JetBrains Mono"],display:["\"Source Serif 4\""],"headline-sm":["\"Source Serif 4\""],"body-md":["IBM Plex Sans"],"label-sm":["IBM Plex Sans"],"headline-lg":["\"Source Serif 4\""]},fontSize:{"title-md":["16px",{lineHeight:"24px",letterSpacing:"0.01em",fontWeight:"600"}],"ticker-badge":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"400"}],"headline-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-md":["13px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"body-lg":["18px",{lineHeight:"28px",letterSpacing:"0em",fontWeight:"400"}],"headline-md":["26px",{lineHeight:"34px",letterSpacing:"-0.01em",fontWeight:"500"}],"data-mono":["13px",{lineHeight:"18px",letterSpacing:"-0.02em",fontWeight:"500"}],display:["48px",{lineHeight:"56px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-sm":["20px",{lineHeight:"28px",letterSpacing:"0em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"600"}],"headline-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.015em",fontWeight:"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface"><header class="fixed top-0 w-full z-50 bg-tertiary text-on-tertiary shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-layout-max-width mx-auto px-layout-margin-mobile lg:px-layout-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-2xs text-on-tertiary-fixed-variant hover:text-on-tertiary font-label-sm text-label-sm transition-colors" href="index.html"><span class="material-symbols-outlined text-[14px]">arrow_back</span><span>Volver a AgroTabaco Labs</span></a><span class="font-headline-sm text-headline-sm text-on-tertiary font-bold tracking-tight">Federico Tabacalero</span></div><div><a class="bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md px-space-md py-space-xs rounded transition-colors flex items-center gap-space-xs" href="https://wa.me/5491178270751?text=Hola%20Federico" target="_blank"><span class="material-symbols-outlined text-[18px] text-tertiary-fixed-dim">chat</span><span class="">Probarlo por WhatsApp</span></a></div></div></header><main class="w-full pt-20 bg-surface"><div class="flex flex-col w-full">
+<!-- Top Telemetry & Agronomic Financial Ticker -->
+<!-- Hero Section -->
+<section class="w-full relative px-layout-margin-mobile lg:px-layout-margin-desktop overflow-hidden pt-space-2xl pb-space-lg">
+<!-- Subtle Agronomic Radial Gradient Backdrop -->
+<div class="absolute top-0 right-0 w-[55rem] h-[55rem] bg-gradient-to-br from-primary-fixed/20 via-surface-container/30 to-transparent rounded-full blur-3xl pointer-events-none -mr-48 -mt-24"></div>
+<div class="max-w-layout-max-width mx-auto relative">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- Left Editorial Column -->
+<div class="lg:col-span-7 flex flex-col justify-between space-y-space-xl">
+<div class="space-y-space-md">
+<!-- Institutional Eyebrow -->
+<div class="inline-flex items-center gap-space-xs bg-surface-container-high px-space-sm py-space-3xs rounded shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-ticker-badge text-ticker-badge uppercase tracking-widest text-primary font-semibold">SAGyP · Fondo Especial del Tabaco</span>
+</div>
+<!-- Title with italicised/highlighted 'mensaje' -->
+<h1 class="font-display text-display lg:text-[54px] lg:leading-[62px] text-primary tracking-tight font-medium">
+              Los datos oficiales del tabaco, a un <span class="italic font-normal text-secondary underline decoration-secondary-fixed-dim decoration-2 underline-offset-8">mensaje</span> de distancia.
+            </h1>
+<!-- Verbatim Subtitle -->
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-2xl">
+              Federico es un asistente de WhatsApp que responde con datos reales de producción, acopio, precios, POAs y normativa de la cadena tabacalera argentina — sin buscar en anuarios, PDFs sueltos ni resoluciones dispersas.
+            </p>
+</div>
+<!-- CTAs -->
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs">
+<a class="bg-primary text-on-primary hover:bg-primary-container px-space-lg py-space-md rounded font-label-md text-label-md flex items-center gap-space-xs shadow-md transition-all hover:translate-y-[-1px]" href="https://wa.me/5491178270751?text=Hola%20Federico" target="_blank">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span class="">Escribirle ahora ↗</span>
+</a>
+<a class="bg-surface-container hover:bg-surface-container-high text-primary px-space-lg py-space-md rounded font-label-md text-label-md transition-colors flex items-center gap-space-2xs" href="#capacidades">
+<span class="">Ver qué puede responder</span>
+<span class="material-symbols-outlined text-[18px]">arrow_downward</span>
+</a>
+</div>
+<!-- Official Stats Strip -->
+<div class="pt-space-lg grid grid-cols-3 gap-space-md bg-surface-container-lowest p-space-lg rounded shadow-sm">
+<div class="flex flex-col">
+<span class="font-display text-[40px] leading-none font-semibold text-primary">10</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-space-2xs">Fuentes oficiales SAGyP/FET</span>
+</div>
+<div class="flex flex-col">
+<span class="font-display text-[40px] leading-none font-semibold text-primary">7</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-space-2xs">Provincias tabacaleras</span>
+</div>
+<div class="flex flex-col">
+<span class="font-display text-[40px] leading-none font-semibold text-secondary">1991</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-space-2xs">Serie histórica desde</span>
+</div>
+</div>
+</div>
+<!-- Right Realistic WhatsApp Mockup Widget -->
+
+<div class="lg:col-span-5 relative mt-space-lg lg:mt-0">
+<!-- Glowing subtle ambient background -->
+<div class="absolute -inset-4 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary-fixed/20 rounded-[48px] blur-2xl pointer-events-none"></div>
+<!-- Device Frame (iPhone-style) -->
+<div class="relative max-w-[380px] mx-auto bg-[#111B21] rounded-[44px] p-3 shadow-[0_25px_60px_-15px_rgba(1,45,21,0.35),0_0_0_1px_rgba(255,255,255,0.1)] border-[4px] border-[#222E35]">
+<!-- Screen Glass Container -->
+<div class="relative bg-[#EFEAE2] rounded-[36px] overflow-hidden flex flex-col h-[640px] text-left font-sans select-none shadow-inner">
+<!-- Phone Status Bar -->
+<div class="bg-[#075E54] text-white px-6 pt-3 pb-1 flex items-center justify-between text-xs font-semibold tracking-tight">
+<span>9:41</span>
+<div class="w-20 h-4 bg-black/40 rounded-full mx-auto"></div>
+<div class="flex items-center gap-1.5 text-[10px]">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[14px]">battery_full</span>
+</div>
+</div>
+<!-- WhatsApp App Header -->
+<div class="bg-[#075E54] text-white px-3 py-2.5 flex items-center justify-between shadow-md z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-white/80 cursor-pointer">arrow_back</span>
+<div class="relative">
+<div class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-sm border border-white/20 shadow-sm">
+<span class="material-symbols-outlined text-primary-fixed text-[22px]">smart_toy</span>
+</div>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#075E54] rounded-full"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="font-semibold text-sm leading-tight text-white">Federico Tabacalero</span>
+<span class="material-symbols-outlined text-emerald-300 text-[15px]">verified</span>
+</div>
+<span class="text-[11px] text-emerald-100 font-normal leading-tight">en línea · SAGyP &amp; FET</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-white/90">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+<span class="material-symbols-outlined text-[20px]">call</span>
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</div>
+</div>
+<!-- Chat Messages Scroll Area -->
+<div class="flex-1 p-3.5 space-y-3 overflow-y-auto text-[13px] bg-[#EFEAE2] relative" style="background-image: radial-gradient(#d1c7b7 0.75px, transparent 0.75px); background-size: 16px 16px;">
+<!-- Date Badge -->
+<div class="flex justify-center">
+<span class="bg-white/90 backdrop-blur shadow-sm text-gray-600 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">Hoy</span>
+</div>
+<!-- Security Pill -->
+<div class="bg-[#FFF9C4]/80 text-[#5D4037] text-[10px] p-2 rounded-lg text-center shadow-xs border border-amber-200/60 leading-tight">
+          🔒 Mensajes cifrados de extremo a extremo. Respuestas basadas exclusivamente en resoluciones oficiales.
+        </div>
+<!-- User Message 1 -->
+<div class="flex justify-end">
+<div class="bg-[#E7FFDB] text-gray-900 rounded-2xl rounded-tr-none px-3.5 py-2 max-w-[85%] shadow-sm border border-emerald-100/50">
+<p class="leading-relaxed">Hola Federico, ¿cuánto se pagó por kilo en Salta esta última campaña?</p>
+<div class="flex items-center justify-end gap-1 mt-0.5 text-[10px] text-gray-500">
+<span>10:14</span>
+<span class="material-symbols-outlined text-[14px] text-blue-500">done_all</span>
+</div>
+</div>
+</div>
+<!-- Federico Bot Message 1 -->
+<div class="flex justify-start">
+<div class="bg-white text-gray-900 rounded-2xl rounded-tl-none px-3.5 py-2.5 max-w-[92%] shadow-sm border border-gray-100 space-y-1.5">
+<div class="flex items-center gap-1 text-[#075E54] font-bold text-[11px]">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+<span>Federico · SAGyP Oficial</span>
+</div>
+<p class="leading-relaxed">
+              💰 <strong>Precios Oficiales Salta 24/25:</strong><br/>
+              • <strong>Boca de acopio:</strong> $3.114,26/kg <span class="text-gray-500 text-[11px]">(77%)</span><br/>
+              • <strong>Complemento FET:</strong> $923,73/kg <span class="text-gray-500 text-[11px]">(23%)</span><br/>
+              • <strong>Total real productor:</strong> <strong class="text-[#012d15] bg-emerald-50 px-1 rounded">$4.037,98/kg</strong>
+</p>
+<div class="flex items-center justify-end gap-1 text-[10px] text-gray-400">
+<span>10:14</span>
+</div>
+</div>
+</div>
+<!-- User Message 2 -->
+<div class="flex justify-end">
+<div class="bg-[#E7FFDB] text-gray-900 rounded-2xl rounded-tr-none px-3.5 py-2 max-w-[85%] shadow-sm border border-emerald-100/50">
+<p class="leading-relaxed">¿Tenés la resolución del POA de fertilizantes?</p>
+<div class="flex items-center justify-end gap-1 mt-0.5 text-[10px] text-gray-500">
+<span>10:15</span>
+<span class="material-symbols-outlined text-[14px] text-blue-500">done_all</span>
+</div>
+</div>
+</div>
+<!-- Federico Bot Message 2 (Document Delivery) -->
+<div class="flex justify-start">
+<div class="bg-white text-gray-900 rounded-2xl rounded-tl-none px-3.5 py-2.5 max-w-[92%] shadow-sm border border-gray-100 space-y-2">
+<p class="leading-relaxed">
+              📎 Encontré la <strong>Res. SAGyP Nº 137-2026</strong>. Te adjunto el PDF homologado con el detalle del plan operativo de fertilizantes y sanidad:
+            </p>
+<!-- WhatsApp PDF Card -->
+<div class="flex items-center gap-2.5 bg-[#F0F2F5] p-2.5 rounded-xl border border-gray-200/80 hover:bg-gray-100 transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="font-bold text-[12px] text-gray-800 truncate">POA_Salta_2025_Res137.pdf</div>
+<div class="text-[10px] text-gray-500 font-mono">1.4 MB · Documento Oficial</div>
+</div>
+<div class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-1 text-[10px] text-gray-400">
+<span>10:15</span>
+</div>
+</div>
+</div>
+</div>
+<!-- WhatsApp Bottom Input Bar -->
+<div class="bg-[#F0F2F5] p-2 flex items-center gap-2 border-t border-gray-200">
+<div class="flex-1 bg-white rounded-full px-3.5 py-1.5 flex items-center gap-2 text-gray-400 text-xs shadow-xs">
+<span class="material-symbols-outlined text-[18px]">sentiment_satisfied</span>
+<span class="flex-1 text-gray-400">Escribe un mensaje...</span>
+<span class="material-symbols-outlined text-[18px] rotate-45">attach_file</span>
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</div>
+<div class="w-9 h-9 rounded-full bg-[#00A884] text-white flex items-center justify-center shadow-sm flex-shrink-0 cursor-pointer hover:bg-[#075E54] transition-colors">
+<span class="material-symbols-outlined text-[18px]">mic</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom CTA Badge directly under phone -->
+<div class="text-center mt-4">
+<a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs transition-all shadow-md hover:shadow-lg group" href="https://wa.me/5491178270751?text=Hola%20Federico" target="_blank">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+<span>Abrir conversación en vivo con Federico</span>
+<span class="material-symbols-outlined text-[14px] group-hover:translate-x-0.5 transition-transform">north_east</span>
+</a>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+<!-- Agronomic Diagnostic Strip with Visual Image -->
+<!-- Section: El problema -->
+<section class="w-full px-layout-margin-mobile lg:px-layout-margin-desktop bg-surface pt-space-md pb-space-3xl" id="el-problema">
+<div class="max-w-layout-max-width mx-auto">
+<!-- Section Header -->
+<div class="max-w-3xl mb-space-2xl space-y-space-xs">
+<div class="inline-block font-ticker-badge text-ticker-badge uppercase tracking-widest text-secondary font-semibold">
+          El problema
+        </div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight font-medium">
+          La información existe.<br/>Encontrarla, no tanto.
+        </h2>
+</div>
+<!-- Problem 3-Column Editorial Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Problem 01 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-[32px] font-semibold text-secondary">01</span>
+<span class="material-symbols-outlined text-outline text-[24px]">folder_off</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold leading-snug">
+              Datos repartidos en anuarios, planillas y PDFs sueltos
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Producción, acopio, precios, POAs y normativa viven en fuentes separadas, publicadas en formatos distintos y sin buscador común entre ellas.
+            </p>
+</div>
+<div class="pt-space-lg font-ticker-badge text-ticker-badge text-on-surface-variant">
+            FORMATOS DISPERSOS // SIN INDEXAR
+          </div>
+</div>
+<!-- Problem 02 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-[32px] font-semibold text-secondary">02</span>
+<span class="material-symbols-outlined text-outline text-[24px]">hourglass_top</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold leading-snug">
+              Una pregunta simple puede tomar horas
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              "¿Cuánto acopió tal empresa en mi provincia?" implica cruzar el Anuario de Producción con las estadísticas de Acopio a mano.
+            </p>
+</div>
+<div class="pt-space-lg font-ticker-badge text-ticker-badge text-on-surface-variant">
+            CRUCE MANUAL // COSTO OPERATIVO
+          </div>
+</div>
+<!-- Problem 03 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-[32px] font-semibold text-secondary">03</span>
+<span class="material-symbols-outlined text-outline text-[24px]">flash_on</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold leading-snug">
+              El productor no tiene tiempo para eso
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Necesita la respuesta en el momento, en el canal que ya usa todos los días — no un informe para leer después.
+            </p>
+</div>
+<div class="pt-space-lg font-ticker-badge text-ticker-badge text-on-surface-variant">
+            TIEMPO REAL // ACCESIBILIDAD MÓVIL
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Qué responde Federico (Capacidades) -->
+<section class="w-full py-space-3xl px-layout-margin-mobile lg:px-layout-margin-desktop bg-surface-container-low" id="capacidades">
+<div class="max-w-layout-max-width mx-auto">
+<!-- Section Header -->
+<div class="max-w-4xl mb-space-2xl space-y-space-sm">
+<div class="inline-block font-ticker-badge text-ticker-badge uppercase tracking-widest text-secondary font-semibold">
+          Qué responde Federico
+        </div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight font-medium">
+          Una pregunta en lenguaje natural. Una respuesta con la cifra oficial exacta.
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+          Federico no adivina: cada cifra sale de una consulta en vivo contra las bases oficiales de SAGyP y el FET. Si el dato no existe, lo dice — no lo inventa.
+        </p>
+</div>
+<!-- Bento Grid of Capabilities -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
+<!-- Cap 01 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-data-mono font-semibold bg-surface-container text-primary px-space-xs py-space-3xs rounded">01</span>
+<span class="material-symbols-outlined text-primary text-[20px]">psychiatry</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Producción primaria</h3>
+<div>
+<span class="inline-block bg-primary-container text-on-primary-container font-ticker-badge text-ticker-badge px-space-xs py-space-3xs rounded">
+                anuario_produccion_primaria
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Hectáreas sembradas y cosechadas, kilos producidos y rendimiento por provincia, variedad y campaña — serie histórica desde 1991/92.
+            </p>
+</div>
+<!-- Inline Sparkline Visualization of Production -->
+<div class="pt-space-md mt-space-md bg-surface-container-low p-space-sm rounded">
+<div class="flex justify-between items-center text-ticker-badge font-ticker-badge text-on-surface-variant mb-space-3xs">
+<span class="">SERIE HISTÓRICA RENDIMIENTO</span>
+<span class="text-primary font-semibold">+18.4%</span>
+</div>
+<svg class="w-full h-10 text-primary" fill="none" preserveaspectratio="none" viewbox="0 0 200 40">
+<path d="M0 32 L30 28 L60 30 L90 22 L120 25 L150 15 L180 18 L200 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M0 32 L30 28 L60 30 L90 22 L120 25 L150 15 L180 18 L200 8 V40 H0 Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+</div>
+</div>
+<!-- Cap 02 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-data-mono font-semibold bg-surface-container text-primary px-space-xs py-space-3xs rounded">02</span>
+<span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Acopio y precios</h3>
+<div>
+<span class="inline-block bg-primary-container text-on-primary-container font-ticker-badge text-ticker-badge px-space-xs py-space-3xs rounded">
+                acopio_por_empresa · resumen_precios
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Kilos acopiados por empresa y cooperativa, y el precio real del productor: boca de acopio + complemento del Fondo Especial del Tabaco.
+            </p>
+</div>
+<!-- Mini Price Ratio Bar -->
+<div class="pt-space-md mt-space-md bg-surface-container-low p-space-sm rounded space-y-space-2xs">
+<div class="flex justify-between font-ticker-badge text-[11px] text-on-surface-variant">
+<span class="">BOCA ACOPIO (77%)</span>
+<span class="">COMPL. FET (23%)</span>
+</div>
+<div class="w-full h-2.5 bg-surface-variant rounded-full overflow-hidden flex">
+<div class="bg-primary h-full w-[77%]"></div>
+<div class="bg-secondary h-full w-[23%]"></div>
+</div>
+</div>
+</div>
+<!-- Cap 03 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-data-mono font-semibold bg-surface-container text-primary px-space-xs py-space-3xs rounded">03</span>
+<span class="material-symbols-outlined text-primary text-[20px]">picture_as_pdf</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">POAs y resoluciones — con el PDF original</h3>
+<div>
+<span class="inline-block bg-primary-container text-on-primary-container font-ticker-badge text-ticker-badge px-space-xs py-space-3xs rounded">
+                poas_proyectos
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Montos, componentes y organismo ejecutor de cada resolución de Plan Operativo Anual. Si el productor lo pide, Federico manda el PDF real por WhatsApp.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md flex items-center gap-space-xs text-secondary font-ticker-badge text-ticker-badge">
+<span class="material-symbols-outlined text-[16px]">attachment</span>
+<span class="">ENTREGA DE DOCUMENTO BINARIO INTACTO</span>
+</div>
+</div>
+<!-- Cap 04 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-data-mono font-semibold bg-surface-container text-primary px-space-xs py-space-3xs rounded">04</span>
+<span class="material-symbols-outlined text-primary text-[20px]">gavel</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Marco normativo</h3>
+<div>
+<span class="inline-block bg-primary-container text-on-primary-container font-ticker-badge text-ticker-badge px-space-xs py-space-3xs rounded">
+                Leyes · Decretos · Resoluciones
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Desde la Ley 19.800 (creación del FET) hasta la última resolución vigente — con cita textual del artículo, no un resumen genérico.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md font-ticker-badge text-ticker-badge text-primary-container">
+            CITA NORMATIVA LITERAL • SIN ALUCINACIONES
+          </div>
+</div>
+<!-- Cap 05 -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-all lg:col-span-2">
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<span class="font-data-mono text-data-mono font-semibold bg-surface-container text-primary px-space-xs py-space-3xs rounded">05</span>
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Balances del FET</h3>
+<div>
+<span class="inline-block bg-primary-container text-on-primary-container font-ticker-badge text-ticker-badge px-space-xs py-space-3xs rounded">
+                fet_ejecuciones_mensuales
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Recaudación mensual, transferencias automáticas del 80% a las provincias productoras, y ejecución presupuestaria del Fondo.
+            </p>
+</div>
+<!-- Visual Telemetry Mini Grid -->
+<div class="pt-space-md mt-space-md grid grid-cols-1 sm:grid-cols-3 gap-space-sm bg-surface-container-low p-space-sm rounded">
+<div class="flex flex-col">
+<span class="font-ticker-badge text-[10px] text-on-surface-variant uppercase">Transferencias Ley 19.800</span>
+<span class="font-data-mono text-data-mono font-semibold text-primary">80% AUTOMÁTICO</span>
+</div>
+<div class="flex flex-col">
+<span class="font-ticker-badge text-[10px] text-on-surface-variant uppercase">Frecuencia de Actualización</span>
+<span class="font-data-mono text-data-mono font-semibold text-primary">MENSUAL VIGENTE</span>
+</div>
+<div class="flex flex-col">
+<span class="font-ticker-badge text-[10px] text-on-surface-variant uppercase">Nivel de Precisión</span>
+<span class="font-data-mono text-data-mono font-semibold text-secondary">CÉNTIMOS OFICIALES</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: De dónde salen los datos & Al servicio de -->
+<section class="w-full py-space-3xl px-layout-margin-mobile lg:px-layout-margin-desktop bg-surface" id="fuentes">
+<div class="max-w-layout-max-width mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl">
+<!-- Left Column: De dónde salen los datos -->
+<div class="lg:col-span-6 flex flex-col space-y-space-lg">
+<div class="space-y-space-xs">
+<div class="inline-block font-ticker-badge text-ticker-badge uppercase tracking-widest text-secondary font-semibold">
+              De dónde salen los datos
+            </div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight font-medium">
+              Solo fuentes oficiales.
+            </h2>
+</div>
+<!-- Strict Documented Sources List -->
+<div class="space-y-space-xs">
+<div class="p-space-md bg-surface-container-lowest rounded shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">database</span>
+<span class="font-body-md text-body-md text-on-surface"><strong>Anuario de Producción Primaria</strong> — SAGyP</span>
+</div>
+<span class="font-ticker-badge text-ticker-badge text-secondary font-semibold">HISTÓRICO</span>
+</div>
+<div class="p-space-md bg-surface-container-lowest rounded shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">assignment</span>
+<span class="font-body-md text-body-md text-on-surface"><strong>Registro de POAs y Resoluciones</strong> — SAGyP / FET</span>
+</div>
+<span class="font-ticker-badge text-ticker-badge text-secondary font-semibold">PROYECTOS</span>
+</div>
+<div class="p-space-md bg-surface-container-lowest rounded shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">stacked_line_chart</span>
+<span class="font-body-md text-body-md text-on-surface"><strong>Estadísticas de Acopio y Precios</strong> — SAGyP</span>
+</div>
+<span class="font-ticker-badge text-ticker-badge text-secondary font-semibold">BOCA/FET</span>
+</div>
+<div class="p-space-md bg-surface-container-lowest rounded shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance_wallet</span>
+<span class="font-body-md text-body-md text-on-surface"><strong>Ejecuciones Presupuestarias del FET</strong> — SAGyP</span>
+</div>
+<span class="font-ticker-badge text-ticker-badge text-secondary font-semibold">MENSUAL</span>
+</div>
+<div class="p-space-md bg-surface-container-lowest rounded shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">menu_book</span>
+<span class="font-body-md text-body-md text-on-surface"><strong>InfoLeg</strong> — Leyes y decretos nacionales</span>
+</div>
+<span class="font-ticker-badge text-ticker-badge text-secondary font-semibold">LEGISLACIÓN</span>
+</div>
+<div class="p-space-md bg-surface-container-lowest rounded shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">newspaper</span>
+<span class="font-body-md text-body-md text-on-surface"><strong>Boletín Oficial</strong> — Resoluciones y normativa marco</span>
+</div>
+<span class="font-ticker-badge text-ticker-badge text-secondary font-semibold">DISPOSICIONES</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Al servicio de (Provincias) -->
+<div class="lg:col-span-6 flex flex-col justify-between space-y-space-lg" id="provincias">
+<div class="space-y-space-xs">
+<div class="inline-block font-ticker-badge text-ticker-badge uppercase tracking-widest text-secondary font-semibold">
+              Al servicio de
+            </div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight font-medium">
+              Las siete provincias tabacaleras.
+            </h2>
+</div>
+<!-- Territory Map Module -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-lg">
+<!-- Province Badge Chips -->
+<div class="flex flex-wrap gap-space-xs">
+<span class="px-space-md py-space-xs rounded font-title-md text-title-md bg-primary text-on-primary shadow-sm hover:bg-primary-container cursor-default transition-colors">
+                Salta
+              </span>
+<span class="px-space-md py-space-xs rounded font-title-md text-title-md bg-primary text-on-primary shadow-sm hover:bg-primary-container cursor-default transition-colors">
+                Jujuy
+              </span>
+<span class="px-space-md py-space-xs rounded font-title-md text-title-md bg-primary text-on-primary shadow-sm hover:bg-primary-container cursor-default transition-colors">
+                Tucumán
+              </span>
+<span class="px-space-md py-space-xs rounded font-title-md text-title-md bg-primary text-on-primary shadow-sm hover:bg-primary-container cursor-default transition-colors">
+                Catamarca
+              </span>
+<span class="px-space-md py-space-xs rounded font-title-md text-title-md bg-primary text-on-primary shadow-sm hover:bg-primary-container cursor-default transition-colors">
+                Corrientes
+              </span>
+<span class="px-space-md py-space-xs rounded font-title-md text-title-md bg-primary text-on-primary shadow-sm hover:bg-primary-container cursor-default transition-colors">
+                Chaco
+              </span>
+<span class="px-space-md py-space-xs rounded font-title-md text-title-md bg-primary text-on-primary shadow-sm hover:bg-primary-container cursor-default transition-colors">
+                Misiones
+              </span>
+</div>
+<div class="font-ticker-badge text-ticker-badge text-on-surface-variant flex items-center gap-space-2xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="">COBERTURA TOTAL DE LA CUENCA TABACALERA DEL NORTE GRANDE ARGENTINO</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Lo que sigue (Roadmap) -->
+<section class="w-full py-space-3xl px-layout-margin-mobile lg:px-layout-margin-desktop bg-surface-container-low" id="lo-que-sigue">
+<div class="max-w-layout-max-width mx-auto">
+<!-- Section Header -->
+<div class="max-w-3xl mb-space-2xl space-y-space-xs">
+<div class="inline-block font-ticker-badge text-ticker-badge uppercase tracking-widest text-secondary font-semibold">
+          Lo que sigue
+        </div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight font-medium">
+          Recién estamos empezando la cosecha.
+        </h2>
+</div>
+<!-- Roadmap 3 Steps -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Step 1: Hoy -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary-fixed/30 rounded-bl-full pointer-events-none"></div>
+<div class="space-y-space-md">
+<span class="inline-flex items-center gap-space-3xs font-data-mono text-data-mono font-semibold text-on-primary bg-primary px-space-sm py-space-3xs rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
+              Hoy
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">
+              Datos nacionales completos
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Producción, acopio, precios, POAs, FET y marco normativo nacional — operando en producción sobre WhatsApp.
+            </p>
+</div>
+<div class="pt-space-lg font-ticker-badge text-ticker-badge text-primary font-semibold flex items-center gap-space-3xs">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="">DESPLEGADO • EN LÍNEA</span>
+</div>
+</div>
+<!-- Step 2: Próximo -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="space-y-space-md">
+<span class="inline-block font-data-mono text-data-mono font-semibold text-secondary bg-surface-container px-space-sm py-space-3xs rounded">
+              Próximo
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">
+              Normativa provincial
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Sumar convenios y resoluciones propias de cada una de las 7 provincias, con el mismo criterio de cita textual.
+            </p>
+</div>
+<div class="pt-space-lg font-ticker-badge text-ticker-badge text-on-surface-variant flex items-center gap-space-3xs">
+<span class="material-symbols-outlined text-[16px]">pending</span>
+<span class="">EN CURACIÓN DOCUMENTAL</span>
+</div>
+</div>
+<!-- Step 3: Después -->
+<div class="bg-surface-container-lowest p-space-xl rounded-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="space-y-space-md">
+<span class="inline-block font-data-mono text-data-mono font-semibold text-on-surface-variant bg-surface-container px-space-sm py-space-3xs rounded">
+              Después
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">
+              Datos por productor
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Consultas individuales de acopio y liquidación, si cada organismo provincial habilita el cruce con su propio padrón.
+            </p>
+</div>
+<div class="pt-space-lg font-ticker-badge text-ticker-badge text-on-surface-variant flex items-center gap-space-3xs">
+<span class="material-symbols-outlined text-[16px]">integration_instructions</span>
+<span class="">INTEGRACIÓN MINISTERIAL</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Probalo ahora mismo (Final CTA + QR Box) -->
+<section class="w-full py-space-3xl px-layout-margin-mobile lg:px-layout-margin-desktop bg-surface relative overflow-hidden pt-space-2xl pb-space-lg">
+<!-- Subtle Agronomic Backdrop -->
+<div class="max-w-layout-max-width mx-auto bg-primary text-on-primary rounded-2xl p-space-xl lg:p-space-3xl shadow-xl relative overflow-hidden">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center relative z-10">
+<!-- Left Side: Copy and Action -->
+<div class="lg:col-span-8 space-y-space-lg">
+<div class="space-y-space-xs">
+<div class="inline-block font-ticker-badge text-ticker-badge uppercase tracking-widest text-secondary-container font-semibold">
+              Probalo ahora mismo
+            </div>
+<h2 class="font-display text-display lg:text-[44px] lg:leading-[52px] font-semibold text-on-primary tracking-tight">
+              Escaneá el código y hacele<br/>la primera pregunta.
+            </h2>
+<p class="font-body-lg text-body-lg text-tertiary-fixed-dim leading-relaxed max-w-xl">
+              Sin instalar nada — es el WhatsApp que ya tenés.
+            </p>
+</div>
+<div class="pt-space-xs flex flex-wrap items-center gap-space-md">
+<a class="bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed font-title-md text-title-md px-space-xl py-space-md rounded font-semibold transition-all shadow-md flex items-center gap-space-xs" href="https://wa.me/5491178270751?text=Hola%20Federico" target="_blank">
+<span class="">Escribirle a Federico ↗</span>
+</a>
+<div class="font-data-mono text-data-mono text-tertiary-fixed-dim">
+              wa.me/5491178270751
+            </div>
+</div>
+</div>
+<!-- Right Side: Clean QR Box Card -->
+<div class="lg:col-span-4 flex flex-col items-center justify-center">
+<div class="bg-surface-container-lowest text-on-surface p-space-lg rounded-xl shadow-2xl flex flex-col items-center text-center space-y-space-sm max-w-[280px] w-full">
+<!-- High-Contrast SVG QR Representation -->
+<div class="w-48 h-48 bg-surface-container p-space-xs rounded flex items-center justify-center relative shadow-inner">
+<svg class="w-full h-full text-primary" fill="currentColor" viewbox="0 0 100 100">
+<!-- Outer framing corners -->
+<rect fill="currentColor" height="26" rx="2" width="26" x="10" y="10"></rect>
+<rect fill="#ffffff" height="18" rx="1" width="18" x="14" y="14"></rect>
+<rect fill="currentColor" height="10" width="10" x="18" y="18"></rect>
+<rect fill="currentColor" height="26" rx="2" width="26" x="64" y="10"></rect>
+<rect fill="#ffffff" height="18" rx="1" width="18" x="68" y="14"></rect>
+<rect fill="currentColor" height="10" width="10" x="72" y="18"></rect>
+<rect fill="currentColor" height="26" rx="2" width="26" x="10" y="64"></rect>
+<rect fill="#ffffff" height="18" rx="1" width="18" x="14" y="68"></rect>
+<rect fill="currentColor" height="10" width="10" x="18" y="72"></rect>
+<!-- Data blocks matrix pattern -->
+<rect height="6" width="6" x="42" y="12"></rect>
+<rect height="6" width="6" x="52" y="12"></rect>
+<rect height="12" width="6" x="42" y="24"></rect>
+<rect height="8" width="6" x="52" y="28"></rect>
+<rect height="6" width="8" x="12" y="44"></rect>
+<rect height="6" width="10" x="26" y="44"></rect>
+<rect fill="#1a4329" height="16" width="16" x="42" y="42"></rect>
+<rect height="6" width="12" x="64" y="44"></rect>
+<rect height="6" width="10" x="80" y="44"></rect>
+<rect height="8" width="8" x="44" y="64"></rect>
+<rect height="14" width="6" x="56" y="64"></rect>
+<rect height="12" width="6" x="44" y="78"></rect>
+<rect height="8" width="8" x="68" y="64"></rect>
+<rect height="6" width="10" x="80" y="64"></rect>
+<rect height="6" width="14" x="68" y="78"></rect>
+<rect height="14" width="6" x="86" y="76"></rect>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest text-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+</div>
+</div>
+</div>
+<!-- Box caption -->
+<div class="space-y-space-3xs">
+<span class="font-ticker-badge text-ticker-badge text-on-surface-variant uppercase tracking-wider block">Escaneo directo</span>
+<span class="font-data-mono text-data-mono font-semibold text-primary block">wa.me/5491178270751</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Institutional Watermark Background Badge -->
+<div class="absolute -bottom-10 -right-10 text-surface-tint opacity-10 pointer-events-none select-none font-display text-[180px] font-bold">
+        FET
+      </div>
+</div>
+</section>
+<!-- Endorsements & Contact Strip -->
+<section class="w-full bg-surface-container-high py-space-lg px-layout-margin-mobile lg:px-layout-margin-desktop">
+<div class="max-w-layout-max-width mx-auto flex flex-col md:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<span class="">Federico Tabacalero — AgroTabaco Labs</span>
+</div>
+<div class="flex items-center gap-space-xs font-data-mono text-data-mono text-primary font-semibold">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<a class="hover:underline" href="https://wa.me/5491178270751" target="_blank">+54 9 11 7827-0751</a>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-low text-on-surface py-space-3xl"><div class="max-w-layout-max-width mx-auto px-layout-margin-mobile lg:px-layout-margin-desktop py-space-xl flex flex-col sm:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-on-surface-variant"><div class="flex items-center gap-space-xs"><span class="font-semibold text-primary">Federico Tabacalero</span><span class="">— AgroTabaco Labs</span></div><div class="flex items-center gap-space-xs font-data-mono text-data-mono text-primary font-semibold"><span class="material-symbols-outlined text-[18px]">chat</span><a class="hover:underline" href="https://wa.me/5491178270751" target="_blank">+54 9 11 7827-0751</a></div></div></footer>
+</body></html>
