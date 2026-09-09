@@ -32,8 +32,8 @@ export const metadata: Metadata = {
     "Federico es un asistente de WhatsApp que responde con datos reales de producción, acopio, precios, POAs y normativa de la cadena tabacalera argentina.",
 };
 
-const WA_URL = "https://wa.me/5491178270751?text=Hola%20Federico";
-const PHONE_DISPLAY = "+54 9 11 7827-0751";
+const WA_URL = "https://wa.me/5491178192165?text=Hola%20Federico";
+const PHONE_DISPLAY = "+54 9 11 7819-2165";
 
 export default function BotFedericoPage() {
   return (
@@ -804,7 +804,7 @@ export default function BotFedericoPage() {
                   <span>Escribirle a Federico ↗</span>
                 </a>
                 <div className="font-mono text-sm text-[#AFCEB3]">
-                  wa.me/5491178270751
+                  wa.me/5491178192165
                 </div>
               </div>
             </div>
@@ -852,7 +852,7 @@ export default function BotFedericoPage() {
                     Escaneo directo
                   </span>
                   <span className="font-mono text-xs font-bold text-[#012D15] block">
-                    wa.me/5491178270751
+                    wa.me/5491178192165
                   </span>
                 </div>
               </div>
