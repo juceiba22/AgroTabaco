@@ -258,6 +258,23 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["data_subscriptions"]["Row"]>;
         Relationships: [];
       };
+
+      // --- Perfiles y Roles (Admin / Trader) ---
+      profiles: {
+        Row: {
+          id: string;
+          role: "admin" | "trader";
+          full_name: string | null;
+          company_name: string | null;
+          phone: string | null;
+          province: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["profiles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["profiles"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

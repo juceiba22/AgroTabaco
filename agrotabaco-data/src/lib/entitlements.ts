@@ -43,6 +43,18 @@ async function fetchEntitlement(): Promise<Entitlement> {
 
   if (!user) return { user: null, plan: "anonymous" };
 
+  // 1. Si el usuario pertenece al equipo (role = 'admin' en profiles), tiene acceso PRO total
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profile?.role === "admin") {
+    return { user, plan: "pro" };
+  }
+
+  // 2. Si no es admin, verificar si tiene suscripción activa en data_subscriptions
   const { data: subscription } = await supabase
     .from("data_subscriptions")
     .select("status, current_period_end")
