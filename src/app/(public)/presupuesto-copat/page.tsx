@@ -151,15 +151,28 @@ export default function PresupuestoCopatPage() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-border/80 bg-muted/40 p-4">
-              <div className="flex items-center gap-2 font-semibold text-brand-green-dark">
-                <Bot className="h-4 w-4 text-brand-gold" />
-                <h4 className="text-sm">Bot Interno para Socios</h4>
+            <div className="flex flex-col justify-between rounded-lg border border-border/80 bg-muted/40 p-4">
+              <div>
+                <div className="flex items-center gap-2 font-semibold text-brand-green-dark">
+                  <Bot className="h-4 w-4 text-brand-gold" />
+                  <h4 className="text-sm">Bot Interno para Socios</h4>
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  Creación de un bot interactivo para socios y miembros de la cooperativa: acceso inmediato a
+                  cronogramas de acopio, liquidaciones FET, avisos operativos y trámites directos.
+                </p>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                Creación de un bot interactivo para socios y miembros de la cooperativa: acceso inmediato a
-                cronogramas de acopio, liquidaciones FET, avisos operativos y trámites directos.
-              </p>
+              <div className="mt-3 pt-2 border-t border-border/60">
+                <a
+                  href="https://wa.me/5491178192165?text=Hola%20Federico,%20quiero%20probar%20el%20bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-brand-green-dark px-2.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-green-darker"
+                >
+                  <MessageSquare className="h-3.5 w-3.5 text-brand-gold" />
+                  <span>Probar demo en WhatsApp ↗</span>
+                </a>
+              </div>
             </div>
           </div>
 
