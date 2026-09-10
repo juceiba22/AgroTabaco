@@ -346,44 +346,66 @@ export default function PresupuestoCopatPage() {
       </div>
 
       {/* CUADRO DE INVERSIÓN Y HONORARIOS */}
-      <div className="mt-10 overflow-hidden rounded-2xl border-2 border-brand-gold/60 bg-linear-to-b from-card to-brand-gray p-6 sm:p-8 shadow-lg">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-6">
-          <div>
-            <span className="inline-block rounded-md bg-brand-gold/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-gold">
-              Inversión Mensual Integral
+      <div className="mt-10 overflow-hidden rounded-2xl border-2 border-brand-gold/60 bg-gradient-to-b from-card to-brand-gray p-6 sm:p-8 shadow-lg">
+        <div className="border-b border-border pb-6">
+          <span className="inline-block rounded-md bg-brand-gold/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-gold">
+            Esquema de Inversión y Honorarios
+          </span>
+          <h3 className="mt-1.5 font-serif text-2xl font-bold text-brand-green-dark sm:text-3xl">
+            Estructura Comercial y Modalidad de Pago
+          </h3>
+          <p className="text-xs text-muted-foreground sm:text-sm">
+            Implementación inicial completa y abono mensual de soporte técnico, gestión continua y comercio exterior.
+          </p>
+        </div>
+
+        {/* Tarjetas: Primer Pago vs Abono Mensual */}
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {/* Primer Pago */}
+          <div className="rounded-xl border border-border/90 bg-card p-5 shadow-xs">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+              01 · Primer Pago
             </span>
-            <h3 className="mt-1.5 font-serif text-2xl font-bold text-brand-green-dark sm:text-3xl">
-              Honorarios del Servicio
-            </h3>
-            <p className="text-xs text-muted-foreground sm:text-sm">
-              Cobertura total y simultánea de los 3 módulos estratégicos de trabajo.
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="font-serif text-3xl font-extrabold text-brand-green-dark sm:text-4xl">
+                $ 4.000.000
+              </span>
+              <span className="text-xs font-medium uppercase text-muted-foreground">ARS (Pago Inicial)</span>
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-foreground/85">
+              <strong>Setup e Implementación Inicial:</strong> Desarrollo y puesta en marcha de la nueva página web corporativa, arquitectura e integración del Bot de autogestión para socios productores, armado de legajo y apertura bursátil en MAV, y primer enlace con Cancillería.
             </p>
           </div>
 
-          <div className="text-right">
-            <div className="font-serif text-3xl font-extrabold text-brand-green-dark sm:text-4xl">
-              $ 3.000.000
+          {/* Abono Mensual */}
+          <div className="rounded-xl border-2 border-brand-green-dark bg-emerald-50/40 p-5 shadow-xs">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-green-dark">
+              02 · Abono Recurrente
+            </span>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="font-serif text-3xl font-extrabold text-brand-green-dark sm:text-4xl">
+                $ 2.300.000
+              </span>
+              <span className="text-xs font-semibold uppercase text-brand-green-dark">ARS / Mes</span>
             </div>
-            <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              ARS / Mes
-            </div>
+            <p className="mt-2 text-xs leading-relaxed text-foreground/85">
+              <strong>Gestión Integral & Soporte Técnico:</strong> Incluye soporte técnico continuo y mantenimiento de la web y bot, administración profesional de redes sociales, gestión de instrumentos de financiamiento en MAV y enlace comercial activo con compradores internacionales de tabaco Burley.
+            </p>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 border-t border-border pt-6">
           <div className="space-y-2.5 text-xs text-foreground/80 sm:text-sm">
             <div className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <span>
-                <strong>Equipo multidisciplinario dedicado:</strong> Desarrolladores, comunicadores,
-                especialistas en MAV y comercio exterior.
+                <strong>Soporte técnico continuo:</strong> Mantenimiento preventivo, actualizaciones del bot para socios y disponibilidad de la plataforma web.
               </span>
             </div>
             <div className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <span>
-                <strong>Reuniones periódicas de seguimiento:</strong> Presentación de avances e
-                informes de gestión al Consejo de Administración.
+                <strong>Equipo multidisciplinario dedicado:</strong> Desarrolladores, comunicadores, especialistas bursátiles en MAV y comercio exterior.
               </span>
             </div>
           </div>
@@ -392,15 +414,13 @@ export default function PresupuestoCopatPage() {
             <div className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <span>
-                <strong>Sin costos ocultos:</strong> El abono mensual comprende el mantenimiento y la
-                operación continua de las iniciativas pactadas.
+                <strong>Reuniones periódicas de seguimiento:</strong> Informes quincenales de avance y estado de gestiones al Consejo de Administración.
               </span>
             </div>
             <div className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <span>
-                <strong>Respaldo AgroTabaco:</strong> Acceso a toda la red de contactos e inteligencia
-                sectorial de la plataforma.
+                <strong>Respaldo AgroTabaco:</strong> Acceso permanente a la red de contactos, datos cuantitativos e inteligencia sectorial.
               </span>
             </div>
           </div>
@@ -419,7 +439,7 @@ export default function PresupuestoCopatPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="https://wa.me/5491100000000?text=Hola%20AgroTabaco,%20quiero%20coordinar%20la%20puesta%20en%20marcha%20de%20la%20propuesta%20de%20servicios%20para%20COPAT."
+              href="https://wa.me/5491178192165?text=Hola%20AgroTabaco,%20quiero%20coordinar%20la%20puesta%20en%20marcha%20de%20la%20propuesta%20de%20servicios%20para%20COPAT."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-green-dark px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-green-darker"
