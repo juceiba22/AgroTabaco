@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Propuesta Comercial COPAT | AgroTabaco</title>
+  
+  <!-- Tipografías Oficiales AgroTabaco -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              green: {
+                dark: '#132a1e',
+                darker: '#0d1f15',
+                light: '#2f6844',
+              },
+              olive: '#446553',
+              gold: '#c59b27',
+              cream: '#f3fcf5',
+              gray: '#edf6ef',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #ffffff !important; color: #000000 !important; }
+      .print-border { border: 1px solid #ddd !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+
+<body class="bg-[#f3fcf5] font-sans text-[#151d19] antialiased min-h-screen">
+  
+  <!-- Barra de Navegación Institucional -->
+  <header class="no-print border-b border-[#e2e8e0] bg-[#ffffff]/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-serif text-xl font-bold tracking-tight text-[#132a1e]">AgroTabaco</span>
+        <span class="text-xs uppercase tracking-widest font-semibold px-2 py-0.5 rounded bg-[#edf6ef] text-[#446553]">Servicios Corporativos</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#132a1e] bg-[#edf6ef] hover:bg-[#e2e8e0] rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[16px]">print</span>
+          <span>Guardar PDF / Imprimir</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Tag de Estado -->
+    <div class="no-print mb-4 flex items-center justify-between">
+      <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        Propuesta Exclusiva · Confidencial
+      </span>
+      <span class="text-xs text-[#727971]">Documento Oficial AgroTabaco</span>
+    </div>
+
+    <!-- Header Ejecutivo Membretado -->
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d1f15] via-[#132a1e] to-[#1a3b2b] text-white p-6 sm:p-9 shadow-xl border border-[#c59b27]/30">
+      <div class="relative z-10">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-[#c59b27]">
+          <span>AgroTabaco · Soluciones Estratégicas</span>
+          <span class="font-mono text-white/80" id="fecha-propuesta">Marzo 2026</span>
+        </div>
+
+        <h1 class="mt-3 font-serif text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-white">
+          Propuesta de Servicios Estratégicos
+        </h1>
+        <p class="mt-2 text-sm sm:text-base text-emerald-100/90 max-w-2xl">
+          Plan integral de Comunicación Digital, Financiamiento en Mercado de Capitales y Expansión Comercial Externa para <strong class="text-white">COPAT</strong>.
+        </p>
+
+        <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t border-white/15 text-xs sm:text-sm">
+          <div>
+            <span class="block text-[11px] uppercase tracking-wide text-white/60">Destinatario</span>
+            <strong class="font-semibold text-white">Directorio COPAT</strong>
+          </div>
+          <div>
+            <span class="block text-[11px] uppercase tracking-wide text-white/60">Emisor</span>
+            <strong class="font-semibold text-white">AgroTabaco</strong>
+          </div>
+          <div>
+            <span class="block text-[11px] uppercase tracking-wide text-white/60">Validez</span>
+            <strong class="font-semibold text-white">30 Días</strong>
+          </div>
+          <div>
+            <span class="block text-[11px] uppercase tracking-wide text-white/60">Modalidad</span>
+            <strong class="font-semibold text-white">Abono Mensual</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visión General -->
+    <div class="mt-6 bg-white rounded-xl p-5 sm:p-7 border border-[#e2e8e0] shadow-sm">
+      <h2 class="font-serif text-lg sm:text-xl font-bold text-[#132a1e]">
+        Visión y Alianza Estratégica
+      </h2>
+      <p class="mt-2 text-sm leading-relaxed text-[#151d19]/90">
+        AgroTabaco pone a disposición de <strong>COPAT</strong> un equipo interdisciplinario especializado en la cadena de valor tabacalera argentina. La presente propuesta articula tres dimensiones fundamentales para potenciar la competitividad de la cooperativa: modernización de su ecosistema de comunicación institucional y gremial, acceso a instrumentos modernos de financiamiento no bancario y apertura sistemática de canales de exportación para el tabaco Burley.
+      </p>
+    </div>
+
+    <!-- Los 3 Módulos -->
+    <div class="mt-8 space-y-6">
+      <div class="flex items-center gap-2 border-b border-[#e2e8e0] pb-2">
+        <span class="font-serif text-xl font-bold text-[#132a1e]">Alcance del Servicio Integral</span>
+        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#c59b27]/15 text-[#c59b27]">3 Módulos Incluidos</span>
+      </div>
+
+      <!-- Módulo 1 -->
+      <div class="bg-white rounded-xl p-6 border border-[#e2e8e0] shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-[#132a1e] text-[#c59b27] flex items-center justify-center font-bold">
+            <span class="material-symbols-outlined text-[24px]">language</span>
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#4e4635]">Módulo 01</span>
+            <h3 class="font-serif text-lg sm:text-xl font-bold text-[#132a1e]">
+              Servicio Integral de Comunicación & Transformación Digital
+            </h3>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-[#151d19]/80">
+          Reconversión de la imagen institucional externa y facilitación de los flujos de información interna entre la cooperativa y todos sus socios productores.
+        </p>
+
+        <div class="mt-5 grid sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">web</span>
+              <h4>Rediseño Web Total</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Diseño y desarrollo desde cero de una nueva página web corporativa moderna, de carga ultra rápida, adaptable a celulares y orientada a posicionar a COPAT frente a clientes e instituciones.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">campaign</span>
+              <h4>Gestión de Redes</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Manejo integral de canales oficiales (estrategia de contenidos, piezas visuales, novedades de campaña, comunicados sectoriales y visibilidad de los logros cooperativos).
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">smart_toy</span>
+              <h4>Bot Interno para Socios</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Creación de un bot interactivo para socios y miembros de la cooperativa: acceso inmediato a cronogramas de acopio, liquidaciones FET, avisos operativos y trámites directos.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2 text-xs">
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Portal Web Institucional
+          </span>
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Contenido Audiovisual y Redes
+          </span>
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Asistente de Autogestión para Productores
+          </span>
+        </div>
+      </div>
+
+      <!-- Módulo 2 -->
+      <div class="bg-white rounded-xl p-6 border border-[#e2e8e0] shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-[#132a1e] text-[#c59b27] flex items-center justify-center font-bold">
+            <span class="material-symbols-outlined text-[24px]">trending_up</span>
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#4e4635]">Módulo 02</span>
+            <h3 class="font-serif text-lg sm:text-xl font-bold text-[#132a1e]">
+              Gestión de Financiamiento & Mercado de Capitales
+            </h3>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-[#151d19]/80">
+          Estructuración y canalización de vehículos financieros para dotar a COPAT de liquidez para acopio, insumos e inversiones de infraestructura a costos eficientes.
+        </p>
+
+        <div class="mt-5 grid sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">account_balance</span>
+              <h4>Pagaré Bursátil</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Estructuración y colocación de pagarés avalados y directos en el mercado bursátil (pesos o dollar-linked) para optimizar el capital de trabajo de la campaña.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">currency_exchange</span>
+              <h4>Emisión de Deuda en MAV</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Apertura y gestión de líneas en el Mercado Argentino de Valores (MAV) dedicadas a cooperativas y economías regionales con instrumentos a medida.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">token</span>
+              <h4>Tokenización & Activos</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Diseño de esquemas de tokenización de activos o producción y anticipo de liquidaciones para diversificar fuentes de fondeo alternativas.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2 text-xs">
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Acceso a Inversores Institucionales
+          </span>
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Optimización de Tasas y Plazos
+          </span>
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Asesoramiento Regulatorio y Bursátil
+          </span>
+        </div>
+      </div>
+
+      <!-- Módulo 3 -->
+      <div class="bg-white rounded-xl p-6 border border-[#e2e8e0] shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-[#132a1e] text-[#c59b27] flex items-center justify-center font-bold">
+            <span class="material-symbols-outlined text-[24px]">public</span>
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#4e4635]">Módulo 03</span>
+            <h3 class="font-serif text-lg sm:text-xl font-bold text-[#132a1e]">
+              Gestión de Nuevos Mercados Internacionales (Tabaco Burley)
+            </h3>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-[#151d19]/80">
+          Apertura de demanda externa, generación de contactos comerciales y posicionamiento del tabaco Burley de COPAT en plazas internacionales clave.
+        </p>
+
+        <div class="mt-5 grid sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">assured_workload</span>
+              <h4>Enlace con Cancillería</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Articulación directa con la Cancillería Argentina, embajadas, agregadurías agrícolas y misiones comerciales oficiales en destinos estratégicos.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">directions_boat</span>
+              <h4>Matching con Compradores</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Vinculación y rondas de contacto con traders, brokers internacionales e industrias compradoras de tabaco Burley.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#edf6ef]/50 border border-[#e2e8e0]">
+            <div class="flex items-center gap-2 font-semibold text-[#132a1e] text-sm">
+              <span class="material-symbols-outlined text-[#c59b27] text-[18px]">price_change</span>
+              <h4>Posición Arancelaria & Verde</h4>
+            </div>
+            <p class="mt-2 text-xs text-[#4e4635] leading-relaxed">
+              Inteligencia de comercio exterior según posición arancelaria (NCM), tanto para colocación en verde como para tabaco con procesamiento primario.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2 text-xs">
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Inteligencia Comercial Internacional
+          </span>
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Gestión Diplomática y Agencias de Promoción
+          </span>
+          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-md">
+            ✓ Foco Específico en Tabaco Burley
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUADRO DE INVERSIÓN Y HONORARIOS -->
+    <div class="mt-10 bg-white rounded-2xl p-6 sm:p-8 border-2 border-[#c59b27]/60 shadow-lg relative overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#e2e8e0] pb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md bg-[#c59b27]/15 text-[#c59b27] inline-block">
+            Inversión Mensual Integral
+          </span>
+          <h3 class="font-serif text-2xl sm:text-3xl font-bold text-[#132a1e] mt-1.5">
+            Honorarios del Servicio
+          </h3>
+          <p class="text-xs sm:text-sm text-[#727971]">
+            Cobertura total y simultánea de los 3 módulos estratégicos de trabajo.
+          </p>
+        </div>
+
+        <div class="text-right">
+          <div class="font-serif text-3xl sm:text-4xl font-extrabold text-[#132a1e]">
+            $ 3.000.000
+          </div>
+          <div class="text-xs font-medium uppercase tracking-wider text-[#727971]">
+            ARS / Mes
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 grid sm:grid-cols-2 gap-4 text-xs sm:text-sm text-[#151d19]/80">
+        <div class="space-y-2.5">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-600 font-bold text-base">✓</span>
+            <span><strong>Equipo interdisciplinario dedicado:</strong> Desarrolladores, comunicadores, especialistas en MAV y comercio exterior.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-600 font-bold text-base">✓</span>
+            <span><strong>Reuniones periódicas de seguimiento:</strong> Presentación de avances e informes de gestión al Consejo de Administración.</span>
+          </div>
+        </div>
+        <div class="space-y-2.5">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-600 font-bold text-base">✓</span>
+            <span><strong>Sin costos ocultos:</strong> El abono mensual comprende el mantenimiento y la operación continua de las iniciativas pactadas.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-600 font-bold text-base">✓</span>
+            <span><strong>Respaldo AgroTabaco:</strong> Acceso a toda la red de contactos e inteligencia sectorial de la plataforma.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones de Cierre -->
+      <div class="no-print mt-8 pt-6 border-t border-[#e2e8e0] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-center sm:text-left">
+          <p class="text-xs font-semibold text-[#151d19]">¿Desea avanzar con la puesta en marcha de la propuesta?</p>
+          <p class="text-xs text-[#727971]">Podemos coordinar una reunión técnica para iniciar el cronograma de trabajo.</p>
+        </div>
+
+        <a href="https://wa.me/5491178192165?text=Hola%20AgroTabaco,%20quiero%20coordinar%20la%20puesta%20en%20marcha%20de%20la%20propuesta%20de%20servicios%20para%20COPAT." target="_blank" class="inline-flex items-center gap-2 bg-[#132a1e] hover:bg-[#0d1f15] text-white px-5 py-3 rounded-lg font-semibold text-sm shadow-md transition-all">
+          <span>Aprobar / Coordinar por WhatsApp</span>
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer Membretado -->
+    <footer class="mt-12 text-center text-xs text-[#727971] border-t border-[#e2e8e0] pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>AgroTabaco &copy; 2026 · Soluciones Estratégicas y Comunicación Sectorial</span>
+      <span class="font-mono text-[11px]">agrotabaco.com</span>
+    </footer>
+
+  </main>
+
+  <script>
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const dateEl = document.getElementById('fecha-propuesta');
+    if (dateEl) {
+      dateEl.textContent = new Date().toLocaleDateString('es-AR', options);
+    }
+  </script>
+</body>
+</html>
