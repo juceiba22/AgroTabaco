@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, Check, Copy, Sparkles, UploadCloud } from "lucide-react";
+import { ArrowLeft, Check, Copy, Send, Sparkles, UploadCloud } from "lucide-react";
 import slugify from "slugify";
 import { toast } from "sonner";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
@@ -21,6 +21,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 import type { Category, Post } from "@/lib/types";
+
+type TargetStatus = "published" | "draft";
 
 type PostFormProps = {
   mode: "create" | "edit";
@@ -57,9 +59,6 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
     post && post.category.id ? post.category.id : (categories[0]?.id ?? "")
   );
   const [featured, setFeatured] = useState(post?.featured ?? false);
-  const [published, setPublished] = useState(
-    mode === "create" ? true : post?.status === "published"
-  );
 
   const initialCoverImage =
     post && !post.coverImage.startsWith(FALLBACK_COVER_PREFIX) ? post.coverImage : null;
@@ -130,9 +129,7 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
     return data.publicUrl;
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-
+  async function handleSave(targetStatus: TargetStatus) {
     if (!title.trim()) return toast.error("El título es obligatorio.");
     if (!slug.trim()) return toast.error("El slug es obligatorio.");
     if (!categoryId) return toast.error("Elegí una categoría.");
@@ -146,33 +143,39 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
       }
 
       const nowIso = new Date().toISOString();
-      const publishedAt = !published
-        ? null
-        : mode === "edit" && post?.status === "published" && post.publishedAt
-          ? post.publishedAt
-          : nowIso;
+      const publishedAt =
+        targetStatus === "draft"
+          ? null
+          : mode === "edit" && post?.status === "published" && post.publishedAt
+            ? post.publishedAt
+            : nowIso;
 
-      const supabase = createClient();
-      const payload = {
-        title: title.trim(),
-        slug: slug.trim(),
-        excerpt: excerpt.trim(),
-        content: contentHtml,
-        cover_image: coverImage,
-        category_id: categoryId,
-        status: published ? ("published" as const) : ("draft" as const),
-        featured,
-        published_at: publishedAt,
-      };
+      // Inserta/actualiza desde el servidor (no directo desde el navegador):
+      // la sesión del cliente puede quedar con un access token vencido entre
+      // refrescos del middleware, y Supabase lo trata como anónimo, lo que
+      // dispara "row-level security" en el insert aunque el usuario sea
+      // admin. El route ya se prueba y se usa desde el importador de boletín.
+      const res = await fetch("/api/admin/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: mode === "edit" ? post!.id : undefined,
+          title: title.trim(),
+          slug: slug.trim(),
+          excerpt: excerpt.trim(),
+          content: contentHtml,
+          coverImage,
+          categoryId,
+          status: targetStatus,
+          featured,
+          publishedAt,
+        }),
+      });
 
-      const { error } =
-        mode === "create"
-          ? await supabase.from("posts").insert(payload)
-          : await supabase.from("posts").update(payload).eq("id", post!.id);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error guardando la noticia.");
 
-      if (error) throw error;
-
-      toast.success(mode === "create" ? "Noticia creada." : "Noticia actualizada.");
+      toast.success(targetStatus === "published" ? "Noticia publicada." : "Noticia guardada como borrador.");
       router.push("/admin");
       router.refresh();
     } catch (err) {
@@ -189,7 +192,7 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <Button
         type="button"
         variant="ghost"
@@ -206,13 +209,25 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
         <h1 className="font-serif text-2xl font-bold text-brand-green-dark">
           {mode === "create" ? "Nueva noticia" : "Editar noticia"}
         </h1>
-        <Button
-          type="submit"
-          disabled={isSaving}
-          className="bg-brand-green-dark text-white hover:bg-brand-green-darker"
-        >
-          {isSaving ? "Guardando..." : "Guardar"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isSaving}
+            onClick={() => handleSave("draft")}
+          >
+            {isSaving ? "Guardando..." : "Guardar borrador"}
+          </Button>
+          <Button
+            type="button"
+            disabled={isSaving}
+            onClick={() => handleSave("published")}
+            className="bg-brand-green-dark text-white hover:bg-brand-green-darker"
+          >
+            <Send className="size-4" />
+            {isSaving ? "Publicando..." : "Publicar noticia"}
+          </Button>
+        </div>
       </div>
 
       <div className="mb-8 rounded-xl border border-brand-olive/30 bg-brand-gray p-5">
@@ -320,12 +335,14 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
               <Switch id="featured" checked={featured} onCheckedChange={setFeatured} />
             </div>
 
-            <div className="flex items-center justify-between border-t pt-3">
-              <Label htmlFor="published" className="text-sm font-normal">
-                {published ? "Publicado" : "Borrador"}
-              </Label>
-              <Switch id="published" checked={published} onCheckedChange={setPublished} />
-            </div>
+            {mode === "edit" && (
+              <div className="flex items-center justify-between border-t pt-3">
+                <Label className="text-sm font-normal">Estado actual</Label>
+                <span className="rounded-md bg-brand-gray px-2 py-1 text-xs font-medium text-muted-foreground">
+                  {post?.status === "published" ? "Publicado" : "Borrador"}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-3 rounded-xl border bg-card p-5">
@@ -378,6 +395,6 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
           )}
         </div>
       </div>
-    </form>
+    </div>
   );
 }
