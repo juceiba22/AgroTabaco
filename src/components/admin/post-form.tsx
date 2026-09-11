@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { createClient } from "@/lib/supabase/client";
 import type { Category, Post } from "@/lib/types";
 
 type TargetStatus = "published" | "draft";
@@ -62,8 +61,8 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
 
   const initialCoverImage =
     post && !post.coverImage.startsWith(FALLBACK_COVER_PREFIX) ? post.coverImage : null;
-  const [existingCoverImage, setExistingCoverImage] = useState(initialCoverImage);
-  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [existingCoverImage] = useState(initialCoverImage);
+  const [newImageDataUrl, setNewImageDataUrl] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(initialCoverImage);
 
   const [isSaving, setIsSaving] = useState(false);
@@ -111,22 +110,19 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
   }
 
   function handleImageSelect(file: File | null) {
-    setNewImageFile(file);
-    setImagePreview(file ? URL.createObjectURL(file) : existingCoverImage);
-  }
+    if (!file) {
+      setNewImageDataUrl(null);
+      setImagePreview(existingCoverImage);
+      return;
+    }
 
-  async function uploadCoverImage(file: File): Promise<string> {
-    const supabase = createClient();
-    const extension = file.name.split(".").pop() || "jpg";
-    const filePath = `posts/${slug || "post"}-${Date.now()}.${extension}`;
-
-    const { error } = await supabase.storage
-      .from("media")
-      .upload(filePath, file, { upsert: true });
-    if (error) throw error;
-
-    const { data } = supabase.storage.from("media").getPublicUrl(filePath);
-    return data.publicUrl;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setNewImageDataUrl(base64);
+      setImagePreview(base64);
+    };
+    reader.readAsDataURL(file);
   }
 
   async function handleSave(targetStatus: TargetStatus) {
@@ -136,11 +132,7 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
 
     setIsSaving(true);
     try {
-      let coverImage = existingCoverImage;
-      if (newImageFile) {
-        coverImage = await uploadCoverImage(newImageFile);
-        setExistingCoverImage(coverImage);
-      }
+      const coverImage = newImageDataUrl ?? existingCoverImage;
 
       const nowIso = new Date().toISOString();
       const publishedAt =
@@ -150,11 +142,11 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
             ? post.publishedAt
             : nowIso;
 
-      // Inserta/actualiza desde el servidor (no directo desde el navegador):
-      // la sesión del cliente puede quedar con un access token vencido entre
-      // refrescos del middleware, y Supabase lo trata como anónimo, lo que
-      // dispara "row-level security" en el insert aunque el usuario sea
-      // admin. El route ya se prueba y se usa desde el importador de boletín.
+      // Todo (imagen incluida) se manda al servidor en vez de escribir
+      // directo a Supabase desde el navegador: mismo patrón que ya usa el
+      // importador de boletín, necesario porque la sesión del cliente puede
+      // fallar la policy RLS (is_admin()) por motivos que la del servidor
+      // (refrescada por el middleware en cada request) no tiene.
       const res = await fetch("/api/admin/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
