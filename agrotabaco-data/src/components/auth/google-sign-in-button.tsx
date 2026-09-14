@@ -13,7 +13,7 @@ export function GoogleSignInButton() {
     setError(null);
     setLoading(true);
 
-    const redirectTo = searchParams.get("redirectTo") ?? "/laboratorio";
+    const redirectTo = searchParams.get("redirectTo") || searchParams.get("next") || "/laboratorio";
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
