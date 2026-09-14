@@ -3,8 +3,22 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getEntitlement } from "@/lib/entitlements";
 import { PLAN_ANUAL_ARS, getMercadoPagoClient } from "@/lib/mercadopago";
 
+function getRequestOrigin(request: NextRequest): string {
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+  const host = request.headers.get("host");
+  if (host) {
+    const proto = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+    return `${proto}://${host}`;
+  }
+  return new URL(request.url).origin;
+}
+
 export async function POST(request: NextRequest) {
-  const { origin } = new URL(request.url);
+  const origin = getRequestOrigin(request);
   const { user, plan } = await getEntitlement();
 
   if (!user) {

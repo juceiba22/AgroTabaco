@@ -2,8 +2,23 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/supabase/types";
 
+function getRequestOrigin(request: NextRequest): string {
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+  const host = request.headers.get("host");
+  if (host) {
+    const proto = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+    return `${proto}://${host}`;
+  }
+  return new URL(request.url).origin;
+}
+
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const origin = getRequestOrigin(request);
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const redirectTo = searchParams.get("redirectTo") ?? searchParams.get("next") ?? "/laboratorio";
 
@@ -16,7 +31,8 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const targetUrl = new URL(redirectTo.startsWith("/") ? redirectTo : `/${redirectTo}`, origin);
+    const cleanRedirect = redirectTo.startsWith("/") ? redirectTo : `/${redirectTo}`;
+    const targetUrl = new URL(cleanRedirect, origin);
     forwardParams.forEach((value, key) => targetUrl.searchParams.set(key, value));
 
     const response = NextResponse.redirect(targetUrl.toString());
@@ -32,7 +48,12 @@ export async function GET(request: NextRequest) {
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
             cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options)
+              response.cookies.set(name, value, {
+                ...options,
+                path: "/",
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+              })
             );
           },
         },
