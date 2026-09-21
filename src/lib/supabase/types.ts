@@ -269,6 +269,98 @@ export type Database = {
         };
         Relationships: [];
       };
+      documentation_submissions: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          company_name: string;
+          cuit: string;
+          contact_name: string;
+          email: string;
+          phone: string | null;
+          is_sa: boolean;
+          requested_amount: string | null;
+          requested_term: string | null;
+          requested_purpose: string | null;
+          notes: string | null;
+          status: "nuevo" | "en_revision" | "completo" | "descartado";
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          user_id?: string | null;
+          company_name: string;
+          cuit: string;
+          contact_name: string;
+          email: string;
+          phone?: string | null;
+          is_sa?: boolean;
+          requested_amount?: string | null;
+          requested_term?: string | null;
+          requested_purpose?: string | null;
+          notes?: string | null;
+          status?: "nuevo" | "en_revision" | "completo" | "descartado";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          company_name?: string;
+          cuit?: string;
+          contact_name?: string;
+          email?: string;
+          phone?: string | null;
+          is_sa?: boolean;
+          requested_amount?: string | null;
+          requested_term?: string | null;
+          requested_purpose?: string | null;
+          notes?: string | null;
+          status?: "nuevo" | "en_revision" | "completo" | "descartado";
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      documentation_files: {
+        Row: {
+          id: string;
+          submission_id: string;
+          document_key: string;
+          storage_path: string;
+          file_name: string;
+          mime_type: string;
+          size_bytes: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          submission_id: string;
+          document_key: string;
+          storage_path: string;
+          file_name: string;
+          mime_type: string;
+          size_bytes: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          submission_id?: string;
+          document_key?: string;
+          storage_path?: string;
+          file_name?: string;
+          mime_type?: string;
+          size_bytes?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "documentation_files_submission_id_fkey";
+            columns: ["submission_id"];
+            isOneToOne: false;
+            referencedRelation: "documentation_submissions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
