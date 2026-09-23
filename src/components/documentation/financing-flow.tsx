@@ -8,9 +8,9 @@ import { DocumentationForm } from "@/components/documentation/documentation-form
 import { REQUIRED_DOCUMENTS } from "@/lib/documentation/constants";
 import { cn } from "@/lib/utils";
 
-// Número de AgroTabaco para WhatsApp: 549 + 11 2369-4472 (formato internacional
+// Número de AgroTabaco para WhatsApp: 549 + 11 2369-4772 (formato internacional
 // que exige wa.me para celulares argentinos).
-const WHATSAPP_NUMBER = "5491123694472";
+const WHATSAPP_NUMBER = "5491123694772";
 const WHATSAPP_MESSAGE =
   "Estuve explorando la posibilidad de solicitar financiamiento para el Agro y necesito contactarme con un representante";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
