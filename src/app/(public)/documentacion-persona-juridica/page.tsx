@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DocumentationForm } from "@/components/documentation/documentation-form";
+import { FinancingFlow } from "@/components/documentation/financing-flow";
 
 export const metadata: Metadata = {
   title: "Conseguí financiamiento por medio del Mercado de Valores | AgroTabaco",
@@ -33,7 +33,7 @@ export default function DocumentacionPersonaJuridicaPage() {
       </div>
 
       <div className="mt-10">
-        <DocumentationForm />
+        <FinancingFlow />
       </div>
 
       <p className="mt-10 text-sm text-muted-foreground">

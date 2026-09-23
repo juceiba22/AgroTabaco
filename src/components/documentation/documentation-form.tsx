@@ -65,7 +65,7 @@ function isValidCuit(value: string): boolean {
   return check === Number(digits[10]);
 }
 
-export function DocumentationForm() {
+export function DocumentationForm({ sector }: { sector?: string } = {}) {
   const [companyName, setCompanyName] = useState("");
   const [cuit, setCuit] = useState("");
   const [contactName, setContactName] = useState("");
@@ -171,7 +171,7 @@ export function DocumentationForm() {
           requested_amount: amount.trim(),
           requested_term: term.trim(),
           requested_purpose: purpose.trim(),
-          notes: notes.trim() || null,
+          notes: [sector ? `Rubro: ${sector}` : null, notes.trim() || null].filter(Boolean).join("\n") || null,
         });
         if (error) throw error;
         submissionInserted.current = true;
@@ -466,7 +466,7 @@ export function DocumentationForm() {
 
       <section className="flex flex-col gap-2">
         <Label htmlFor="notes">Comentarios (opcional)</Label>
-        <Textarea id="notes" rows={3} maxLength={2000} value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <Textarea id="notes" rows={3} maxLength={1800} value={notes} onChange={(e) => setNotes(e.target.value)} />
       </section>
 
       <div className="flex flex-col gap-3">
