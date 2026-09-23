@@ -4,7 +4,7 @@ import { FinancingFlow } from "@/components/documentation/financing-flow";
 export const metadata: Metadata = {
   title: "Conseguí financiamiento por medio del Mercado de Valores | AgroTabaco",
   description:
-    "Si sos una empresa o cooperativa tabacalera, podés solicitar financiamiento directamente en el mercado de valores, sin recurrir a los bancos comerciales.",
+    "Si sos una empresa o cooperativa del Agro, podés solicitar financiamiento directamente en el mercado de valores, sin recurrir a los bancos comerciales.",
   robots: { index: false, follow: false },
 };
 
@@ -20,7 +20,7 @@ export default function DocumentacionPersonaJuridicaPage() {
 
       <div className="mt-6 space-y-3 text-muted-foreground">
         <p>
-          Si sos una empresa o cooperativa tabacalera, podés solicitar financiamiento directamente en
+          Si sos una empresa o cooperativa del Agro, podés solicitar financiamiento directamente en
           el mercado de valores, sin recurrir a los bancos comerciales. Si querés evaluar y gestionar
           la calificación de tu empresa como Persona Jurídica ante dicho mercado, subí la
           documentación.
