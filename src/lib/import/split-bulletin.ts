@@ -29,8 +29,18 @@ function stripHtml(html: string): string {
 }
 
 export function splitBulletinFromHtml(html: string): ParsedBulletinBlock[] {
-  // Dividir el HTML por el delimitador de 7777...
-  const chunks = html.split(DELIMITER_HTML);
+  // Las imágenes vienen embebidas como data URL en base64 (cientos de KB), y
+  // esa cadena puede contener "77777" por casualidad: si se corta el HTML con
+  // las imágenes adentro, el delimitador parte una foto al medio y aparecen
+  // "noticias" de basura. Por eso se sacan a una lista antes de cortar y se
+  // reponen después en el bloque al que pertenecen.
+  const images: string[] = [];
+  const lightHtml = html.replace(/<img[^>]+src=["'](data:[^"']+)["'][^>]*>/gi, (_m, src: string) => {
+    images.push(src);
+    return `<img data-idx="${images.length - 1}">`;
+  });
+
+  const chunks = lightHtml.split(DELIMITER_HTML);
 
   const results: ParsedBulletinBlock[] = [];
 
@@ -38,29 +48,14 @@ export function splitBulletinFromHtml(html: string): ParsedBulletinBlock[] {
     const trimmedChunk = chunk.trim();
     if (!trimmedChunk) continue;
 
-    // Buscar imagen embebida (data URL)
-    const imgMatch = trimmedChunk.match(/<img[^>]+src=["'](data:[^"']+)["'][^>]*>/i);
-    const coverImage = imgMatch ? imgMatch[1] : null;
-
     const rawText = stripHtml(trimmedChunk);
-    if (rawText.length >= MIN_BLOCK_LENGTH) {
-      results.push({
-        rawText,
-        coverImage,
-      });
-    }
-  }
+    if (rawText.length < MIN_BLOCK_LENGTH) continue;
 
-  // Si no se dividió en bloques pero hay texto suficiente
-  if (results.length === 0) {
-    const rawText = stripHtml(html);
-    if (rawText.length >= MIN_BLOCK_LENGTH) {
-      const imgMatch = html.match(/<img[^>]+src=["'](data:[^"']+)["'][^>]*>/i);
-      results.push({
-        rawText,
-        coverImage: imgMatch ? imgMatch[1] : null,
-      });
-    }
+    const imgMatch = trimmedChunk.match(/<img data-idx="(\d+)">/);
+    results.push({
+      rawText,
+      coverImage: imgMatch ? images[Number(imgMatch[1])] : null,
+    });
   }
 
   return results;

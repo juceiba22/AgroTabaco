@@ -373,7 +373,7 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
                 {draft.aiFailed && (
                   <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900">
                     <AlertTriangle className="size-4 text-amber-600" />
-                    Gemini no pudo formatear automáticamente este bloque — completá los campos.
+                    Gemini no pudo formatear automáticamente este bloque — completá los campos.{draft.aiError ? ` Motivo: ${draft.aiError.slice(0, 300)}` : ""}
                   </span>
                 )}
               </div>
