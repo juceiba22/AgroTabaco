@@ -6,7 +6,7 @@ import { getCategories } from "@/lib/data";
 export const maxDuration = 60;
 
 // Convierte un borrador en bruto en un artículo listo para publicar, usando
-// Gemini con salida estructurada. Solo accesible para usuarios logueados
+// Claude con salida estructurada. Solo accesible para usuarios logueados
 // (evita gasto de API por visitantes anónimos).
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -18,10 +18,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Falta configurar GEMINI_API_KEY en el servidor." },
+      { error: "Falta configurar ANTHROPIC_API_KEY en el servidor." },
       { status: 500 }
     );
   }

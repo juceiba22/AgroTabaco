@@ -1,4 +1,4 @@
-import { GoogleGenAI, ThinkingLevel, Type } from "@google/genai";
+import Anthropic from "@anthropic-ai/sdk";
 
 export type AiResult = {
   title: string;
@@ -49,66 +49,77 @@ export function buildEditorialPrompt(
   `;
 }
 
-const PRIMARY_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
-// Respaldo opcional: sólo se usa si se define GEMINI_FALLBACK_MODEL (los modelos
-// viejos, ej. gemini-2.5-flash, ya no están disponibles para cuentas nuevas).
-const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || null;
-const RETRY_DELAYS_MS = [2000, 5000, 10000, 20000];
-
-function isTransient(error: unknown): boolean {
-  const msg = error instanceof Error ? error.message : String(error);
-  return /(429|500|502|503|504)|UNAVAILABLE|RESOURCE_EXHAUSTED|DEADLINE_EXCEEDED|overloaded|high demand|fetch failed/i.test(
-    msg
-  );
-}
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// Modelo barato y rápido: la reescritura editorial corta no necesita más.
+// Se puede cambiar sin tocar código con ANTHROPIC_MODEL (ej. claude-sonnet-5).
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5";
 
 function countParagraphs(html: string): number {
-  return (html.match(/<p[s>]/gi) ?? []).length;
+  return (html.match(/<p[\s>]/gi) ?? []).length;
 }
 
 async function generate(
-  ai: GoogleGenAI,
-  model: string,
+  client: Anthropic,
   rawText: string,
   categoryNames: string[],
   opts: { maxParagraphs?: number },
   correction?: string
 ): Promise<AiResult> {
-  const response = await ai.models.generateContent({
-    model,
-    contents: `Borrador original:
-"""${rawText}"""${correction ? `
-
-${correction}` : ""}`,
-    config: {
-      systemInstruction: buildEditorialPrompt(categoryNames, opts),
-      // Reescritura editorial simple, no requiere razonamiento profundo — el
-      // nivel de thinking por default de gemini-3.6-flash es la causa
-      // principal de la lentitud reportada en el autocompletado.
-      thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          title: { type: Type.STRING },
-          summary: { type: Type.STRING },
-          category: { type: Type.STRING, enum: categoryNames },
-          contentHtml: { type: Type.STRING },
-          socialCopy: { type: Type.STRING },
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 4096,
+    system: buildEditorialPrompt(categoryNames, opts),
+    messages: [
+      {
+        role: "user",
+        content: `Borrador original:\n"""${rawText}"""${correction ? `\n\n${correction}` : ""}`,
+      },
+    ],
+    // Salida estructurada: el JSON siempre cumple este esquema.
+    output_config: {
+      format: {
+        type: "json_schema",
+        schema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            summary: { type: "string" },
+            category: { type: "string", enum: categoryNames },
+            contentHtml: { type: "string" },
+            socialCopy: { type: "string" },
+          },
+          required: ["title", "summary", "category", "contentHtml", "socialCopy"],
+          additionalProperties: false,
         },
-        required: ["title", "summary", "category", "contentHtml", "socialCopy"],
       },
     },
   });
 
-  return JSON.parse(response.text ?? "{}") as AiResult;
+  if (response.stop_reason === "max_tokens") {
+    throw new Error("La respuesta de la IA se cortó por longitud. Probá de nuevo.");
+  }
+
+  const textBlock = response.content.find((b) => b.type === "text");
+  if (!textBlock || textBlock.type !== "text") {
+    throw new Error("La IA no devolvió texto.");
+  }
+  return JSON.parse(textBlock.text) as AiResult;
 }
 
-// Gemini responde 503 "high demand" en picos: se reintenta con espera y, si el
-// modelo principal sigue saturado y hay respaldo configurado, se usa ese. Con tope de
-// párrafos, además se valida el resultado y se pide una corrección si el
+function friendlyError(error: unknown): Error {
+  if (error instanceof Anthropic.AuthenticationError) {
+    return new Error("La ANTHROPIC_API_KEY del servidor no es válida.");
+  }
+  if (error instanceof Anthropic.BadRequestError && /credit balance/i.test(error.message)) {
+    return new Error("Se agotó el crédito de la cuenta de Anthropic: cargá saldo en console.anthropic.com.");
+  }
+  if (error instanceof Anthropic.RateLimitError) {
+    return new Error("Límite de uso de Anthropic alcanzado (429). Esperá un momento y reintentá.");
+  }
+  return error instanceof Error ? error : new Error(String(error));
+}
+
+// El SDK ya reintenta solo ante 429/5xx/errores de red (maxRetries). Con tope
+// de párrafos, además se valida el resultado y se pide una corrección si el
 // modelo se pasó (o se quedó corto).
 export async function transformArticle(
   rawText: string,
@@ -116,46 +127,32 @@ export async function transformArticle(
   apiKey: string,
   opts: { maxParagraphs?: number } = {}
 ): Promise<AiResult> {
-  const ai = new GoogleGenAI({ apiKey });
-  const models = [
-    PRIMARY_MODEL,
-    ...RETRY_DELAYS_MS.map(() => PRIMARY_MODEL),
-    ...(FALLBACK_MODEL ? [FALLBACK_MODEL] : []),
-  ];
+  const client = new Anthropic({ apiKey, maxRetries: 4 });
 
-  async function run(correction?: string): Promise<AiResult> {
-    let lastError: unknown;
-    for (let attempt = 0; attempt < models.length; attempt++) {
-      try {
-        return await generate(ai, models[attempt], rawText, categoryNames, opts, correction);
-      } catch (error) {
-        const isFallback = attempt === models.length - 1 && FALLBACK_MODEL !== null && attempt > 0;
-        if (isFallback) throw lastError ?? error;
-        lastError = error;
-        if (!isTransient(error)) throw error;
-        const delay = RETRY_DELAYS_MS[attempt];
-        if (delay) await sleep(delay);
+  try {
+    let result = await generate(client, rawText, categoryNames, opts);
+
+    const max = opts.maxParagraphs;
+    if (max) {
+      const found = countParagraphs(result.contentHtml);
+      if (found !== max) {
+        try {
+          const retry = await generate(
+            client,
+            rawText,
+            categoryNames,
+            opts,
+            `Tu respuesta anterior tenía ${found} párrafos. Reescribila con EXACTAMENTE ${max} párrafos <p> cortos (40 a 70 palabras cada uno).`
+          );
+          if (countParagraphs(retry.contentHtml) === max) result = retry;
+        } catch {
+          // Nos quedamos con el primer resultado válido.
+        }
       }
     }
-    throw lastError;
+
+    return result;
+  } catch (error) {
+    throw friendlyError(error);
   }
-
-  let result = await run();
-
-  const max = opts.maxParagraphs;
-  if (max) {
-    const found = countParagraphs(result.contentHtml);
-    if (found !== max) {
-      try {
-        const retry = await run(
-          `Tu respuesta anterior tenía ${found} párrafos. Reescribila con EXACTAMENTE ${max} párrafos <p> cortos (40 a 70 palabras cada uno).`
-        );
-        if (countParagraphs(retry.contentHtml) === max) result = retry;
-      } catch {
-        // Nos quedamos con el primer resultado válido.
-      }
-    }
-  }
-
-  return result;
 }

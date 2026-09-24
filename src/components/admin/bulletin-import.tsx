@@ -37,13 +37,10 @@ type AiResult = {
   socialCopy: string;
 };
 
-type BulletinItemResult = {
+type BulletinBlock = {
   rawText: string;
   coverImage: string | null;
-} & (
-  | { ok: true; data: AiResult }
-  | { ok: false; error: string }
-);
+};
 
 type DraftStatus = "pending" | "saving" | "saved" | "error";
 
@@ -59,49 +56,30 @@ type Draft = {
   published: boolean;
   rawText: string;
   aiFailed: boolean;
+  aiProcessing?: boolean;
   aiError?: string;
   status: DraftStatus;
   savedPost?: { id: string; slug: string; status: string };
 };
 
-function draftsFromResults(results: BulletinItemResult[], categories: Category[]): Draft[] {
+function draftsFromBlocks(blocks: BulletinBlock[], categories: Category[]): Draft[] {
   const fallbackCategoryId = categories[0]?.id ?? "";
 
-  return results.map((result, index) => {
-    const base = {
-      id: `bloque-${index}-${Date.now()}`,
-      slugTouched: false,
-      published: true,
-      rawText: result.rawText,
-      coverImage: result.coverImage ?? null,
-      status: "pending" as DraftStatus,
-    };
-
-    if (result.ok) {
-      const matched = categories.find((c) => c.name === result.data.category);
-      const title = result.data.title;
-      return {
-        ...base,
-        title,
-        slug: slugify(title, { lower: true, strict: true, locale: "es" }),
-        excerpt: result.data.summary,
-        contentHtml: result.data.contentHtml,
-        categoryId: matched?.id ?? fallbackCategoryId,
-        aiFailed: false,
-      };
-    }
-
-    return {
-      ...base,
-      title: "",
-      slug: "",
-      excerpt: "",
-      contentHtml: `<p>${result.rawText}</p>`,
-      categoryId: fallbackCategoryId,
-      aiFailed: true,
-      aiError: result.error,
-    };
-  });
+  return blocks.map((block, index) => ({
+    id: `bloque-${index}-${Date.now()}`,
+    slugTouched: false,
+    published: true,
+    rawText: block.rawText,
+    coverImage: block.coverImage,
+    status: "pending" as DraftStatus,
+    title: "",
+    slug: "",
+    excerpt: "",
+    contentHtml: `<p>${block.rawText}</p>`,
+    categoryId: fallbackCategoryId,
+    aiFailed: false,
+    aiProcessing: true,
+  }));
 }
 
 export function BulletinImport({ categories }: { categories: Category[] }) {
@@ -109,6 +87,7 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
   const [processing, setProcessing] = useState(false);
   const [drafts, setDrafts] = useState<Draft[] | null>(null);
   const [batchActionRunning, setBatchActionRunning] = useState(false);
+  const [aiProgress, setAiProgress] = useState<{ done: number; total: number } | null>(null);
   const [retrying, setRetrying] = useState<Set<string>>(new Set());
 
   function updateDraft(id: string, patch: Partial<Draft>) {
@@ -133,18 +112,34 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
     reader.readAsDataURL(file);
   }
 
-  async function retryAi(draft: Draft) {
-    setRetrying((prev) => new Set(prev).add(draft.id));
+  // Manda un bloque a la IA y vuelca el resultado en su borrador. Devuelve true
+  // si salió bien; si falla deja el bloque editable a mano con el motivo.
+  async function formatWithAi(draft: Draft): Promise<boolean> {
+    updateDraft(draft.id, { aiProcessing: true });
     try {
       const res = await fetch("/api/ai/transform", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rawText: draft.rawText, maxParagraphs: 3 }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo procesar con IA.");
+      const text = await res.text();
+      let data: Record<string, unknown> = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`El servidor no respondió a tiempo (HTTP ${res.status}).`);
+      }
+      if (!res.ok) {
+        const detail = String(data.error || "No se pudo procesar con IA.");
+        if (/429|quota|RESOURCE_EXHAUSTED/i.test(detail)) {
+          throw new Error(
+            "Se agotó la cuota de uso de Gemini (revisá el plan y la facturación en Google AI Studio)."
+          );
+        }
+        throw new Error(detail);
+      }
 
-      const ai = data as AiResult;
+      const ai = data as unknown as AiResult;
       const matched = categories.find((c) => c.name === ai.category);
       updateDraft(draft.id, {
         title: ai.title,
@@ -155,19 +150,25 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
         categoryId: matched?.id ?? draft.categoryId,
         aiFailed: false,
         aiError: undefined,
+        aiProcessing: false,
       });
-      toast.success("Noticia formateada con IA.");
+      return true;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error desconocido";
-      updateDraft(draft.id, { aiError: message });
-      toast.error(`No se pudo reintentar: ${message.slice(0, 120)}`);
-    } finally {
-      setRetrying((prev) => {
-        const next = new Set(prev);
-        next.delete(draft.id);
-        return next;
-      });
+      updateDraft(draft.id, { aiFailed: true, aiError: message, aiProcessing: false });
+      return false;
     }
+  }
+
+  async function retryAi(draft: Draft) {
+    setRetrying((prev) => new Set(prev).add(draft.id));
+    const ok = await formatWithAi(draft);
+    if (ok) toast.success("Noticia formateada con IA.");
+    setRetrying((prev) => {
+      const next = new Set(prev);
+      next.delete(draft.id);
+      return next;
+    });
   }
 
   async function handleProcess() {
@@ -179,11 +180,34 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
 
       const res = await fetch("/api/ai/import-bulletin", { method: "POST", body: formData });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo procesar el boletín.");
+      if (!res.ok) throw new Error(data.error || "No se pudo leer el boletín.");
 
-      const results = data.results as BulletinItemResult[];
-      setDrafts(draftsFromResults(results, categories));
-      toast.success(`${results.length} noticias detectadas y formateadas.`);
+      const newDrafts = draftsFromBlocks(data.blocks as BulletinBlock[], categories);
+      setDrafts(newDrafts);
+      toast.success(`${newDrafts.length} noticias detectadas. Formateando con IA...`);
+
+      // Cola con 2 en paralelo: cada noticia se va completando en pantalla.
+      setAiProgress({ done: 0, total: newDrafts.length });
+      let next = 0;
+      let done = 0;
+      let failed = 0;
+      const worker = async () => {
+        while (next < newDrafts.length) {
+          const draft = newDrafts[next++];
+          const ok = await formatWithAi(draft);
+          if (!ok) failed++;
+          done++;
+          setAiProgress({ done, total: newDrafts.length });
+        }
+      };
+      await Promise.all([worker(), worker()]);
+      setAiProgress(null);
+
+      if (failed > 0) {
+        toast.warning(`${failed} noticia(s) no se pudieron formatear: usá "Reintentar con IA" en cada una.`);
+      } else {
+        toast.success("Todas las noticias fueron formateadas.");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al procesar el boletín.");
     } finally {
@@ -324,9 +348,15 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
               </span>
             )}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Revisá el contenido y las fotos de cada noticia. Podés publicar cada una individualmente o todas juntas.
-          </p>
+          {aiProgress ? (
+            <p className="mt-1 text-sm font-semibold text-brand-green-dark animate-pulse">
+              Formateando con IA: {aiProgress.done} de {aiProgress.total} noticias listas...
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground mt-1">
+              Revisá el contenido y las fotos de cada noticia. Podés publicar cada una individualmente o todas juntas.
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
@@ -408,10 +438,16 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
                   </span>
                 )}
 
+                {draft.aiProcessing && (
+                  <span className="text-xs font-semibold text-brand-green-dark animate-pulse">
+                    Formateando con IA...
+                  </span>
+                )}
+
                 {draft.aiFailed && (
                   <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900">
                     <AlertTriangle className="size-4 text-amber-600" />
-                    Gemini no pudo formatear automáticamente este bloque — completá los campos.{draft.aiError ? ` Motivo: ${draft.aiError.slice(0, 300)}` : ""}
+                    La IA no pudo formatear automáticamente este bloque — completá los campos.{draft.aiError ? ` Motivo: ${draft.aiError.slice(0, 300)}` : ""}
                     <button
                       type="button"
                       onClick={() => retryAi(draft)}
