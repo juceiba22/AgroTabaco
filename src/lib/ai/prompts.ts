@@ -50,8 +50,10 @@ export function buildEditorialPrompt(
 }
 
 const PRIMARY_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
-const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || "gemini-2.5-flash";
-const RETRY_DELAYS_MS = [1500, 4000];
+// Respaldo opcional: sólo se usa si se define GEMINI_FALLBACK_MODEL (los modelos
+// viejos, ej. gemini-2.5-flash, ya no están disponibles para cuentas nuevas).
+const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || null;
+const RETRY_DELAYS_MS = [2000, 5000, 10000, 20000];
 
 function isTransient(error: unknown): boolean {
   const msg = error instanceof Error ? error.message : String(error);
@@ -105,7 +107,7 @@ ${correction}` : ""}`,
 }
 
 // Gemini responde 503 "high demand" en picos: se reintenta con espera y, si el
-// modelo principal sigue saturado, se cae al modelo de respaldo. Con tope de
+// modelo principal sigue saturado y hay respaldo configurado, se usa ese. Con tope de
 // párrafos, además se valida el resultado y se pide una corrección si el
 // modelo se pasó (o se quedó corto).
 export async function transformArticle(
@@ -115,7 +117,11 @@ export async function transformArticle(
   opts: { maxParagraphs?: number } = {}
 ): Promise<AiResult> {
   const ai = new GoogleGenAI({ apiKey });
-  const models = [PRIMARY_MODEL, ...RETRY_DELAYS_MS.map(() => PRIMARY_MODEL), FALLBACK_MODEL];
+  const models = [
+    PRIMARY_MODEL,
+    ...RETRY_DELAYS_MS.map(() => PRIMARY_MODEL),
+    ...(FALLBACK_MODEL ? [FALLBACK_MODEL] : []),
+  ];
 
   async function run(correction?: string): Promise<AiResult> {
     let lastError: unknown;
@@ -123,6 +129,8 @@ export async function transformArticle(
       try {
         return await generate(ai, models[attempt], rawText, categoryNames, opts, correction);
       } catch (error) {
+        const isFallback = attempt === models.length - 1 && FALLBACK_MODEL !== null && attempt > 0;
+        if (isFallback) throw lastError ?? error;
         lastError = error;
         if (!isTransient(error)) throw error;
         const delay = RETRY_DELAYS_MS[attempt];
