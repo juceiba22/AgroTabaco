@@ -18,9 +18,12 @@ export function buildEditorialPrompt(
   { maxParagraphs }: { maxParagraphs?: number } = {}
 ): string {
   const contentRule = maxParagraphs
-    ? `4. Contenido (HTML): estructurado con <p>, de hasta ${maxParagraphs} párrafos
-       de desarrollo (no cuentan <h2>/<h3>/<blockquote> si hacen falta). No
-       uses <script>, estilos inline ni clases CSS.`
+    ? `4. Contenido (HTML): EXACTAMENTE ${maxParagraphs} párrafos <p>, cortos y
+       sintéticos (entre 40 y 70 palabras cada uno). Primero lo más importante
+       (qué pasó, quién, cuándo/dónde), luego contexto y datos clave, y el
+       último párrafo cierra con el dato o la consecuencia más relevante. No
+       agregues subtítulos, listas, citas ni más párrafos: solo ${maxParagraphs}
+       etiquetas <p>. No uses <script>, estilos inline ni clases CSS.`
     : `4. Contenido (HTML): estructurado con <p>, subtítulos <h2>/<h3> si
        corresponde, <ul>/<li> si aplica y <blockquote> para citas textuales.
        No uses <script>, estilos inline ni clases CSS.`;
@@ -46,16 +49,37 @@ export function buildEditorialPrompt(
   `;
 }
 
-export async function transformArticle(
+const PRIMARY_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || "gemini-2.5-flash";
+const RETRY_DELAYS_MS = [1500, 4000];
+
+function isTransient(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  return /(429|500|502|503|504)|UNAVAILABLE|RESOURCE_EXHAUSTED|DEADLINE_EXCEEDED|overloaded|high demand|fetch failed/i.test(
+    msg
+  );
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function countParagraphs(html: string): number {
+  return (html.match(/<p[s>]/gi) ?? []).length;
+}
+
+async function generate(
+  ai: GoogleGenAI,
+  model: string,
   rawText: string,
   categoryNames: string[],
-  apiKey: string,
-  opts: { maxParagraphs?: number } = {}
+  opts: { maxParagraphs?: number },
+  correction?: string
 ): Promise<AiResult> {
-  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
-    model: "gemini-3.6-flash",
-    contents: `Borrador original:\n"""${rawText}"""`,
+    model,
+    contents: `Borrador original:
+"""${rawText}"""${correction ? `
+
+${correction}` : ""}`,
     config: {
       systemInstruction: buildEditorialPrompt(categoryNames, opts),
       // Reescritura editorial simple, no requiere razonamiento profundo — el
@@ -78,4 +102,52 @@ export async function transformArticle(
   });
 
   return JSON.parse(response.text ?? "{}") as AiResult;
+}
+
+// Gemini responde 503 "high demand" en picos: se reintenta con espera y, si el
+// modelo principal sigue saturado, se cae al modelo de respaldo. Con tope de
+// párrafos, además se valida el resultado y se pide una corrección si el
+// modelo se pasó (o se quedó corto).
+export async function transformArticle(
+  rawText: string,
+  categoryNames: string[],
+  apiKey: string,
+  opts: { maxParagraphs?: number } = {}
+): Promise<AiResult> {
+  const ai = new GoogleGenAI({ apiKey });
+  const models = [PRIMARY_MODEL, ...RETRY_DELAYS_MS.map(() => PRIMARY_MODEL), FALLBACK_MODEL];
+
+  async function run(correction?: string): Promise<AiResult> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < models.length; attempt++) {
+      try {
+        return await generate(ai, models[attempt], rawText, categoryNames, opts, correction);
+      } catch (error) {
+        lastError = error;
+        if (!isTransient(error)) throw error;
+        const delay = RETRY_DELAYS_MS[attempt];
+        if (delay) await sleep(delay);
+      }
+    }
+    throw lastError;
+  }
+
+  let result = await run();
+
+  const max = opts.maxParagraphs;
+  if (max) {
+    const found = countParagraphs(result.contentHtml);
+    if (found !== max) {
+      try {
+        const retry = await run(
+          `Tu respuesta anterior tenía ${found} párrafos. Reescribila con EXACTAMENTE ${max} párrafos <p> cortos (40 a 70 palabras cada uno).`
+        );
+        if (countParagraphs(retry.contentHtml) === max) result = retry;
+      } catch {
+        // Nos quedamos con el primer resultado válido.
+      }
+    }
+  }
+
+  return result;
 }

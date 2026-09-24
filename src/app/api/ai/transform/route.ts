@@ -3,6 +3,8 @@ import { transformArticle } from "@/lib/ai/prompts";
 import { createClient } from "@/lib/supabase/server";
 import { getCategories } from "@/lib/data";
 
+export const maxDuration = 60;
+
 // Convierte un borrador en bruto en un artículo listo para publicar, usando
 // Gemini con salida estructurada. Solo accesible para usuarios logueados
 // (evita gasto de API por visitantes anónimos).
@@ -25,8 +27,9 @@ export async function POST(request: Request) {
   }
 
   let rawText: unknown;
+  let maxParagraphs: unknown;
   try {
-    ({ rawText } = await request.json());
+    ({ rawText, maxParagraphs } = await request.json());
   } catch {
     return NextResponse.json({ error: "Cuerpo de la petición inválido" }, { status: 400 });
   }
@@ -39,7 +42,12 @@ export async function POST(request: Request) {
   const categoryNames = categories.map((c) => c.name);
 
   try {
-    const result = await transformArticle(rawText, categoryNames, apiKey);
+    const result = await transformArticle(rawText, categoryNames, apiKey, {
+      maxParagraphs:
+        typeof maxParagraphs === "number" && maxParagraphs >= 1 && maxParagraphs <= 5
+          ? Math.floor(maxParagraphs)
+          : undefined,
+    });
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error desconocido";

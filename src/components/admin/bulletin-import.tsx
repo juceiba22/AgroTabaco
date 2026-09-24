@@ -109,6 +109,7 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
   const [processing, setProcessing] = useState(false);
   const [drafts, setDrafts] = useState<Draft[] | null>(null);
   const [batchActionRunning, setBatchActionRunning] = useState(false);
+  const [retrying, setRetrying] = useState<Set<string>>(new Set());
 
   function updateDraft(id: string, patch: Partial<Draft>) {
     setDrafts((prev) => prev?.map((d) => (d.id === id ? { ...d, ...patch } : d)) ?? prev);
@@ -130,6 +131,43 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
       updateDraft(id, { coverImage: base64 });
     };
     reader.readAsDataURL(file);
+  }
+
+  async function retryAi(draft: Draft) {
+    setRetrying((prev) => new Set(prev).add(draft.id));
+    try {
+      const res = await fetch("/api/ai/transform", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawText: draft.rawText, maxParagraphs: 3 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se pudo procesar con IA.");
+
+      const ai = data as AiResult;
+      const matched = categories.find((c) => c.name === ai.category);
+      updateDraft(draft.id, {
+        title: ai.title,
+        slug: slugify(ai.title, { lower: true, strict: true, locale: "es" }),
+        slugTouched: false,
+        excerpt: ai.summary,
+        contentHtml: ai.contentHtml,
+        categoryId: matched?.id ?? draft.categoryId,
+        aiFailed: false,
+        aiError: undefined,
+      });
+      toast.success("Noticia formateada con IA.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      updateDraft(draft.id, { aiError: message });
+      toast.error(`No se pudo reintentar: ${message.slice(0, 120)}`);
+    } finally {
+      setRetrying((prev) => {
+        const next = new Set(prev);
+        next.delete(draft.id);
+        return next;
+      });
+    }
   }
 
   async function handleProcess() {
@@ -374,6 +412,14 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
                   <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900">
                     <AlertTriangle className="size-4 text-amber-600" />
                     Gemini no pudo formatear automáticamente este bloque — completá los campos.{draft.aiError ? ` Motivo: ${draft.aiError.slice(0, 300)}` : ""}
+                    <button
+                      type="button"
+                      onClick={() => retryAi(draft)}
+                      disabled={retrying.has(draft.id)}
+                      className="ml-1 rounded bg-amber-200 px-2 py-0.5 text-amber-950 hover:bg-amber-300 disabled:opacity-60"
+                    >
+                      {retrying.has(draft.id) ? "Procesando..." : "Reintentar con IA"}
+                    </button>
                   </span>
                 )}
               </div>

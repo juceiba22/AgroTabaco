@@ -6,7 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 import { getCategories } from "@/lib/data";
 
 const MAX_PARAGRAPHS = 3;
-const CONCURRENCY = 3;
+const CONCURRENCY = 2;
+
+// Con reintentos ante 503, un boletín grande puede tardar más que el default.
+export const maxDuration = 300;
 
 export type BulletinItemResult = {
   rawText: string;
