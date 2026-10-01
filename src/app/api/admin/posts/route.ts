@@ -54,35 +54,39 @@ export async function POST(request: Request) {
   let finalCoverImage = body.coverImage || null;
 
   if (finalCoverImage && finalCoverImage.startsWith("data:image/")) {
-    try {
-      const match = finalCoverImage.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
-      if (match) {
-        let ext = match[1].toLowerCase();
-        if (ext === "jpeg") ext = "jpg";
-        if (ext === "svg+xml") ext = "svg";
-        const base64Data = match[2];
-        const buffer = Buffer.from(base64Data, "base64");
-        const filePath = `posts/${cleanSlug}-${Date.now()}.${ext}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("media")
-          .upload(filePath, buffer, {
-            contentType: `image/${match[1]}`,
-            upsert: true,
-          });
-
-        if (!uploadError) {
-          const { data: publicUrlData } = supabase.storage
-            .from("media")
-            .getPublicUrl(filePath);
-          finalCoverImage = publicUrlData.publicUrl;
-        } else {
-          console.error("Error al subir imagen a storage:", uploadError);
-        }
-      }
-    } catch (err) {
-      console.error("Error al procesar base64 image:", err);
+    const match = finalCoverImage.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+    if (!match) {
+      return NextResponse.json({ error: "El formato de la imagen no es válido." }, { status: 400 });
     }
+
+    let ext = match[1].toLowerCase();
+    if (ext === "jpeg") ext = "jpg";
+    if (ext === "svg+xml") ext = "svg";
+    const base64Data = match[2];
+    const buffer = Buffer.from(base64Data, "base64");
+    const filePath = `posts/${cleanSlug}-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("media")
+      .upload(filePath, buffer, {
+        contentType: `image/${match[1]}`,
+        upsert: true,
+      });
+
+    // Antes, si esto fallaba, el código seguía adelante y guardaba el base64
+    // completo en la columna cover_image — la noticia quedaba "guardada" sin
+    // avisar, pero con una imagen rota o directamente sin cambiar. Ahora el
+    // guardado se corta acá y el formulario muestra el motivo real.
+    if (uploadError) {
+      console.error("Error al subir imagen a storage:", uploadError);
+      return NextResponse.json(
+        { error: `No se pudo subir la imagen: ${uploadError.message}` },
+        { status: 500 }
+      );
+    }
+
+    const { data: publicUrlData } = supabase.storage.from("media").getPublicUrl(filePath);
+    finalCoverImage = publicUrlData.publicUrl;
   }
 
   // Check unique slug and append suffix if exists

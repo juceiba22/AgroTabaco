@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { resizeImageFile } from "@/lib/image-resize";
 import type { Category } from "@/lib/types";
 
 type AiResult = {
@@ -102,14 +103,17 @@ export function BulletinImport({ categories }: { categories: Category[] }) {
     updateDraft(id, patch);
   }
 
-  function handleImageUpload(id: string, file: File | null) {
+  async function handleImageUpload(id: string, file: File | null) {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      updateDraft(id, { coverImage: base64 });
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Igual que en PostForm: sin redimensionar, una foto de celular sin
+      // optimizar hace fallar el guardado por el límite de tamaño de
+      // petición de Vercel (~4.5 MB).
+      const resized = await resizeImageFile(file);
+      updateDraft(id, { coverImage: resized });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo procesar la imagen.");
+    }
   }
 
   // Manda un bloque a la IA y vuelca el resultado en su borrador. Devuelve true

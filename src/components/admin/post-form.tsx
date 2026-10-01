@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { resizeImageFile } from "@/lib/image-resize";
 import type { Category, Post } from "@/lib/types";
 
 type TargetStatus = "published" | "draft";
@@ -109,20 +110,23 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
     }
   }
 
-  function handleImageSelect(file: File | null) {
+  async function handleImageSelect(file: File | null) {
     if (!file) {
       setNewImageDataUrl(null);
       setImagePreview(existingCoverImage);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      setNewImageDataUrl(base64);
-      setImagePreview(base64);
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Se redimensiona en el navegador: una foto de celular sin optimizar
+      // (3-8 MB) hace que el guardado falle por el límite de tamaño de
+      // petición de Vercel (~4.5 MB), y sin esto fallaba sin avisar bien.
+      const resized = await resizeImageFile(file);
+      setNewImageDataUrl(resized);
+      setImagePreview(resized);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo procesar la imagen.");
+    }
   }
 
   async function handleSave(targetStatus: TargetStatus) {
