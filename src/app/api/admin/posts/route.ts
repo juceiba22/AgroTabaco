@@ -157,3 +157,40 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ ok: true, post: savedPost });
 }
+
+export async function DELETE(request: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  if (!id) {
+    return NextResponse.json({ error: "Falta el id de la noticia" }, { status: 400 });
+  }
+
+  // La policy "Noticias: borrado solo admin" (RLS) es la que en definitiva
+  // decide esto — si el usuario logueado no es admin, delete() no borra
+  // ninguna fila (no tira error) y count queda en 0, por eso se chequea eso.
+  const { error, count } = await supabase
+    .from("posts")
+    .delete({ count: "exact" })
+    .eq("id", id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  if (!count) {
+    return NextResponse.json(
+      { error: "No se encontró la noticia o no tenés permiso para borrarla." },
+      { status: 404 }
+    );
+  }
+
+  return NextResponse.json({ ok: true });
+}

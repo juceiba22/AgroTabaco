@@ -78,7 +78,7 @@ export default async function AdminDashboardPage() {
                   {formatDate(post.publishedAt)}
                 </TableCell>
                 <TableCell className="text-right">
-                  <PostRowActions postId={post.id} slug={post.slug} />
+                  <PostRowActions postId={post.id} slug={post.slug} title={post.title} />
                 </TableCell>
               </TableRow>
             ))}
