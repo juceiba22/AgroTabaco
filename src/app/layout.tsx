@@ -21,6 +21,9 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // Necesario para que las URLs relativas de og:image salgan absolutas, que es
+  // lo único que aceptan WhatsApp y los demás scrapers.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.agrotabaco.com"),
   title: {
     default: "AgroTabaco | Noticias del agro y las economías regionales",
     template: "%s | AgroTabaco",

@@ -17,9 +17,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
+  // Imagen de vista previa (WhatsApp, Facebook, X...): ver src/app/api/og.
+  const image = {
+    url: `/api/og/${slug}`,
+    width: 1200,
+    height: 630,
+    alt: post.title,
+  };
+
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/post/${slug}` },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.excerpt,
+      url: `/post/${slug}`,
+      siteName: "AgroTabaco",
+      locale: "es_AR",
+      publishedTime: post.publishedAt,
+      authors: [post.author],
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: [image.url],
+    },
   };
 }
 
