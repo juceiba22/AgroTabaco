@@ -5,7 +5,7 @@ import type { Category } from "@/lib/types";
 
 export function Footer({ categories }: { categories: Category[] }) {
   return (
-    <footer className="mt-20 bg-[#0D1F15] text-white border-t border-[#1A3B2B]">
+    <footer className="mt-20 print:hidden bg-[#0D1F15] text-white border-t border-[#1A3B2B]">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
         <div className="md:col-span-1 flex flex-col gap-4">
           <Logo variant="light" subtext="PORTAL EDITORIAL & DATA HUB" />

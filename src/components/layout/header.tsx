@@ -43,7 +43,7 @@ export function Header({ categories }: { categories: Category[] }) {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <header className="sticky top-0 z-50 w-full print:hidden bg-background/95 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
       {/* 1. Barra Superior de Ticker Financiero en Vivo */}
       <div className="w-full bg-[#132A1E] text-[#EAF3EC] py-1 px-4 sm:px-6 lg:px-8 border-b border-[#1A3B2B]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 text-xs">
