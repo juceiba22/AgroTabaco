@@ -20,8 +20,8 @@ import { cn } from "@/lib/utils";
 
 export type Lang = "en" | "es";
 
-const WA_NUMBER = "5491178192165";
-const WA_DISPLAY = "+54 9 11 7819-2165";
+const WA_NUMBER = "5491166814208";
+const WA_DISPLAY = "+54 9 11 6681-4208";
 const EMAIL = "institucional@agrotabaco.com";
 
 const TEXT = {
