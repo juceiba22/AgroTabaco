@@ -22,7 +22,7 @@ export type Lang = "en" | "es";
 
 const WA_NUMBER = "5491178192165";
 const WA_DISPLAY = "+54 9 11 7819-2165";
-const EMAIL = "redaccion@agrotabaco.com.ar";
+const EMAIL = "institucional@agrotabaco.com";
 
 const TEXT = {
   en: {
