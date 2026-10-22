@@ -5,9 +5,9 @@ type PageProps = {
   searchParams: Promise<{ lang?: string }>;
 };
 
-const TITLE = "Export Portfolio — Virginia Flue-Cured Tobacco, Salta, Argentina";
+const TITLE = "Export Portfolio — Premium Virginia, Salta, Argentina";
 const DESCRIPTION =
-  "Product profile of Virginia flue-cured tobacco from Salta, Argentina, for importers, embassies and consulates. New-crop samples available on request.";
+  "Flue-cured Virginia, crop 2026, grade B1F, lot 20/03/2026. Specifications and sample requests for importers, embassies and consulates.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -19,11 +19,15 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: "/exportacion/virginia",
     siteName: "AgroTabaco",
+    images: [
+      { url: "/images/exportacion/virginia-og.jpg", width: 1200, height: 630, alt: "Premium Virginia tobacco sample, Salta, Argentina" },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: `AgroTabaco ${TITLE}`,
     description: DESCRIPTION,
+    images: ["/images/exportacion/virginia-og.jpg"],
   },
 };
 
