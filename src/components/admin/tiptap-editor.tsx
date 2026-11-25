@@ -4,8 +4,10 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { useEffect } from "react";
+import { Video } from "./video-extension";
 import {
   Bold,
+  Film,
   Heading2,
   Heading3,
   Italic,
@@ -29,6 +31,7 @@ export function TiptapEditor({
     extensions: [
       StarterKit,
       Link.configure({ openOnClick: false, autolink: true }),
+      Video,
     ],
     content,
     editorProps: {
@@ -117,6 +120,17 @@ export function TiptapEditor({
           }}
         >
           <LinkIcon className="size-4" />
+        </ToolbarButton>
+        <ToolbarButton
+          active={false}
+          label="Video"
+          onClick={() => {
+            const src = window.prompt("URL del video (.mp4)", "https://");
+            if (!src || src === "https://") return;
+            editor.chain().focus().setVideo({ src }).run();
+          }}
+        >
+          <Film className="size-4" />
         </ToolbarButton>
       </div>
 
