@@ -147,15 +147,6 @@ export const DESTINATARIOS: Destinatario[] = [
   },
 ];
 
-// Resolución 172-2026, Artículo 3: reparto por etapa del cultivo.
-export const RES_172_ACTIVIDADES = [
-  { actividad: "Fase almácigos de plantines", monto: 3_221_746_115.0, pct: 5.5 },
-  { actividad: "Preparación y acondicionamiento de suelos (Virginia)", monto: 9_701_809_735.0, pct: 16.6 },
-  { actividad: "Participación de la mano de obra en el costo de producción", monto: 28_882_163_910.0, pct: 49.4 },
-  { actividad: "Fase de cosecha", monto: 7_379_726_084.0, pct: 12.6 },
-  { actividad: "Selección o tipificación de las hojas", monto: 9_320_190_000.0, pct: 15.9 },
-];
-
 // --- Formato es-AR ---
 
 const pesos = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -164,4 +155,89 @@ const millones = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 1, maxi
 export const fmtPesos = (n: number) => `$ ${pesos.format(n)}`;
 export const fmtMillones = (n: number) => `$ ${millones.format(n / 1_000_000)} M`;
 export const fmtPct = (n: number, digits = 2) =>
-  `${n.toLocaleString("es-AR", { minimumFractionDigits: digits, maximumFractionDigits: digits })} %`;
+  `${n.toLocaleString("es-AR", { minimumFractionDigits: digits, maximumFractionDigits: digits })} %`;
+
+// Supuesto del resumen ejecutivo: cantidad aproximada de productores
+// tabacaleros de Salta (estimación del autor, no surge de las resoluciones).
+export const PRODUCTORES_ESTIMADOS = 1_800;
+export const POR_PRODUCTOR_ANUAL = TOTAL / PRODUCTORES_ESTIMADOS;
+export const POR_PRODUCTOR_MENSUAL = POR_PRODUCTOR_ANUAL / 12;
+
+// Clasificación conceptual de los fondos por tipo de destino. Cada tipo
+// agrupa conceptos de DESTINATARIOS (se identifican por su texto); el monto
+// y las entidades se calculan a partir de ellos.
+const TIPOS_BASE: { tipo: string; detalle: string; conceptos: string[] }[] = [
+  {
+    tipo: "Apoyo a la producción",
+    detalle: "Compensación general: almácigos, mano de obra, cosecha y tipificación",
+    conceptos: ["Compensación general de producción (excl. preparación y acondicionamiento de suelos)"],
+  },
+  {
+    tipo: "Seguridad social",
+    detalle: "Aportes del convenio de corresponsabilidad gremial (Art. 14 bis)",
+    conceptos: ["Seguridad social, Art. 14 bis (convenio de corresponsabilidad gremial)"],
+  },
+  {
+    tipo: "Salud",
+    detalle: "Cobertura médico asistencial para productores",
+    conceptos: ["Cobertura médico asistencial para productores"],
+  },
+  {
+    tipo: "Insumos y fertilizantes",
+    detalle: "Preparación y acondicionamiento de suelos",
+    conceptos: ["Preparación y acondicionamiento de suelos (Virginia)"],
+  },
+  {
+    tipo: "Emergencia climática",
+    detalle: "Resarcimiento por factores climáticos adversos",
+    conceptos: ["Resarcimiento por factores climáticos adversos"],
+  },
+  {
+    tipo: "Curado y estufado",
+    detalle: "Gas, leña y energía eléctrica; calidad en centros de estufado",
+    conceptos: [
+      "Compensación de carburante (gas natural y leña para curado)",
+      "Energía eléctrica del centro de estufado",
+      "Mejoramiento de la calidad en centros comunitarios de estufado",
+    ],
+  },
+  {
+    tipo: "Funcionamiento institucional",
+    detalle: "Organismo de aplicación del FET, relevamientos y reasignaciones",
+    conceptos: [
+      "Funcionamiento del organismo de aplicación provincial del FET",
+      "Relevamiento de superficie plantada",
+      "Reasignaciones y rendiciones menores",
+    ],
+  },
+];
+
+export const TIPOS_DE_DESTINO = TIPOS_BASE.map((t) => {
+  const items = DESTINATARIOS.flatMap((d) =>
+    d.conceptos.filter((c) => t.conceptos.includes(c.concepto)).map((c) => ({ d, c }))
+  );
+  if (items.length !== t.conceptos.length) {
+    throw new Error(`Tipo de destino "${t.tipo}": concepto no encontrado`);
+  }
+  const monto = items.reduce((s, { c }) => s + c.monto, 0);
+  return {
+    tipo: t.tipo,
+    detalle: t.detalle,
+    monto,
+    pct: (monto / TOTAL) * 100,
+    entidades: [...new Set(items.map(({ d }) => (d.sigla.startsWith("Gobierno") ? "Gobierno" : d.sigla)))],
+  };
+});
+
+// Precio FET (pago directo a productores, fuera de los POA). Estimación:
+// lo pagado a nivel nacional en 2026 como "Retribución al Productor
+// Tabacalero 2026 (Precio)" según la ejecución mensual del FET (abril a
+// agosto de 2026; mercado-argentino-tabaco/FET_Consolidado_Ejecuciones_Dashboard.csv),
+// multiplicado por la participación de Salta en el valor FET de la campaña
+// 2024/2025 (acopio_resumen_precios_historico_unificado.csv).
+export const PRECIO_FET_NACIONAL_2026 =
+  15_628_862_920.46 + 9_055_087_021.58 + 9_059_698_779.01 + 15_782_385_707.63 + 71_918_613.0;
+export const PARTICIPACION_SALTA_FET = 34_146_053_357.43 / 105_404_687_149.35;
+export const PRECIO_FET_SALTA_2026 = PRECIO_FET_NACIONAL_2026 * PARTICIPACION_SALTA_FET;
+export const PRECIO_FET_POR_PRODUCTOR_ANUAL = PRECIO_FET_SALTA_2026 / PRODUCTORES_ESTIMADOS;
+export const PRECIO_FET_POR_PRODUCTOR_MENSUAL = PRECIO_FET_POR_PRODUCTOR_ANUAL / 12;

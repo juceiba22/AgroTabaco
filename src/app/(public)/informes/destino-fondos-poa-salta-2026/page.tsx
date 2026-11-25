@@ -5,13 +5,13 @@ import {
   DESTINATARIOS,
   RESOLUCIONES,
   RESOLUCION_POR_ID,
-  RES_172_ACTIVIDADES,
   TOTAL,
   fmtMillones,
   fmtPct,
   fmtPesos,
   type Resolucion,
 } from "@/lib/informes/poa-salta-2026";
+import { ResumenEjecutivo } from "./resumen-ejecutivo";
 
 const TITLE = "Destino de los fondos POA · Salta 2026";
 const DESCRIPTION =
@@ -41,6 +41,8 @@ export default function DestinoFondosPoaSalta2026Page() {
         <ArrowLeft className="h-3.5 w-3.5" />
         Informes
       </Link>
+
+      <ResumenEjecutivo />
 
       {/* Encabezado */}
       <header className="relative overflow-hidden rounded-2xl border border-brand-gold/30 bg-gradient-to-br from-[#0d1f15] via-[#132a1e] to-[#1a3b2b] p-6 text-white shadow-xl sm:p-9">
@@ -229,43 +231,7 @@ export default function DestinoFondosPoaSalta2026Page() {
             </tbody>
           </table>
         </TableWrap>
-
-        <div className="mt-8 rounded-xl border border-brand-gold/40 bg-[#F7F1E2] p-5 text-sm text-[#4a3a14] break-inside-avoid">
-          <h3 className="flex flex-wrap items-center gap-2 font-serif text-lg font-bold text-brand-green-dark">
-            Resolución <ResLink r={RESOLUCION_POR_ID["172-2026"]} />: cómo se reparten los{" "}
-            {fmtMillones(RESOLUCION_POR_ID["172-2026"].monto)}
-          </h3>
-          <p className="mt-1.5">
-            El Artículo 2 menciona la adquisición de fertilizantes entre los destinos, pero el
-            Artículo 3 no tiene una partida propia para fertilizantes: el monto se reparte por
-            etapa del cultivo.
-          </p>
-          <ul className="mt-4 space-y-3">
-            {RES_172_ACTIVIDADES.map((a) => (
-              <li key={a.actividad}>
-                <div className="flex flex-wrap items-baseline justify-between gap-2 text-[13px]">
-                  <span className="font-medium text-foreground">{a.actividad}</span>
-                  <span className="tabular-nums text-foreground">
-                    {fmtPesos(a.monto)}{" "}
-                    <span className="ml-1 font-bold text-brand-green-dark">{fmtPct(a.pct, 1)}</span>
-                  </span>
-                </div>
-                <div className="mt-1 h-2 w-full rounded-full bg-white/70">
-                  <div
-                    className="h-2 rounded-full bg-brand-green-light"
-                    style={{ width: `${a.pct}%` }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
       </Section>
-
-      <p className="mt-12 border-t border-border pt-4 text-xs text-muted-foreground">
-        Fuente: resoluciones de POA publicadas por la Secretaría de Agricultura, Ganadería y Pesca
-        (magyp.gob.ar). Montos tomados del Artículo 1 de cada resolución. Generado el 25/11/2026.
-      </p>
     </div>
   );
 }
