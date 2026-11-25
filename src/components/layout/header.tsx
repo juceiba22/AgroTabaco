@@ -8,6 +8,7 @@ import {
   Bot,
   Clock,
   ExternalLink,
+  FileBarChart,
   FileText,
   Menu,
   Search,
@@ -208,6 +209,18 @@ export function Header({ categories }: { categories: Category[] }) {
               );
             })}
             <Link
+              href="/informes"
+              className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1 rounded font-bold uppercase tracking-wider transition-colors",
+                pathname?.startsWith("/informes")
+                  ? "bg-white text-[#132A1E] shadow-xs"
+                  : "text-[#4E4635] hover:text-[#132A1E] hover:bg-white/50"
+              )}
+            >
+              <FileBarChart className="h-3.5 w-3.5 text-[#C59B27]" />
+              <span>Informes</span>
+            </Link>
+            <Link
               href="/bot"
               className={cn(
                 "flex items-center gap-1.5 px-2.5 py-1 rounded font-bold uppercase tracking-wider transition-colors",
@@ -298,6 +311,14 @@ function MobileNav({ categories }: { categories: Category[] }) {
               {category.name}
             </Link>
           ))}
+          <Link
+            href="/informes"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-[#EDF6EF]"
+          >
+            <FileBarChart className="h-4 w-4 text-[#C59B27]" />
+            Informes
+          </Link>
           <div className="my-2 border-t border-border" />
           <a
             href={AGROTABACO_DATA_URL}
