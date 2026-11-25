@@ -17,6 +17,7 @@ export async function POST(request: Request) {
     title: string;
     slug: string;
     excerpt: string;
+    authorName?: string;
     content: string;
     coverImage?: string | null;
     categoryId: string;
@@ -110,6 +111,7 @@ export async function POST(request: Request) {
     status === "published" ? (publishedAt || nowIso) : null;
 
   const authorName =
+    body.authorName?.trim() ||
     (user.user_metadata?.full_name as string | undefined) ||
     user.email?.split("@")[0] ||
     "Redacción AgroTabaco";

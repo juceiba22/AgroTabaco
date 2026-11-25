@@ -54,6 +54,7 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
   const [slug, setSlug] = useState(post?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(false);
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? "");
+  const [author, setAuthor] = useState(post?.author ?? "");
   const [contentHtml, setContentHtml] = useState(post?.content ?? "");
   const [categoryId, setCategoryId] = useState(
     post && post.category.id ? post.category.id : (categories[0]?.id ?? "")
@@ -159,6 +160,7 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
           title: title.trim(),
           slug: slug.trim(),
           excerpt: excerpt.trim(),
+          authorName: author.trim(),
           content: contentHtml,
           coverImage,
           categoryId,
@@ -289,6 +291,16 @@ export function PostForm({ mode, categories, post }: PostFormProps) {
                 value={excerpt}
                 onChange={(event) => setExcerpt(event.target.value)}
                 placeholder="Breve resumen para la portada..."
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="author">Autor / Firma</Label>
+              <Input
+                id="author"
+                value={author}
+                onChange={(event) => setAuthor(event.target.value)}
+                placeholder="Vacío: se usa el nombre de tu cuenta"
               />
             </div>
 
