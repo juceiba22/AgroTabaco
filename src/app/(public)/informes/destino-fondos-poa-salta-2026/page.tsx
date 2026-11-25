@@ -32,7 +32,8 @@ export const metadata: Metadata = {
 
 export default function DestinoFondosPoaSalta2026Page() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 [print-color-adjust:exact] print:max-w-none print:px-0 print:py-0">
+      <style>{`@media print { @page { size: A4; margin: 14mm 12mm; } html, body { background: #fff !important; } tr { break-inside: avoid; } }`}</style>
       <Link
         href="/informes"
         className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-olive hover:text-brand-green-dark print:hidden"
@@ -108,7 +109,7 @@ export default function DestinoFondosPoaSalta2026Page() {
         {DESTINATARIOS.map((d) => (
           <div
             key={d.sigla}
-            className="rounded-xl border border-border bg-card p-5 shadow-xs"
+            className="rounded-xl border border-border bg-card p-5 shadow-xs break-inside-avoid"
             style={{ borderTop: `3px solid ${d.color}` }}
           >
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -129,7 +130,7 @@ export default function DestinoFondosPoaSalta2026Page() {
         subtitle="Hacé clic en el número de resolución para descargar el PDF."
       >
         <TableWrap>
-          <table className="w-full min-w-[720px] text-sm">
+          <table className="w-full min-w-[720px] text-sm print:min-w-0 print:text-xs">
             <thead>
               <tr>
                 <Th>Destino según la resolución</Th>
@@ -143,7 +144,7 @@ export default function DestinoFondosPoaSalta2026Page() {
                 <Grupo key={d.sigla} d={d} />
               ))}
             </tbody>
-            <tfoot>
+            <tfoot className="print:[display:table-row-group]">
               <tr className="bg-brand-green-dark text-white">
                 <td className="px-4 py-3 font-bold">Total · Cámara del Tabaco de Salta</td>
                 <td />
@@ -166,7 +167,7 @@ export default function DestinoFondosPoaSalta2026Page() {
         subtitle="Las 15 resoluciones en orden cronológico."
       >
         <TableWrap>
-          <table className="w-full min-w-[720px] text-sm">
+          <table className="w-full min-w-[720px] text-sm print:min-w-0 print:text-xs">
             <thead>
               <tr>
                 <Th>Resolución (PDF)</Th>
@@ -202,7 +203,7 @@ export default function DestinoFondosPoaSalta2026Page() {
         subtitle="De las 15 resoluciones de Salta 2026, solo una menciona fertilizantes o insumos en su texto, y ninguna tiene una partida específica para eso."
       >
         <TableWrap>
-          <table className="w-full min-w-[640px] text-sm">
+          <table className="w-full min-w-[640px] text-sm print:min-w-0 print:text-xs">
             <thead>
               <tr>
                 <Th>Resolución (PDF)</Th>
@@ -229,7 +230,7 @@ export default function DestinoFondosPoaSalta2026Page() {
           </table>
         </TableWrap>
 
-        <div className="mt-8 rounded-xl border border-brand-gold/40 bg-[#F7F1E2] p-5 text-sm text-[#4a3a14]">
+        <div className="mt-8 rounded-xl border border-brand-gold/40 bg-[#F7F1E2] p-5 text-sm text-[#4a3a14] break-inside-avoid">
           <h3 className="flex flex-wrap items-center gap-2 font-serif text-lg font-bold text-brand-green-dark">
             Resolución <ResLink r={RESOLUCION_POR_ID["172-2026"]} />: cómo se reparten los{" "}
             {fmtMillones(RESOLUCION_POR_ID["172-2026"].monto)}
